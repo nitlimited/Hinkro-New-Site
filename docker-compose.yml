@@ -1,0 +1,11 @@
+services:
+  hinkro-react:
+    build: .
+    container_name: hinkro-react-preview
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+      - ./index.html:/app/index.html
+      - ./vite.config.js:/app/vite.config.js
