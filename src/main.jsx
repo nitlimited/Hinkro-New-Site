@@ -128,6 +128,86 @@ const trendsNewsImages = [
   },
 ];
 
+const designProcessSteps = [
+  {
+    number: "1",
+    title: "Consultation",
+    text: "This initial step involves meeting with the client to understand their needs, preferences, and any specific requirements for the kente design.",
+  },
+  {
+    number: "2",
+    title: "Concept and Design",
+    text: "Based on the consultation, Hinkro Kente develops a concept and design for the kente cloth. This includes selecting patterns, colors, and symbols that align with the client's vision.",
+  },
+  {
+    number: "3",
+    title: "Client Approval",
+    text: "The proposed design is presented to the client for feedback and approval. Any necessary adjustments are made to ensure the client's satisfaction before proceeding.",
+  },
+  {
+    number: "4",
+    title: "Weaving",
+    text: "Once the design is approved, the yarns are prepared according to the specified colors and patterns. Skilled weavers then begin the intricate process of weaving the kente cloth on traditional looms.",
+  },
+  {
+    number: "5",
+    title: "Sample Weave Inspection",
+    text: "A sample of the woven kente is inspected to ensure it meets the quality standards and design specifications. Any issues identified are addressed before continuing with the full weaving process.",
+  },
+  {
+    number: "6",
+    title: "Finishing",
+    text: "The final kente cloth undergoes finishing touches, which may include washing, ironing, and trimming. This step ensures the cloth is in perfect condition and ready for delivery.",
+  },
+];
+
+const designOfferings = [
+  {
+    title: "Pattern Weave",
+    text: "Hinkro Kente offers a variety of meticulously crafted kente designs with intricate patterns and vibrant colors. Each design has unique symbolism and meaning, catering to classic and contemporary tastes. The weaving process ensures high-quality pieces. Hinkro Kente guarantees authentic and beautifully crafted kente cloth.",
+    image: "/images/hinkro-design-offering-pattern-weave.webp",
+    imageAlt: "Emerald green and peach Hinkro Kente pattern weave fabric",
+    layout: "image-first",
+  },
+  {
+    title: "Plain Weave",
+    text: "Hinkro Kente offers traditional Ghanaian plain kente weaving services for customizing cloth with unique patterns and colors to match any desirable pattern fabric.",
+    image: "/images/hinkro-design-offering-plain-weave.webp",
+    imageAlt: "Cream and silver shimmering Hinkro Kente plain weave fabric",
+    layout: "text-first",
+  },
+  {
+    title: "Transitional Weave (Ombre)",
+    text: "Ombre Kente weaving blends different colors gradually from light to dark, adding depth to traditional Kente cloth. Hinkro Kente Design offers skilled weavers who create intricate Ombre patterns using high-quality materials.",
+    image: "/images/hinkro-design-offering-transitional-ombre-weave.webp",
+    imageAlt: "Yellow purple and green ombre Hinkro Kente fabric",
+    layout: "image-first",
+    cta: true,
+  },
+  {
+    title: "Weaving + Mechanical Embroidery",
+    text: "Hinkro Kente combines traditional handloom weaving with modern mechanical embroidery to create unique and innovative designs. This blend of techniques adds depth and texture to their fabrics, showcasing Ghanaian craftsmanship.",
+    image: "/images/hinkro-design-offering-mechanical-embroidery.jpeg",
+    imageAlt: "Orange Kente cloth with mechanical embroidery symbols",
+    layout: "text-first",
+  },
+  {
+    title: "Weaving + Hand Embroidery",
+    text: "At Hinkro Kente, we combine weaving and hand embroidery to create unique kente cloth designs that blend tradition and artistry. Our skilled artisans use traditional weaving methods to craft the base fabric, which is then enhanced with hand embroidery to add intricate details. This fusion of techniques results in exclusive pieces that highlight Ghanaian textile traditions, offering both traditional and modern designs.",
+    image: "/images/hinkro-design-offering-hand-embroidery.jpg",
+    imageAlt: "Green and gold Kente fabric with white hand embroidery",
+    layout: "text-first",
+  },
+  {
+    title: "Graduation Stoles and Sash",
+    text: "We offer custom weaving graduation stoles that symbolize academic achievements. Our high-quality stoles are tailored to each graduate's preferences, incorporating design elements like school colors and logos.",
+    image: "/images/hinkro-design-offering-graduation-stoles.jpg",
+    imageAlt: "Custom graduation stole and sash by Hinkro Kente",
+    layout: "text-first",
+    cta: true,
+  },
+];
+
 const historyItems = [
   {
     year: "2018",
@@ -245,7 +325,8 @@ const faqItems = [
 
 function getCurrentPage() {
   const hash = window.location.hash.replace("#", "");
-  return hash === "tradition" ? "tradition" : "home";
+  if (hash === "tradition" || hash === "design") return hash;
+  return "home";
 }
 
 function Header({ currentPage }) {
@@ -331,6 +412,100 @@ function Header({ currentPage }) {
         </div>
       )}
     </header>
+  );
+}
+
+function DesignPage() {
+  return (
+    <main className="design-page">
+      <section className="design-process-section" aria-labelledby="design-process-title">
+        <div className="design-process-intro">
+          <p>Our Design Process</p>
+          <h1 id="design-process-title">Stages that results in success</h1>
+          <span>
+            This is where we put together the beautiful concept of designs in
+            your mind to reality. We put the colors of your choice in this process.
+          </span>
+        </div>
+
+        <div className="design-process-layout">
+          <div className="design-process-column design-process-left">
+            {designProcessSteps.slice(0, 3).map((step) => (
+              <article className="design-step" key={step.number}>
+                <div className="design-step-heading">
+                  <strong>{step.number}</strong>
+                  <h2>{step.title}</h2>
+                </div>
+                <p>{step.text}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="design-sketch-wrap" aria-hidden="true">
+            <img
+              src="/images/hinkro-kente-design-process-sketch.png"
+              alt=""
+            />
+          </div>
+
+          <div className="design-process-column design-process-right">
+            {designProcessSteps.slice(3).map((step) => (
+              <article className="design-step" key={step.number}>
+                <div className="design-step-heading">
+                  <strong>{step.number}</strong>
+                  <h2>{step.title}</h2>
+                </div>
+                <p>{step.text}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <DesignOfferingsSection />
+    </main>
+  );
+}
+
+function DesignOfferingsSection() {
+  return (
+    <section className="design-offerings-section" aria-labelledby="design-offerings-title">
+      <div className="design-offerings-divider" aria-hidden="true" />
+      <h2 id="design-offerings-title">Design Offerings</h2>
+      <img
+        className="design-offerings-sketch design-offerings-sketch-left"
+        src="/images/hinkro-kente-design-process-sketch.png"
+        alt=""
+        aria-hidden="true"
+      />
+      <img
+        className="design-offerings-sketch design-offerings-sketch-right"
+        src="/images/hinkro-kente-design-process-sketch.png"
+        alt=""
+        aria-hidden="true"
+      />
+
+      <div className="design-offerings-list">
+        {designOfferings.map((offering) => (
+          <article
+            className={`design-offering ${offering.layout === "text-first" ? "is-text-first" : "is-image-first"}`}
+            key={offering.title}
+          >
+            <figure className="design-offering-image">
+              <img src={offering.image} alt={offering.imageAlt} />
+            </figure>
+            <div className="design-offering-copy">
+              <h3>{offering.title}</h3>
+              <p>{offering.text}</p>
+              {offering.cta && (
+                <a href="#bespoke" className="design-offering-cta">
+                  Learn More <span aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1017,7 +1192,13 @@ function App() {
   return (
     <>
       <Header currentPage={currentPage} />
-      {currentPage === "tradition" ? <InspiringTradition /> : <Hero />}
+      {currentPage === "tradition" ? (
+        <InspiringTradition />
+      ) : currentPage === "design" ? (
+        <DesignPage />
+      ) : (
+        <Hero />
+      )}
     </>
   );
 }
