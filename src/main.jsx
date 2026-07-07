@@ -323,9 +323,63 @@ const faqItems = [
   },
 ];
 
+
+const bespokeServiceRows = [
+  {
+    title: "Custom Color-way",
+    text: "Choose the colors that resonate with you the most, and we will intricately integrate them into a pre-existing design, resulting in a unique and personalized fabric that aligns perfectly with your individual style and preferences.",
+    image: "/images/hinkro-bespoke-custom-color-way.jpg",
+    imageAlt: "Color thread card for custom bespoke Kente color-way selection",
+    cta: "View Color Card",
+    layout: "image-first",
+  },
+  {
+    title: "Story telling pattern",
+    text: "We are dedicated to collaborating with you to bring your narrative to life in a personalized pattern. Our team of experienced craftsmen will engage with you to craft a one-of-a-kind design that encapsulates the essence of your background, accomplishments, or interests.",
+    image: "/images/hinkro-bespoke-storytelling-pattern.jpg",
+    imageAlt: "Designer sketching a storytelling Kente pattern for bespoke weaving",
+    layout: "text-first",
+  },
+];
+
+const bespokeFaqItems = [
+  {
+    question: "01. Do you have a shop ?",
+    answer: "We do not have a shop; Hinkro is not in the business of selling already made Kente. Instead, we have a weaving studio where we primarily create custom and bespoke Kente fabrics. We also have a consultation office where we meet with clients to discuss their needs. Occasionally, we may create some popular and classic Kente for sale or curate rare and unique Kente from other weavers, which will be published and sold through our website and social media channels.",
+  },
+  {
+    question: "02. Do you offer refund ?",
+    answer: "Yes, we offer refunds in cases where there is a defect in production and insufficient time for corrections. However, consultation fees are non-refundable and deposits may become cancellation fees because of thread purchases, pattern development, and design hours already committed to your project. Our production process is designed to keep clients highly satisfied with the final result.",
+  },
+  {
+    question: "03. Do you ship abroad ?",
+    answer: "Yes, we ship internationally. To reduce the risk of losing your fabric, we ship directly to our representatives in the UK, US, and Canada, who then forward the package to your local address. For countries without representatives, we ship the fabric directly to you.",
+  },
+  {
+    question: "04. What is the process of ordering for a custom made Kente ?",
+    answer: "To order bespoke fabric, first decide whether you want to change the colors of an existing pattern, develop a new pattern, or choose from Hinkro-developed patterns. Sketches are created to present your ideas for approval. Once the design and colors are approved, we proceed to weave your fabric and keep you updated with pictures and videos throughout the process.",
+  },
+  {
+    question: "05. How long does it take to weave a Kente",
+    answer: "After consultation and sketch approval, Kente weaving can take 4–10 weeks depending on the complexity of the pattern, number of yards, and gender specifications. We advise clients to start the process about six months ahead of the program.",
+  },
+  {
+    question: "06. Do you take part payment?",
+    answer: "Yes, we accept partial payments. Clients are required to pay a minimum of 60% of the total bill upfront, with the remaining 40% due upon completion. We do not accept payment in installments beyond this structure.",
+  },
+  {
+    question: "07. What happens if the event for which the fabric was ordered does not proceed?",
+    answer: "Since the fabric is custom-made specifically for you, it is important to be fully committed before production begins. Once we start crafting your fabric, we are unable to accept returns or cancellations for changes of mind, sponsorship by another party, program cancellations, or similar circumstances.",
+  },
+  {
+    question: "08. Do you weave Kente graduation stole",
+    answer: "Yes, we do. The minimum order quantity for Kente graduation stoles is 10 units.",
+  },
+];
+
 function getCurrentPage() {
   const hash = window.location.hash.replace("#", "");
-  if (hash === "tradition" || hash === "design") return hash;
+  if (["tradition", "design", "bespoke"].includes(hash)) return hash;
   return "home";
 }
 
@@ -412,6 +466,100 @@ function Header({ currentPage }) {
         </div>
       )}
     </header>
+  );
+}
+
+
+function BespokePage() {
+  return (
+    <main className="bespoke-page">
+      <section className="bespoke-hero" aria-labelledby="bespoke-hero-title">
+        <div className="bespoke-hero-copy">
+          <p>Bespoke Kente</p>
+          <h1 id="bespoke-hero-title">Crafted to match your desire</h1>
+          <span>
+            With bespoke services, our skilled weavers craft the kente fabric to perfectly suit your desires.
+            We practically listen to the client&apos;s preferences to weave the perfect piece. In this aspect,
+            we then communicate and pick the best colors to fit the picture in the client&apos;s vision of the
+            cloth and then we actualize that into reality for them.
+          </span>
+        </div>
+        <div className="bespoke-hero-art" aria-hidden="true">
+          <div className="bespoke-hero-gold" />
+          <img src="/images/hinkro-bespoke-kente-shuttles.png" alt="" />
+        </div>
+      </section>
+
+      <section className="bespoke-services" aria-label="Bespoke Kente services">
+        {bespokeServiceRows.map((item, index) => (
+          <article
+            className={`bespoke-service-row ${index % 2 === 0 ? "is-image-first" : "is-text-first"}`}
+            key={item.title}
+          >
+            <figure className="bespoke-service-image">
+              <img src={item.image} alt={item.imageAlt} />
+            </figure>
+            <div className="bespoke-service-copy">
+              <h2>{item.title}</h2>
+              <p>{item.text}</p>
+              {item.cta && (
+                <a className="bespoke-service-cta" href="#store">
+                  <span aria-hidden="true">▣</span> {item.cta}
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="bespoke-dreams" aria-labelledby="bespoke-dreams-title">
+        <figure className="bespoke-dreams-image">
+          <img src="/images/hinkro-bespoke-dreams-shapes-hues.jpg" alt="Curated yellow and grey Kente fabric with Hinkro packaging" />
+        </figure>
+        <div className="bespoke-dreams-copy">
+          <h2 id="bespoke-dreams-title">Dreams into shapes and hues</h2>
+          <p>
+            Inspiring Greatness. For over 5 years, Hinkro has pushed the boundaries of luxury,
+            creating new realities both within and beyond fabric design. We hope to impact and touch
+            lives through quality services to our loyal consumers
+          </p>
+          <a className="bespoke-dreams-cta" href="https://hinkrokente.com/appointment/">
+            Book Appointment <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <BespokeFaqSection />
+      <TrendsNewsSection />
+      <SiteFooter />
+    </main>
+  );
+}
+
+function BespokeFaqSection() {
+  const [openFaq, setOpenFaq] = useState(0);
+
+  return (
+    <section className="bespoke-faq-section" aria-labelledby="bespoke-faq-title">
+      <h2 id="bespoke-faq-title" className="sr-only">Bespoke Kente frequently asked questions</h2>
+      <div className="bespoke-faq-list">
+        {bespokeFaqItems.map((item, index) => (
+          <article className="bespoke-faq-item" key={item.question}>
+            <button
+              type="button"
+              aria-expanded={openFaq === index}
+              onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+            >
+              <span>{item.question}</span>
+              <span aria-hidden="true" className="bespoke-faq-icon">⌄</span>
+            </button>
+            <div className={openFaq === index ? "bespoke-faq-answer is-open" : "bespoke-faq-answer"}>
+              <p>{item.answer}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -1262,6 +1410,8 @@ function App() {
         <InspiringTradition />
       ) : currentPage === "design" ? (
         <DesignPage />
+      ) : currentPage === "bespoke" ? (
+        <BespokePage />
       ) : (
         <Hero />
       )}
