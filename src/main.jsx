@@ -377,9 +377,66 @@ const bespokeFaqItems = [
   },
 ];
 
+const accessoryItems = [
+  {
+    category: "Protection and Storage",
+    title: "Men Duffel Bag",
+    image: "/images/hinkro-accessory-men-duffel-bag.jpg",
+    imageAlt: "Hinkro men's duffel bag for Kente cloth protection and storage",
+    text: "Effortlessly stylish and designed for the modern man, the Hinkro Men's Duffle Bag combines easy-carry convenience with spacious storage and premium protection for your Kente cloth. Crafted for those who demand both comfort and style, it’s the perfect companion for travel or everyday elegance.",
+    availability: "All Male Kente",
+    actions: [
+      ["Start Men Bespoke", "https://wa.link/5sqlyv"],
+      ["Get Duffel Bag", "https://www.hinkrokente.com/product/hinkro-men-duffel-bag/"],
+    ],
+  },
+  {
+    category: "Personal Lifestyle",
+    title: "Bridal Electronic Hand Fan",
+    image: "/images/hinkro-accessory-bridal-hand-fan.jpg",
+    imageAlt: "Bride holding Hinkro bridal electronic hand fan",
+    text: "The ultimate blend of style and comfort for your big day. Designed to keep brides cool under the sun, it ensures you stay fresh, radiant, and sweat-free. A luxurious must-have accessory for every bride.",
+    availability: "Coming Soon (Bridal Package Only)",
+    actions: [
+      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
+      ["Get Fan", "https://www.hinkrokente.com/product/hinkro-hand-held-bridal-fan/"],
+    ],
+  },
+  {
+    category: "Protection and Storage",
+    title: "Bridal Garment Bag",
+    image: "/images/hinkro-accessory-bridal-garment-bag.jpg",
+    imageAlt: "Hinkro bridal garment bag for Kente gown protection",
+    text: "Your dream Kente gown deserves first class care. Designed to keep your gown safe, spotless, and ready for your big moment, it’s the elegant companion every bride deserves.",
+    availability: "Bridal Package Only",
+    actions: [
+      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
+      ["Get Garment Bag", "https://www.hinkrokente.com/product/bridal-gown-bag/"],
+    ],
+  },
+  {
+    category: "Fragrance",
+    title: "Hinkro Moonlight Eau De Parfum 30ml",
+    image: "/images/hinkro-accessory-moonlight-perfume.jpg",
+    imageAlt: "Bride wearing Kente accessories and holding Hinkro Moonlight perfume",
+    text: "Every bride deserves to smell as beautiful as she looks. A delicate blend of charm and allure, made for the bride who wants to leave a trace of magic. With every spritz, it wraps you in a soft, luxurious scent that lingers long after the “I do.”",
+    availability: "Coming Soon (Pre-Order Only)",
+    actions: [["Coming Soon", "#accessories"]],
+  },
+  {
+    category: "Protection and Storage",
+    title: "Flip Box",
+    image: "/images/hinkro-accessory-flip-box.jpg",
+    imageAlt: "Hinkro flip box packaging for gifting Kente",
+    text: "It’s the ideal packaging for gifting Kente in style. Because every timeless fabric deserves a box that speaks tradition and class. Designed for secure storage and stunning presentation.",
+    availability: "All Female Weave",
+    actions: [["Order Women Kente", "https://wa.me/p/7466245416760251/233209707235"]],
+  },
+];
+
 function getCurrentPage() {
   const hash = window.location.hash.replace("#", "");
-  if (["tradition", "design", "bespoke"].includes(hash)) return hash;
+  if (["tradition", "design", "bespoke", "accessories"].includes(hash)) return hash;
   return "home";
 }
 
@@ -469,6 +526,69 @@ function Header({ currentPage }) {
   );
 }
 
+function AccessoriesPage() {
+  return (
+    <main className="accessories-page" id="accessories">
+      <section className="accessories-intro" aria-labelledby="accessories-title">
+        <h1 id="accessories-title">Discover Hinkro&apos;s Pivotal Accessories</h1>
+        <p>
+          Enrich every moment with a collection of accessories that cater to your
+          unique lifestyle.
+        </p>
+      </section>
+
+      <section className="accessories-grid-section" aria-label="Hinkro Kente accessories">
+        <div className="accessories-grid">
+          {accessoryItems.map((item) => (
+            <article className="accessory-card" key={item.title}>
+              <figure className="accessory-image">
+                <img src={item.image} alt={item.imageAlt} />
+              </figure>
+              <p className="accessory-category">{item.category}</p>
+              <h2>{item.title}</h2>
+              <p className="accessory-description">{item.text}</p>
+              <div className="accessory-divider" aria-hidden="true" />
+              <p className="accessory-availability-label">Available For:</p>
+              <p className="accessory-availability">{item.availability}</p>
+              <div className="accessory-actions">
+                {item.actions.map(([label, href]) => (
+                  <a key={label} href={href}>
+                    {label}
+                  </a>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="accessories-dreams" aria-labelledby="accessories-dreams-title">
+        <figure className="accessories-dreams-image">
+          <img
+            src="/images/hinkro-bespoke-dreams-shapes-hues.jpg"
+            alt="Curated yellow and grey Kente fabric with Hinkro packaging"
+          />
+        </figure>
+        <div className="accessories-dreams-copy">
+          <h2 id="accessories-dreams-title">
+            Dreams into
+            <br />
+            shapes and hues
+          </h2>
+          <p>
+            Inspiring Greatness. For over 5 years, Hinkro has pushed the boundaries
+            of luxury, creating new realities both within and beyond fabric design.
+            We hope to impact and touch lives through quality services to our loyal
+            consumers
+          </p>
+          <a href="https://hinkrokente.com/appointment/">
+            Book Appointment <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+    </main>
+  );
+}
 
 function BespokePage() {
   return (
@@ -1412,6 +1532,8 @@ function App() {
         <DesignPage />
       ) : currentPage === "bespoke" ? (
         <BespokePage />
+      ) : currentPage === "accessories" ? (
+        <AccessoriesPage />
       ) : (
         <Hero />
       )}
