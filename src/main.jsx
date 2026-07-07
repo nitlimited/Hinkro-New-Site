@@ -476,7 +476,7 @@ function BespokePage() {
       <section className="bespoke-hero" aria-labelledby="bespoke-hero-title">
         <div className="bespoke-hero-copy">
           <p>Bespoke Kente</p>
-          <h1 id="bespoke-hero-title">Crafted to match your desire</h1>
+          <h1 id="bespoke-hero-title">Crafted to match<br />your desire</h1>
           <span>
             With bespoke services, our skilled weavers craft the kente fabric to perfectly suit your desires.
             We practically listen to the client&apos;s preferences to weave the perfect piece. In this aspect,
@@ -517,7 +517,7 @@ function BespokePage() {
           <img src="/images/hinkro-bespoke-dreams-shapes-hues.jpg" alt="Curated yellow and grey Kente fabric with Hinkro packaging" />
         </figure>
         <div className="bespoke-dreams-copy">
-          <h2 id="bespoke-dreams-title">Dreams into shapes and hues</h2>
+          <h2 id="bespoke-dreams-title">Dreams into shapes<br />and hues</h2>
           <p>
             Inspiring Greatness. For over 5 years, Hinkro has pushed the boundaries of luxury,
             creating new realities both within and beyond fabric design. We hope to impact and touch
