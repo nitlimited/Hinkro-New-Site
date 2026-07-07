@@ -462,6 +462,9 @@ function DesignPage() {
         </div>
       </section>
       <DesignOfferingsSection />
+      <DesignStudioSection />
+      <DesignTeamSection />
+      <SiteFooter />
     </main>
   );
 }
@@ -485,9 +488,9 @@ function DesignOfferingsSection() {
       />
 
       <div className="design-offerings-list">
-        {designOfferings.map((offering) => (
+        {designOfferings.map((offering, index) => (
           <article
-            className={`design-offering ${offering.layout === "text-first" ? "is-text-first" : "is-image-first"}`}
+            className={`design-offering ${index % 2 === 0 ? "is-image-first" : "is-text-first"}`}
             key={offering.title}
           >
             <figure className="design-offering-image">
@@ -504,6 +507,71 @@ function DesignOfferingsSection() {
             </div>
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+function DesignStudioSection() {
+  return (
+    <section className="design-studio-section" aria-labelledby="design-studio-title">
+      <div className="design-studio-inner">
+        <div className="design-studio-shuttle" aria-hidden="true">
+          <img src="/images/hinkro-kente-shuttle-illustration.png" alt="" />
+        </div>
+        <h2 id="design-studio-title">Our studio</h2>
+        <p>
+          Here is where we transform the beautiful design concepts in your mind into reality.
+          While our weaving studio is still under construction, our consultation office is open
+          during working hours to assist you. Click here if you want to be notified once our
+          Accra weaving studio is ready.
+        </p>
+      </div>
+
+      <div className="design-studio-map" aria-label="Hinkro Kente location map">
+        <iframe
+          title="Hinkro Kente location map"
+          src="https://www.google.com/maps?q=Hinkro%20Kente%201156%20Ubor%20Ntiador%20Lk%20Ablekuma%20Olebu%20Accra%20Ghana&output=embed"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
+      </div>
+    </section>
+  );
+}
+
+function DesignTeamSection() {
+  return (
+    <section className="design-team-section" aria-labelledby="design-team-title">
+      <div className="design-team-inner">
+        <figure className="design-team-photo">
+          <img
+            src="/images/hinkro-kente-eric-boafo-asante-ceo.jpg"
+            alt="Eric Boafo Asante, CEO and Creative Director of Hinkro Kente"
+          />
+        </figure>
+
+        <article className="design-team-copy">
+          <h2 id="design-team-title">Our Team</h2>
+          <h3>Eric Boafo Asante</h3>
+          <p className="design-team-role">CEO / Creative Director</p>
+          <p>
+            Eric Boafo Asante noticed a lack of progress in locally made fabrics,
+            especially in Ghanaian kente fabrics. To change this, he decided to
+            modernize the kente fabric industry by mixing traditional methods with
+            new designs. Eric wants to make a unique product that appeals to both
+            local and international customers by blending the history of kente
+            fabrics with modern styles. At Hinkro, Eric Boafo Asante is known for his
+            dedication to creativity and excellence. His innovative strategies have
+            helped the company become a leader in the textile industry, known for
+            its high-quality products and original designs. Hinkro is now seen as a
+            symbol of creativity and quality, setting new standards for craftsmanship
+            and innovation in the world of Kente textiles.
+          </p>
+          <a className="design-team-cta" href="#team">
+            View Team <span aria-hidden="true">→</span>
+          </a>
+        </article>
       </div>
     </section>
   );
@@ -601,27 +669,25 @@ function InspiringTradition() {
 function FooterSocialIcon({ type }) {
   if (type === "instagram") {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <rect x="3.2" y="3.2" width="17.6" height="17.6" rx="5.2" />
-        <circle cx="12" cy="12" r="4.1" />
-        <circle cx="17.35" cy="6.65" r="1.15" />
+      <svg className="footer-brand-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="4" y="4" width="16" height="16" rx="5" />
+        <circle cx="12" cy="12" r="3.7" />
+        <circle cx="17" cy="7" r="1" />
       </svg>
     );
   }
 
   if (type === "facebook") {
     return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M14.68 8.22h-1.5c-.72 0-1.08.42-1.08 1.12v1.42h2.42l-.38 2.46H12.1v5.92H9.5v-5.92H7.64v-2.46H9.5V9.12c0-2.2 1.32-3.5 3.5-3.5.76 0 1.38.06 1.68.12v2.48Z" />
+      <svg className="footer-brand-icon footer-brand-icon-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M14.2 8.3h2.2V4.6c-.38-.05-1.68-.16-3.2-.16-3.16 0-5.32 1.93-5.32 5.47v3.08H4.4v4.12h3.48V24h4.28v-6.89h3.35l.53-4.12h-3.88v-2.67c0-1.19.33-2.02 2.04-2.02Z" />
       </svg>
     );
   }
 
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M10.15 20.05c.45-1.14.86-2.68 1.07-3.62.18-.76.93-3.62.93-3.62s-.24-.5-.24-1.22c0-1.14.66-1.99 1.48-1.99.7 0 1.04.52 1.04 1.16 0 .7-.45 1.76-.68 2.74-.2.82.42 1.48 1.24 1.48 1.48 0 2.48-1.9 2.48-4.16 0-1.72-1.16-3-3.26-3-2.38 0-3.86 1.78-3.86 3.77 0 .69.2 1.17.51 1.55.15.18.17.26.12.47l-.18.75c-.06.24-.24.34-.5.24-1.08-.44-1.58-1.63-1.58-2.96 0-2.22 1.88-4.9 5.6-4.9 3 0 4.98 2.16 4.98 4.48 0 3.08-1.72 5.37-4.27 5.37-.86 0-1.68-.47-1.96-1 0 0-.46 1.82-.56 2.17-.2.72-.62 1.54-1 2.14-.45.1-.9.15-1.36.15Z" />
+    <svg className="footer-brand-icon footer-brand-icon-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12.2 0C5.46 0 2 4.84 2 8.88c0 2.43.92 4.6 2.9 5.4.32.13.61 0 .7-.35.07-.24.22-.87.29-1.13.09-.35.05-.47-.2-.77-.57-.67-.94-1.54-.94-2.78 0-3.57 2.67-6.76 6.95-6.76 3.79 0 5.88 2.32 5.88 5.41 0 4.07-1.8 7.5-4.48 7.5-1.48 0-2.58-1.22-2.23-2.72.42-1.79 1.24-3.72 1.24-5.01 0-1.16-.62-2.12-1.9-2.12-1.51 0-2.72 1.56-2.72 3.65 0 1.33.45 2.23.45 2.23l-1.82 7.72c-.54 2.29-.08 5.1-.04 5.38.02.17.24.21.34.08.14-.18 1.98-2.46 2.6-4.73.18-.64 1.02-3.98 1.02-3.98.5.96 1.98 1.8 3.54 1.8 4.66 0 7.82-4.25 7.82-9.94C21.4 3.47 17.76 0 12.2 0Z" />
     </svg>
   );
 }
