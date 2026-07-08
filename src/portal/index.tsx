@@ -14,6 +14,13 @@ import {
   ContentDashboard,
   WeaverDashboard,
 } from "./features/dashboard/RoleDashboards";
+import { ProjectsListPage } from "./features/projects/ProjectsListPage";
+import { ProjectCreatePage } from "./features/projects/ProjectCreatePage";
+import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
+import { ClientsPage } from "./features/clients/ClientsPage";
+import { UsersPage } from "./features/users/UsersPage";
+import { NotificationsPage } from "./features/notifications/NotificationsPage";
+import { ComingSoon } from "./features/ComingSoon";
 import { CONTENT_ROLES, STAFF_ROLES } from "./types";
 import "./portal.css";
 
@@ -28,7 +35,21 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <AdminDashboard /> },
-      { path: "*", element: <AdminDashboard /> },
+      { path: "projects", element: <ProjectsListPage /> },
+      { path: "projects/new", element: <ProjectCreatePage /> },
+      { path: "projects/:projectId", element: <ProjectDetailPage /> },
+      { path: "clients", element: <ClientsPage /> },
+      { path: "users", element: <UsersPage /> },
+      {
+        path: "notifications",
+        element: <NotificationsPage projectBase="/portal/admin/projects" />,
+      },
+      { path: "products", element: <ComingSoon phase={3} what="Products" /> },
+      { path: "blog", element: <ComingSoon phase={3} what="Blog" /> },
+      { path: "media", element: <ComingSoon phase={3} what="Media library" /> },
+      { path: "messages", element: <ComingSoon phase={2} what="Messages" /> },
+      { path: "settings", element: <ComingSoon phase={4} what="Settings" /> },
+      { path: "*", element: <Navigate to="/portal/admin" replace /> },
     ],
   },
   {
@@ -40,7 +61,10 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <ContentDashboard /> },
-      { path: "*", element: <ContentDashboard /> },
+      { path: "products", element: <ComingSoon phase={3} what="Products" /> },
+      { path: "blog", element: <ComingSoon phase={3} what="Blog" /> },
+      { path: "media", element: <ComingSoon phase={3} what="Media library" /> },
+      { path: "*", element: <Navigate to="/portal/content" replace /> },
     ],
   },
   {
@@ -52,7 +76,12 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <WeaverDashboard /> },
-      { path: "*", element: <WeaverDashboard /> },
+      { path: "projects/:projectId", element: <ProjectDetailPage /> },
+      {
+        path: "notifications",
+        element: <NotificationsPage projectBase="/portal/weaver/projects" />,
+      },
+      { path: "*", element: <Navigate to="/portal/weaver" replace /> },
     ],
   },
   {
@@ -64,7 +93,12 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <ClientDashboard /> },
-      { path: "*", element: <ClientDashboard /> },
+      { path: "projects/:projectId", element: <ProjectDetailPage /> },
+      {
+        path: "notifications",
+        element: <NotificationsPage projectBase="/portal/client/projects" />,
+      },
+      { path: "*", element: <Navigate to="/portal/client" replace /> },
     ],
   },
   { path: "*", element: <Navigate to="/portal" replace /> },
