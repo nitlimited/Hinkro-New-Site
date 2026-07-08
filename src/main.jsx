@@ -1,12 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ChevronLeft,
   ChevronRight,
   Menu,
   Play,
+  Search,
   X,
 } from "lucide-react";
+import {
+  storeCategories,
+  storeProducts,
+  WHATSAPP_ORDER_NUMBER,
+} from "./storeProducts";
 import "./styles.css";
 
 const navItems = [
@@ -434,9 +440,110 @@ const accessoryItems = [
   },
 ];
 
-function getCurrentPage() {
+const preferredStoreCategories = [
+  "All",
+  "Latest Kente cloth",
+  "Modern kente",
+  "Classic kente",
+  "Women's kente Cloth",
+  "men's kente cloth",
+  "Ombre Kente",
+  "Accessories",
+];
+
+const storeCategoryFilters = preferredStoreCategories.filter(
+  (category) => category === "All" || storeCategories.includes(category),
+);
+
+function getProductSlugFromLocation() {
+  const path = window.location.pathname;
+  const productMatch = path.match(/^\/product\/([^/]+)\/?$/);
+  if (productMatch) return productMatch[1];
+
   const hash = window.location.hash.replace("#", "");
-  if (["tradition", "design", "bespoke", "accessories"].includes(hash)) return hash;
+  const hashMatch = hash.match(/^store\/product\/([^/]+)$/);
+  if (hashMatch) return hashMatch[1];
+
+  return "";
+}
+
+function getPreferredCurrency() {
+  const locale = navigator.language || "";
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+
+  if (locale.toLowerCase().includes("-gh") || timeZone === "Africa/Accra") {
+    return "ghana";
+  }
+
+  return "international";
+}
+
+function getDisplayPrice(product, currency) {
+  const price = product.prices[currency] || product.prices.international;
+  const symbol = currency === "ghana" ? "GH₵" : "$";
+
+  if (!price?.min) return "Chat for price";
+
+  const formatAmount = (amount) =>
+    new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: amount % 1 === 0 ? 0 : 2,
+      minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+    }).format(amount);
+
+  if (!price.max || price.max === price.min) {
+    return `${symbol}${formatAmount(price.min)}`;
+  }
+
+  return `${symbol}${formatAmount(price.min)} – ${symbol}${formatAmount(price.max)}`;
+}
+
+function getWhatsAppUrl(product) {
+  const message = [
+    `Hello Hinkro Kente, I am interested in ${product.name}.`,
+    `Product URL: ${product.sourceUrl}`,
+    "Please share availability, delivery options, and how to order.",
+  ].join("\n");
+
+  return `https://wa.me/${WHATSAPP_ORDER_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+function cleanStoreCopy(text = "") {
+  return text
+    .replace(/\[njwa_button[^\]]*\]/gi, "")
+    .replace(/selected shipping option at checkout/gi, "preferred delivery option")
+    .replace(/at checkout/gi, "during order confirmation")
+    .replace(/checkout/gi, "order confirmation")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function usePageSeo(title, description, keywords = []) {
+  useEffect(() => {
+    const previousTitle = document.title;
+    const metaDescription = document.querySelector('meta[name="description"]');
+    const previousDescription = metaDescription?.getAttribute("content") || "";
+    const metaKeywords = document.querySelector('meta[name="keywords"]');
+    const previousKeywords = metaKeywords?.getAttribute("content") || "";
+
+    document.title = title;
+    if (metaDescription) metaDescription.setAttribute("content", description);
+    if (metaKeywords) metaKeywords.setAttribute("content", keywords.join(", "));
+
+    return () => {
+      document.title = previousTitle;
+      if (metaDescription) metaDescription.setAttribute("content", previousDescription);
+      if (metaKeywords) metaKeywords.setAttribute("content", previousKeywords);
+    };
+  }, [description, keywords, title]);
+}
+
+function getCurrentPage() {
+  const path = window.location.pathname;
+  if (path === "/authentic-kente-fabric/" || path.startsWith("/product/")) return "store";
+
+  const hash = window.location.hash.replace("#", "");
+  if (["tradition", "design", "bespoke", "accessories", "store"].includes(hash)) return hash;
+  if (hash.startsWith("store/")) return "store";
   return "home";
 }
 
@@ -588,6 +695,340 @@ function AccessoriesPage() {
       </section>
       <TrendsNewsSection />
       <SiteFooter />
+    </main>
+  );
+}
+
+function StorePage({ productSlug }) {
+  const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [currency] = useState(getPreferredCurrency);
+
+  const selectedProduct = productSlug
+    ? storeProducts.find((product) => product.slug === productSlug)
+    : null;
+
+  usePageSeo(
+    selectedProduct
+      ? selectedProduct.seo.title
+      : "Authentic Kente Fabric Store | Buy Ghana Kente by Color | Hinkro Kente",
+    selectedProduct
+      ? selectedProduct.seo.description
+      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse authentic Kente by color and occasion, then chat on WhatsApp to order your preferred Kente cloth.",
+    selectedProduct
+      ? selectedProduct.seo.keywords
+      : [
+          "authentic Kente fabric",
+          "buy Kente online",
+          "Ghana Kente cloth",
+          "handwoven Kente",
+          "Hinkro Kente store",
+        ],
+  );
+
+  const filteredProducts = useMemo(() => {
+    const search = query.trim().toLowerCase();
+
+    return storeProducts.filter((product) => {
+      const matchesCategory =
+        activeCategory === "All" || product.categories.includes(activeCategory);
+      const searchable = [
+        product.name,
+        product.seo.description,
+        product.seo.keywords.join(" "),
+        product.categories.join(" "),
+        product.colors.join(" "),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return matchesCategory && (!search || searchable.includes(search));
+    });
+  }, [activeCategory, query]);
+
+  if (selectedProduct) {
+    return (
+      <ProductDetailPage
+        product={selectedProduct}
+        currency={currency}
+      />
+    );
+  }
+
+  return (
+    <main className="store-page" id="store">
+      <section className="store-hero" aria-labelledby="store-title">
+        <p className="store-kicker">Authentic Kente Fabric Store</p>
+        <h1 id="store-title">Shop Hinkro Kente by color, ceremony, and story.</h1>
+        <p>
+          Explore handwoven Kente fabrics and refined Hinkro pieces by color,
+          occasion, and meaning. Choose the design you love, then chat with us
+          on WhatsApp to confirm availability, styling, delivery, and custom options.
+        </p>
+      </section>
+
+      <section className="store-controls" aria-label="Store filters">
+        <label className="store-search">
+          <Search size={19} aria-hidden="true" />
+          <span className="sr-only">Search products</span>
+          <input
+            type="search"
+            value={query}
+            placeholder="Search gold kente, engagement kente, graduation kente..."
+            onChange={(event) => setQuery(event.target.value)}
+          />
+        </label>
+      </section>
+
+      <nav className="store-category-tabs" aria-label="Product categories">
+        {storeCategoryFilters.map((category) => (
+          <button
+            type="button"
+            key={category}
+            className={activeCategory === category ? "is-active" : ""}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}
+          </button>
+        ))}
+      </nav>
+
+      <section className="store-grid-section" aria-label="Products">
+        <div className="store-results-line">
+          <span>{filteredProducts.length} designs shown</span>
+          <span>Tap any design to view colors, options, and ordering details</span>
+        </div>
+
+        <div className="store-grid">
+          {filteredProducts.map((product) => (
+            <ProductCard product={product} currency={currency} key={product.id} />
+          ))}
+        </div>
+      </section>
+
+      <section className="store-seo-section" aria-labelledby="store-seo-title">
+        <h2 id="store-seo-title">Buy authentic Kente fabric with confidence.</h2>
+        <p>
+          Hinkro Kente organizes every product around the colors buyers search for:
+          blue Kente, gold Kente, green Kente, red Kente, pink Kente, ombre Kente,
+          shimmering Kente, and ceremonial Kente cloth. Each product page keeps its
+          original product URL, adds descriptive color keywords, and gives buyers a
+          clear WhatsApp path to confirm the right weave before ordering.
+        </p>
+      </section>
+    </main>
+  );
+}
+
+function WhatsAppIcon({ size = 18 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 32 32"
+      fill="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M16.02 3.2A12.67 12.67 0 0 0 5.1 22.3L3.6 28.8l6.66-1.56A12.67 12.67 0 1 0 16.02 3.2Zm0 22.98c-1.92 0-3.77-.53-5.39-1.54l-.38-.24-3.95.92.9-3.85-.25-.4a10.27 10.27 0 1 1 9.07 5.1Zm5.64-7.68c-.31-.15-1.83-.9-2.12-1-.28-.1-.49-.15-.7.15-.2.31-.8 1-.98 1.2-.18.2-.36.23-.67.08-.31-.15-1.3-.48-2.48-1.52-.92-.82-1.54-1.83-1.72-2.14-.18-.31-.02-.48.13-.63.14-.13.31-.36.46-.54.15-.18.2-.31.31-.51.1-.2.05-.38-.03-.54-.08-.15-.7-1.69-.96-2.31-.25-.6-.51-.52-.7-.53h-.59c-.2 0-.54.08-.82.38-.28.31-1.08 1.06-1.08 2.57 0 1.52 1.1 2.98 1.26 3.19.15.2 2.18 3.33 5.28 4.67.74.32 1.31.51 1.76.65.74.24 1.41.2 1.95.12.59-.09 1.83-.75 2.09-1.47.26-.72.26-1.34.18-1.47-.08-.13-.28-.2-.59-.36Z"
+      />
+    </svg>
+  );
+}
+
+function ProductCard({ product, currency }) {
+  const image = product.images[0];
+
+  return (
+    <article className="store-product-card">
+      <a className="store-product-image" href={product.path} aria-label={`View ${product.name}`}>
+        {image && <img src={image.src} alt={image.alt || product.name} loading="lazy" />}
+        {product.isAccessory && <span>Accessory</span>}
+      </a>
+
+      <div className="store-product-copy">
+        <p>{product.categories[0] || "Hinkro Kente"}</p>
+        <h2>
+          <a href={product.path}>{product.name}</a>
+        </h2>
+        <div className="store-product-colors">
+          {(product.colors.length ? product.colors : ["Kente"]).slice(0, 5).map((color) => (
+            <span key={color}>{color}</span>
+          ))}
+        </div>
+        <p className="store-product-seo">{product.seo.description}</p>
+        <div className="store-product-bottom">
+          <strong>{getDisplayPrice(product, currency)}</strong>
+          <a className="store-whatsapp-link" href={getWhatsAppUrl(product)}>
+            <WhatsAppIcon />
+            Chat to order
+          </a>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function ProductDetailPage({ product, currency }) {
+  const [activeImage, setActiveImage] = useState(0);
+  const currentImage = product.images[activeImage] || product.images[0];
+
+  useEffect(() => {
+    setActiveImage(0);
+  }, [product.id]);
+
+  const relatedProducts = storeProducts
+    .filter(
+      (item) =>
+        item.id !== product.id &&
+        item.categories.some((category) => product.categories.includes(category)),
+    )
+    .slice(0, 3);
+
+  return (
+    <main className="product-detail-page">
+      <nav className="product-breadcrumb" aria-label="Breadcrumb">
+        <a href="/#store">Store</a>
+        <span aria-hidden="true">/</span>
+        <span>{product.name}</span>
+      </nav>
+
+      <div className="product-back-wrap">
+        <a className="product-back-link" href="/#store">
+          <ChevronLeft size={18} aria-hidden="true" />
+          Back to shop
+        </a>
+      </div>
+
+      <section className="product-detail-hero" aria-labelledby="product-title">
+        <div className="product-gallery">
+          <figure className="product-main-image">
+            {currentImage && <img src={currentImage.src} alt={currentImage.alt || product.name} />}
+          </figure>
+          {product.images.length > 1 && (
+            <div className="product-thumbs" aria-label="Product gallery">
+              {product.images.map((image, index) => (
+                <button
+                  type="button"
+                  key={`${image.src}-${index}`}
+                  className={activeImage === index ? "is-active" : ""}
+                  onClick={() => setActiveImage(index)}
+                  aria-label={`Show image ${index + 1}`}
+                >
+                  <img src={image.src} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <article className="product-detail-copy">
+          <p className="store-kicker">{product.categories[0] || "Hinkro Kente"}</p>
+          <h1 id="product-title">{product.name}</h1>
+          <p className="product-detail-intro">{product.seo.intro}</p>
+
+          <div className="product-price-panel">
+            <div>
+              <span>Price</span>
+              <strong>{getDisplayPrice(product, currency)}</strong>
+            </div>
+          </div>
+
+          {product.variations.length > 0 && (
+            <div className="product-variation-summary">
+              <span>Available variations</span>
+              <div>
+                {product.variations.slice(0, 5).map((variation) => (
+                  <a href="#product-options" key={variation.id}>
+                    {variation.option}
+                  </a>
+                ))}
+                {product.variations.length > 5 && <a href="#product-options">+ more</a>}
+              </div>
+            </div>
+          )}
+
+          <div className="product-actions">
+            <a className="product-whatsapp-cta" href={getWhatsAppUrl(product)}>
+              <WhatsAppIcon size={21} />
+              Chat on WhatsApp to order
+            </a>
+            <a className="product-source-link" href={product.sourceUrl}>
+              Original product URL
+            </a>
+          </div>
+
+          <dl className="product-meta-list">
+            <div>
+              <dt>Colors</dt>
+              <dd>{product.colors.length ? product.colors.join(", ") : "Custom Kente tones"}</dd>
+            </div>
+            <div>
+              <dt>Availability</dt>
+              <dd>{product.stockText || "Chat to confirm"}</dd>
+            </div>
+            <div>
+              <dt>Ordering</dt>
+              <dd>WhatsApp consultation, confirmation, and delivery coordination</dd>
+            </div>
+          </dl>
+        </article>
+      </section>
+
+      <section className="product-seo-body" aria-labelledby="product-seo-heading">
+        <div>
+          <h2 id="product-seo-heading">Why buyers choose this {product.name}</h2>
+          <p>{cleanStoreCopy(product.description || product.shortDescription || product.seo.description)}</p>
+          <ul>
+            {product.seo.highlights.map((highlight) => (
+              <li key={highlight}>{highlight}</li>
+            ))}
+          </ul>
+        </div>
+
+        <aside>
+          <h3>Search Keywords</h3>
+          <div className="product-keywords">
+            {product.seo.keywords.map((keyword) => (
+              <span key={keyword}>{keyword}</span>
+            ))}
+          </div>
+        </aside>
+      </section>
+
+      {product.variations.length > 0 && (
+        <section className="product-options-section" id="product-options" aria-labelledby="product-options-title">
+          <h2 id="product-options-title">Available options</h2>
+          <div className="product-options-grid">
+            {product.variations.slice(0, 12).map((variation) => (
+              <article key={variation.id}>
+                <h3>{variation.name}</h3>
+                <p>{variation.option}</p>
+                <span>
+                  {currency === "ghana" && variation.priceGhs
+                    ? `GH₵${variation.priceGhs.toLocaleString("en-US")}`
+                    : variation.priceUsd
+                      ? `$${variation.priceUsd.toLocaleString("en-US")}`
+                      : "Chat for option price"}
+                </span>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {relatedProducts.length > 0 && (
+        <section className="related-products-section" aria-labelledby="related-products-title">
+          <h2 id="related-products-title">Related Kente designs</h2>
+          <div className="store-grid related">
+            {relatedProducts.map((item) => (
+              <ProductCard product={item} currency={currency} key={item.id} />
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }
@@ -1516,14 +1957,27 @@ function Hero() {
 
 function App() {
   const [currentPage, setCurrentPage] = useState(getCurrentPage);
+  const [productSlug, setProductSlug] = useState(getProductSlugFromLocation);
 
   useEffect(() => {
-    const syncPage = () => setCurrentPage(getCurrentPage());
+    const syncPage = () => {
+      setCurrentPage(getCurrentPage());
+      setProductSlug(getProductSlugFromLocation());
+    };
+
     window.addEventListener("hashchange", syncPage);
+    window.addEventListener("popstate", syncPage);
     syncPage();
 
-    return () => window.removeEventListener("hashchange", syncPage);
+    return () => {
+      window.removeEventListener("hashchange", syncPage);
+      window.removeEventListener("popstate", syncPage);
+    };
   }, []);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [currentPage, productSlug]);
 
   return (
     <>
@@ -1536,9 +1990,12 @@ function App() {
         <BespokePage />
       ) : currentPage === "accessories" ? (
         <AccessoriesPage />
+      ) : currentPage === "store" ? (
+        <StorePage productSlug={productSlug} />
       ) : (
         <Hero />
       )}
+      <SiteFooter />
     </>
   );
 }
