@@ -5,16 +5,22 @@
  */
 
 import type {
+  BlogPostRow,
+  CategoryRow,
   ClientRow,
+  LibraryAssetRow,
   MediaRow,
   MessageRow,
   NotificationRow,
   ProfileRow,
+  ProductRow,
   ProjectRow,
   StageRow,
   UpdateRow,
   WorkLogRow,
 } from "./rows";
+import { defaultBlogPosts } from "../../blogArchive";
+import { storeCategories, storeProducts } from "../../storeProducts";
 
 const now = Date.now();
 const daysAgo = (d: number, h = 10) =>
@@ -234,6 +240,294 @@ export const demoMedia: MediaRow[] = [
     uploaded_by: "demo-user",
     created_at: daysAgo(11),
     url: "/images/hinkro-kente-design-process-sketch.png",
+  },
+];
+
+export const demoCatalogProducts: ProductRow[] = storeProducts.map((product, index) => ({
+  id: product.id,
+  slug: product.slug,
+  name: product.name,
+  type: product.type,
+  categories: product.categories ?? [],
+  tags: product.tags ?? [],
+  colors: product.colors ?? [],
+  is_accessory: product.isAccessory,
+  is_featured: product.isFeatured,
+  stock_text: product.stockText,
+  prices: product.prices ?? {},
+  short_description: product.shortDescription || null,
+  description: product.description || null,
+  seo: product.seo ?? {},
+  status: "published",
+  sort: index,
+  created_at: daysAgo(30),
+  updated_at: daysAgo(1),
+  images: (product.images ?? []).map((image, imageIndex) => ({
+    id: `pi-${product.id}-${imageIndex + 1}`,
+    product_id: product.id,
+    src: image.src,
+    alt: image.alt ?? product.name,
+    position: imageIndex,
+    role: imageIndex === 0 ? "primary" : "gallery",
+  })),
+  variations: (product.variations ?? []).map((variation, variationIndex) => ({
+    id: `pv-${product.id}-${variationIndex + 1}`,
+    product_id: product.id,
+    attributes: {
+      name: variation.name,
+      option: variation.option,
+    },
+    prices: {
+      ghana: { min: variation.priceGhs ?? null, max: variation.priceGhs ?? null, currency: "GHS" },
+      international: { min: variation.priceUsd ?? null, max: variation.priceUsd ?? null, currency: "USD" },
+    },
+  })),
+}));
+
+export const demoCategories: CategoryRow[] = [
+  ...storeCategories.map((name, index) => ({
+    id: `cat-product-${index + 1}`,
+    name,
+    slug: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+    kind: name === "Accessories" ? "accessory" as const : "product" as const,
+    position: index,
+    image_url:
+      name === "Accessories"
+        ? "/images/hinkro-accessory-bridal-hand-fan-product.jpg"
+        : null,
+  })),
+  {
+    id: "cat-blog-1",
+    name: "Trends & News",
+    slug: "trends-news",
+    kind: "blog",
+    position: 0,
+    image_url: "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
+  },
+];
+
+export const demoBlogPosts: BlogPostRow[] = defaultBlogPosts.map((post) => ({
+  id: post.id,
+  slug: post.slug,
+  title: post.title,
+  excerpt: post.excerpt,
+  content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+  featured_image: post.featured_image,
+  status: "published",
+  publish_at: post.publish_at,
+  seo: {
+    title: post.title,
+    description: post.excerpt,
+    keywords: ["Kente trends", "Hinkro Kente", "Ghana Kente"],
+  },
+  author_id: "demo-user",
+  created_at: post.publish_at,
+  updated_at: post.publish_at,
+}));
+
+const legacyDemoBlogPosts: BlogPostRow[] = [
+  {
+    id: "bp-1",
+    slug: "types-of-threads-used-in-kente",
+    title: "3 Types of Threads Used in Kente: A Buyer's Guide to Quality",
+    excerpt:
+      "When you set out to purchase authentic Kente, the price tag often varies significantly. One of the biggest factors behind that price and the overall look and feel of the cloth is the type of thread used.",
+    content:
+      "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2026/07/Rayon-Kente-Thread-768x576.jpeg",
+    status: "published",
+    publish_at: "2026-07-07T18:51:18.000Z",
+    seo: {
+      title: "3 Types of Threads Used in Kente: A Buyer's Guide to Quality",
+      description: "A buyer's guide to Rayon, Polyester, and Silk threads used in Kente.",
+      keywords: ["Kente threads", "Rayon Kente thread", "Kente quality"],
+    },
+    author_id: "demo-user",
+    created_at: "2026-07-07T18:51:18.000Z",
+    updated_at: "2026-07-07T18:51:18.000Z",
+  },
+  {
+    id: "bp-2",
+    slug: "kente-belt",
+    title: "The Kente Belt: Understanding the Art and Craftmanship of the Owontoma in the Kente Artistery",
+    excerpt:
+      "The beauty of Kente is not only found in its colors or symbols. Much of its elegance lies in the details that many people often overlook.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2026/05/featured-image-768x383.jpg",
+    status: "published",
+    publish_at: "2026-05-26T13:11:40.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2026-05-26T13:11:40.000Z",
+    updated_at: "2026-05-26T13:11:40.000Z",
+  },
+  {
+    id: "bp-3",
+    slug: "in-appreciation-of-nana-konadu-agyeman-rawlings",
+    title: "In Appreciation of Nana Konadu Agyeman-Rawlings",
+    excerpt:
+      "Hinkro Kente joins the nation of Ghana and admirers across the world in honoring Nana Konadu Agyeman-Rawlings.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2025/11/WhatsApp-Image-2025-10-23-at-14.37.23-400x470-1.webp",
+    status: "published",
+    publish_at: "2025-11-28T15:20:21.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2025-11-28T15:20:21.000Z",
+    updated_at: "2025-11-28T15:20:21.000Z",
+  },
+  {
+    id: "bp-4",
+    slug: "kente-officially-protected-as-a-national-treasure",
+    title: "Ghana Makes History: Kente Officially Protected as a National Treasure",
+    excerpt:
+      "It is now official. The Ghanaian government has granted Kente cloth Geographical Indication status.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2025/10/IMG_1149-768x1024.jpg",
+    status: "published",
+    publish_at: "2025-10-11T19:00:22.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2025-10-11T19:00:22.000Z",
+    updated_at: "2025-10-11T19:00:22.000Z",
+  },
+  {
+    id: "bp-5",
+    slug: "kente-for-organizational-groups-and-corporate-businesses",
+    title: "Kente for Organizational Groups and Corporate Businesses: Elevate Your Brand with Culture and Class",
+    excerpt:
+      "In today's competitive business world, standing out is more than a goal. Many organizations are turning to Kente as a bold cultural asset.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2025/05/Kente-for-organizational-groups-and-corporate-businesses-768x1152.png",
+    status: "published",
+    publish_at: "2025-05-17T11:58:09.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2025-05-17T11:58:09.000Z",
+    updated_at: "2025-05-17T11:58:09.000Z",
+  },
+  {
+    id: "bp-6",
+    slug: "black-star-experience",
+    title: "Ghana Launches the Black Star Experience to Rebrand as Africa's Cultural Powerhouse",
+    excerpt:
+      "Ghana has taken a bold step towards repositioning itself as Africa's premier cultural and creative hub with the Black Star Experience.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2025/05/WhatsApp_Image_2025_05_02_at_18_24_42_1746207699-768x512.jpeg",
+    status: "published",
+    publish_at: "2025-05-04T19:32:26.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2025-05-04T19:32:26.000Z",
+    updated_at: "2025-05-04T19:32:26.000Z",
+  },
+  {
+    id: "bp-7",
+    slug: "kente-and-kitenge",
+    title: "Kente vs Kitenge: Unraveling the Threads of African Textile Heritage",
+    excerpt:
+      "Africa's textile traditions are diverse and vibrant. Among the most iconic are Kente and Kitenge fabrics.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2025/05/Kente-vs-kitenge-768x371.jpg",
+    status: "published",
+    publish_at: "2025-05-03T23:30:46.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2025-05-03T23:30:46.000Z",
+    updated_at: "2025-05-03T23:30:46.000Z",
+  },
+  {
+    id: "bp-8",
+    slug: "developing-kente-pattern-for-weaving",
+    title: "Hinkro Kente: Leading the way in developing Kente Patterns for Weaving",
+    excerpt:
+      "Kente cloth has always stood as a symbol of tradition, identity, and prestige, with intricate patterns and bold colors.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2024/09/Developing-Kente-patterns-01-768x379.jpg",
+    status: "published",
+    publish_at: "2024-09-28T12:59:08.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2024-09-28T12:59:08.000Z",
+    updated_at: "2024-09-28T12:59:08.000Z",
+  },
+  {
+    id: "bp-9",
+    slug: "african-artifact",
+    title: "African Artifact: A Timeless Expression of Cultural Heritage",
+    excerpt:
+      "African artifacts represent a profound connection between the past and present, offering insight into rich history and cultural practices.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2024/09/PHOTO-2023-08-11-15-11-49-768x805.jpg",
+    status: "published",
+    publish_at: "2024-09-09T00:46:28.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2024-09-09T00:46:28.000Z",
+    updated_at: "2024-09-09T00:46:28.000Z",
+  },
+  {
+    id: "bp-10",
+    slug: "computerized-kente-pattern",
+    title: "The Art of Computerized Pattern Generation in Modern Kente Weaving",
+    excerpt:
+      "As technology evolves, so does the art of Kente design and pattern generation in modern weaving.",
+    content: "Imported from the Hinkro Kente Trends archive. Full article content can be expanded in the editor.",
+    featured_image: "https://www.hinkrokente.com/wp-content/uploads/2024/08/212f15fb772ef8314c2014a4793f5a6e.jpg",
+    status: "published",
+    publish_at: "2024-08-25T21:53:35.000Z",
+    seo: {},
+    author_id: "demo-user",
+    created_at: "2024-08-25T21:53:35.000Z",
+    updated_at: "2024-08-25T21:53:35.000Z",
+  },
+];
+
+export const demoLibraryAssets: LibraryAssetRow[] = [
+  {
+    id: "lib-1",
+    storage_path: "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
+    kind: "image",
+    title: "Yellow bridal Kente",
+    alt: "Yellow bridal Kente fashion inspiration by Hinkro Kente",
+    caption: "Yellow bridal Kente fashion inspiration",
+    description: "Editorial image used for Hinkro Kente trends and bridal styling content.",
+    folder: "Trends",
+    size_bytes: 428000,
+    exclude_from_sitemap: false,
+    uploaded_by: "demo-user",
+    created_at: daysAgo(10),
+    url: "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
+  },
+  {
+    id: "lib-2",
+    storage_path: "/images/hinkro-accessory-bridal-hand-fan.jpg",
+    kind: "image",
+    title: "Bridal hand fan",
+    alt: "Hinkro Kente bridal hand fan accessory",
+    caption: "Bridal hand fan accessory",
+    description: "Accessory image for product and media-library preview.",
+    folder: "Accessories",
+    size_bytes: 312000,
+    exclude_from_sitemap: false,
+    uploaded_by: "demo-user",
+    created_at: daysAgo(6),
+    url: "/images/hinkro-accessory-bridal-hand-fan.jpg",
+  },
+  {
+    id: "lib-3",
+    storage_path: "/videos/kente-graduation-stole-sash-hero-video.mp4",
+    kind: "video",
+    title: "Graduation stole hero video",
+    alt: "Graduation stole sash hero video",
+    caption: "Graduation stole hero video",
+    description: "Hero motion asset for graduation stole marketing.",
+    folder: "Graduation",
+    size_bytes: 18400000,
+    exclude_from_sitemap: true,
+    uploaded_by: "demo-user",
+    created_at: daysAgo(20),
+    url: "/videos/kente-graduation-stole-sash-hero-video.mp4",
   },
 ];
 

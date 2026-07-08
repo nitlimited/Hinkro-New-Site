@@ -2,7 +2,14 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Calendar, Plus } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
-import { useClients, useProjects, useTeam } from "../../lib/data";
+import {
+  useBlogPosts,
+  useCatalogProducts,
+  useClients,
+  useLibraryAssets,
+  useProjects,
+  useTeam,
+} from "../../lib/data";
 import {
   EmptyState,
   PriorityBadge,
@@ -122,15 +129,34 @@ export function AdminDashboard() {
 /* ---------- Content ---------- */
 
 export function ContentDashboard() {
+  const { products } = useCatalogProducts({ accessories: false });
+  const { products: accessories } = useCatalogProducts({ accessories: true });
+  const { posts } = useBlogPosts();
+  const { assets } = useLibraryAssets();
+  const stats: [string, number][] = [
+    ["Products", products.length],
+    ["Accessories", accessories.length],
+    ["Blog posts", posts.length],
+    ["Media files", assets.length],
+  ];
+
   return (
     <section>
       <PageHeader
         title="Content studio"
         sub="Manage the public website's products, accessories, blog, and media."
       />
+      <div className="portal-stat-grid">
+        {stats.map(([label, value]) => (
+          <article className="portal-card portal-stat" key={label}>
+            <span className="portal-stat-value">{value}</span>
+            <span className="portal-stat-label">{label}</span>
+          </article>
+        ))}
+      </div>
       <EmptyState
-        title="Coming in Phase 3"
-        body="Product, accessory, blog, and media management move here — the public store then updates instantly when you edit."
+        title="Content workspace is live"
+        body="Use the sidebar to edit catalog listings, publish posts, organise categories, and upload media."
       />
     </section>
   );

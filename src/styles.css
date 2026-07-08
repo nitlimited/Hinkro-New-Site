@@ -2738,8 +2738,23 @@ button {
   aspect-ratio: 1.09 / 1;
   object-fit: cover;
   transition:
+    opacity 360ms ease,
     filter 600ms ease,
     transform 800ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.accessory-hover-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.accessory-image {
+  position: relative;
+}
+
+.accessory-card:hover .accessory-hover-image {
+  opacity: 1;
 }
 
 .accessory-card:hover .accessory-image img {
@@ -3548,6 +3563,52 @@ button {
   text-transform: uppercase;
 }
 
+.store-page-size {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.store-page-size select {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 7px 9px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  font: inherit;
+}
+
+.store-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 26px;
+}
+
+.store-pagination button {
+  min-width: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 7px;
+  padding: 9px 12px;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.06);
+  font-family: Overpass, system-ui, sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.store-pagination button.is-active {
+  color: var(--deep-navy);
+  background: var(--gold-bright);
+  border-color: var(--gold-bright);
+}
+
+.store-pagination button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
 .store-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -3589,8 +3650,19 @@ button {
   aspect-ratio: 1.2 / 1;
   object-fit: cover;
   transition:
+    opacity 360ms ease,
     transform 700ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 700ms ease;
+}
+
+.store-product-hover-image {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.store-product-card:hover .store-product-hover-image {
+  opacity: 1;
 }
 
 .store-product-card:hover .store-product-image img {

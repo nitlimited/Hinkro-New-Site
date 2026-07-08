@@ -17,6 +17,8 @@ export type UpdateType =
   | "question"
   | "reply";
 export type MediaKind = "image" | "video" | "doc";
+export type PublishStatus = "draft" | "scheduled" | "published";
+export type CategoryKind = "product" | "accessory" | "blog";
 
 export interface ClientRow {
   id: string;
@@ -105,6 +107,85 @@ export interface MediaRow {
   uploaded_by: string | null;
   created_at: string;
   /** resolved display URL (signed URL in real mode, direct path in demo) */
+  url?: string;
+}
+
+export interface ProductImageRow {
+  id: string;
+  product_id: number;
+  src: string;
+  alt: string | null;
+  position: number;
+  role?: "primary" | "gallery" | "hover";
+}
+
+export interface ProductVariationRow {
+  id: string;
+  product_id: number;
+  attributes: Record<string, unknown>;
+  prices: Record<string, unknown>;
+}
+
+export interface ProductRow {
+  id: number;
+  slug: string;
+  name: string;
+  type: string;
+  categories: string[];
+  tags: string[];
+  colors: string[];
+  is_accessory: boolean;
+  is_featured: boolean;
+  stock_text: string;
+  prices: Record<string, unknown>;
+  short_description: string | null;
+  description: string | null;
+  seo: Record<string, unknown>;
+  status: PublishStatus;
+  sort: number;
+  created_at?: string;
+  updated_at?: string;
+  images?: ProductImageRow[];
+  variations?: ProductVariationRow[];
+}
+
+export interface CategoryRow {
+  id: string;
+  name: string;
+  slug: string;
+  kind: CategoryKind;
+  position: number;
+  image_url?: string | null;
+}
+
+export interface BlogPostRow {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  content: string | null;
+  featured_image: string | null;
+  status: PublishStatus;
+  publish_at: string | null;
+  seo: Record<string, unknown>;
+  author_id: string | null;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface LibraryAssetRow {
+  id: string;
+  storage_path: string;
+  kind: MediaKind;
+  title: string | null;
+  alt: string | null;
+  caption?: string | null;
+  description?: string | null;
+  folder: string;
+  size_bytes: number | null;
+  uploaded_by: string | null;
+  created_at: string;
+  exclude_from_sitemap?: boolean;
   url?: string;
 }
 

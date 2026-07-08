@@ -8,11 +8,8 @@ import {
   Search,
   X,
 } from "lucide-react";
-import {
-  storeCategories,
-  storeProducts,
-  WHATSAPP_ORDER_NUMBER,
-} from "./storeProducts";
+import { WHATSAPP_ORDER_NUMBER } from "./storeProducts";
+import { usePublicBlogPosts, usePublicCatalog } from "./publicCatalog";
 import "./styles.css";
 
 const navItems = [
@@ -21,6 +18,7 @@ const navItems = [
   ["Bespoke", "bespoke"],
   ["Accessories", "accessories"],
   ["Store", "store"],
+  ["Trends & News", "blog"],
 ];
 
 const logoUrl =
@@ -494,6 +492,7 @@ const accessoryItems = [
     category: "Protection and Storage",
     title: "Men Duffel Bag",
     image: "/images/hinkro-accessory-men-duffel-bag.jpg",
+    hoverImage: "/images/hinkro-accessory-men-duffel-bag-product.jpg",
     imageAlt: "Hinkro men's duffel bag for Kente cloth protection and storage",
     text: "Effortlessly stylish and designed for the modern man, the Hinkro Men's Duffle Bag combines easy-carry convenience with spacious storage and premium protection for your Kente cloth. Crafted for those who demand both comfort and style, it’s the perfect companion for travel or everyday elegance.",
     availability: "All Male Kente",
@@ -506,6 +505,7 @@ const accessoryItems = [
     category: "Personal Lifestyle",
     title: "Bridal Electronic Hand Fan",
     image: "/images/hinkro-accessory-bridal-hand-fan.jpg",
+    hoverImage: "/images/hinkro-accessory-bridal-hand-fan-product.jpg",
     imageAlt: "Bride holding Hinkro bridal electronic hand fan",
     text: "The ultimate blend of style and comfort for your big day. Designed to keep brides cool under the sun, it ensures you stay fresh, radiant, and sweat-free. A luxurious must-have accessory for every bride.",
     availability: "Coming Soon (Bridal Package Only)",
@@ -518,6 +518,7 @@ const accessoryItems = [
     category: "Protection and Storage",
     title: "Bridal Garment Bag",
     image: "/images/hinkro-accessory-bridal-garment-bag.jpg",
+    hoverImage: "/images/hinkro-accessory-gown-bag-product.jpg",
     imageAlt: "Hinkro bridal garment bag for Kente gown protection",
     text: "Your dream Kente gown deserves first class care. Designed to keep your gown safe, spotless, and ready for your big moment, it’s the elegant companion every bride deserves.",
     availability: "Bridal Package Only",
@@ -530,6 +531,7 @@ const accessoryItems = [
     category: "Fragrance",
     title: "Hinkro Moonlight Eau De Parfum 30ml",
     image: "/images/hinkro-accessory-moonlight-perfume.jpg",
+    hoverImage: "/images/hinkro-accessory-moonlight-perfume-product.jpg",
     imageAlt: "Bride wearing Kente accessories and holding Hinkro Moonlight perfume",
     text: "Every bride deserves to smell as beautiful as she looks. A delicate blend of charm and allure, made for the bride who wants to leave a trace of magic. With every spritz, it wraps you in a soft, luxurious scent that lingers long after the “I do.”",
     availability: "Coming Soon (Pre-Order Only)",
@@ -556,10 +558,6 @@ const preferredStoreCategories = [
   "Ombre Kente",
   "Accessories",
 ];
-
-const storeCategoryFilters = preferredStoreCategories.filter(
-  (category) => category === "All" || storeCategories.includes(category),
-);
 
 function getProductSlugFromLocation() {
   const path = window.location.pathname;
@@ -659,7 +657,7 @@ function getCurrentPage() {
   if (path === "/authentic-kente-fabric/" || path.startsWith("/product/")) return "store";
 
   const hash = window.location.hash.replace("#", "");
-  if (["tradition", "design", "bespoke", "accessories", "store", "graduation"].includes(hash)) return hash;
+  if (["tradition", "design", "bespoke", "accessories", "store", "graduation", "blog"].includes(hash)) return hash;
   if (hash.startsWith("store/")) return "store";
   return "home";
 }
@@ -767,6 +765,7 @@ function AccessoriesPage() {
             <article className="accessory-card" key={item.title}>
               <figure className="accessory-image">
                 <img src={item.image} alt={item.imageAlt} />
+                {item.hoverImage && <img className="accessory-hover-image" src={item.hoverImage} alt="" />}
               </figure>
               <p className="accessory-category">{item.category}</p>
               <h2>{item.title}</h2>
@@ -962,12 +961,22 @@ function GraduationGalleryCarousel() {
 }
 
 function StorePage({ productSlug }) {
+  const { products, categories } = usePublicCatalog();
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("All");
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [catalogPage, setCatalogPage] = useState(1);
   const [currency] = useState(getPreferredCurrency);
+  const storeCategoryFilters = useMemo(
+    () =>
+      preferredStoreCategories.filter(
+        (category) => category === "All" || categories.includes(category),
+      ),
+    [categories],
+  );
 
   const selectedProduct = productSlug
-    ? storeProducts.find((product) => product.slug === productSlug)
+    ? products.find((product) => product.slug === productSlug)
     : null;
 
   usePageSeo(
@@ -991,7 +1000,7 @@ function StorePage({ productSlug }) {
   const filteredProducts = useMemo(() => {
     const search = query.trim().toLowerCase();
 
-    return storeProducts.filter((product) => {
+    return products.filter((product) => {
       const matchesCategory =
         activeCategory === "All" || product.categories.includes(activeCategory);
       const searchable = [
@@ -1006,13 +1015,23 @@ function StorePage({ productSlug }) {
 
       return matchesCategory && (!search || searchable.includes(search));
     });
-  }, [activeCategory, query]);
+  }, [activeCategory, products, query]);
+  const totalCatalogPages = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const visibleProducts = filteredProducts.slice(
+    (catalogPage - 1) * itemsPerPage,
+    catalogPage * itemsPerPage,
+  );
+
+  useEffect(() => {
+    setCatalogPage(1);
+  }, [activeCategory, itemsPerPage, query]);
 
   if (selectedProduct) {
     return (
       <ProductDetailPage
         product={selectedProduct}
         currency={currency}
+        products={products}
       />
     );
   }
@@ -1057,15 +1076,29 @@ function StorePage({ productSlug }) {
 
       <section className="store-grid-section" aria-label="Products">
         <div className="store-results-line">
-          <span>{filteredProducts.length} designs shown</span>
-          <span>Tap any design to view colors, options, and ordering details</span>
+          <span>{filteredProducts.length} designs found · page {catalogPage} of {totalCatalogPages}</span>
+          <label className="store-page-size">Show
+            <select value={itemsPerPage} onChange={(event) => setItemsPerPage(Number(event.target.value))}>
+              <option value={12}>12</option>
+              <option value={20}>20</option>
+              <option value={40}>40</option>
+              <option value={filteredProducts.length || 1}>All</option>
+            </select>
+          </label>
         </div>
 
         <div className="store-grid">
-          {filteredProducts.map((product) => (
+          {visibleProducts.map((product) => (
             <ProductCard product={product} currency={currency} key={product.id} />
           ))}
         </div>
+        {totalCatalogPages > 1 && (
+          <Pagination
+            page={catalogPage}
+            totalPages={totalCatalogPages}
+            onPageChange={setCatalogPage}
+          />
+        )}
       </section>
 
       <section className="store-seo-section" aria-labelledby="store-seo-title">
@@ -1079,6 +1112,117 @@ function StorePage({ productSlug }) {
         </p>
       </section>
     </main>
+  );
+}
+
+function BlogPage() {
+  const posts = usePublicBlogPosts();
+  const [postsPerPage, setPostsPerPage] = useState(12);
+  const [blogPage, setBlogPage] = useState(1);
+
+  usePageSeo(
+    "Kente Trends & News | Hinkro Kente",
+    "Read Hinkro Kente trends, style inspiration, ceremony guidance, and bespoke Kente news.",
+    ["Kente trends", "Kente news", "Hinkro Kente blog", "Ghana Kente inspiration"],
+  );
+
+  const fallbackPosts = trendsNewsImages.map((image, index) => ({
+    id: image.src,
+    title: [
+      "Bespoke Kente colour inspiration",
+      "Bridal Kente styling notes",
+      "Ceremonial accessories and finishing touches",
+      "Modern Kente silhouettes",
+      "Statement fans and coordinated details",
+      "Garden celebration Kente palettes",
+    ][index],
+    excerpt:
+      "Explore Kente styling inspiration from Hinkro Kente while the editorial archive is being prepared.",
+    featured_image: image.src,
+  }));
+  const visiblePosts = posts.length > 0 ? posts : fallbackPosts;
+  const totalBlogPages = Math.max(1, Math.ceil(visiblePosts.length / postsPerPage));
+  const pagedPosts = visiblePosts.slice(
+    (blogPage - 1) * postsPerPage,
+    blogPage * postsPerPage,
+  );
+
+  useEffect(() => {
+    setBlogPage(1);
+  }, [postsPerPage, posts.length]);
+
+  return (
+    <main className="store-page blog-page" id="blog">
+      <section className="store-hero" aria-labelledby="blog-title">
+        <p className="store-kicker">Trends & News</p>
+        <h1 id="blog-title">Kente inspiration, styling notes, and studio stories.</h1>
+        <p>
+          Browse Hinkro Kente ideas for weddings, graduations, bespoke cloth,
+          accessories, and refined ceremonial styling.
+        </p>
+      </section>
+
+      <section className="store-grid-section" aria-label="Blog posts">
+        <div className="store-results-line">
+          <span>{visiblePosts.length} stories found · page {blogPage} of {totalBlogPages}</span>
+          <label className="store-page-size">Show
+            <select value={postsPerPage} onChange={(event) => setPostsPerPage(Number(event.target.value))}>
+              <option value={6}>6</option>
+              <option value={12}>12</option>
+              <option value={24}>24</option>
+              <option value={visiblePosts.length || 1}>All</option>
+            </select>
+          </label>
+        </div>
+        <div className="store-grid">
+          {pagedPosts.map((post) => (
+            <article className="store-product-card" key={post.id}>
+              <div className="store-product-image">
+                {post.featured_image && (
+                  <img src={post.featured_image} alt={post.title} loading="lazy" />
+                )}
+              </div>
+              <div className="store-product-copy">
+                <p>Hinkro Kente</p>
+                <h2>{post.title}</h2>
+                <p className="store-product-seo">{post.excerpt}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+        {totalBlogPages > 1 && (
+          <Pagination
+            page={blogPage}
+            totalPages={totalBlogPages}
+            onPageChange={setBlogPage}
+          />
+        )}
+      </section>
+    </main>
+  );
+}
+
+function Pagination({ page, totalPages, onPageChange }) {
+  const pages = Array.from({ length: totalPages }, (_, index) => index + 1);
+  return (
+    <nav className="store-pagination" aria-label="Pagination">
+      <button type="button" disabled={page === 1} onClick={() => onPageChange(page - 1)}>
+        Previous
+      </button>
+      {pages.map((item) => (
+        <button
+          type="button"
+          key={item}
+          className={item === page ? "is-active" : ""}
+          onClick={() => onPageChange(item)}
+        >
+          {item}
+        </button>
+      ))}
+      <button type="button" disabled={page === totalPages} onClick={() => onPageChange(page + 1)}>
+        Next
+      </button>
+    </nav>
   );
 }
 
@@ -1102,11 +1246,13 @@ function WhatsAppIcon({ size = 18 }) {
 
 function ProductCard({ product, currency }) {
   const image = product.images[0];
+  const hoverImage = product.images.find((item) => item.role === "hover") || product.images[1];
 
   return (
     <article className="store-product-card">
       <a className="store-product-image" href={product.path} aria-label={`View ${product.name}`}>
         {image && <img src={image.src} alt={image.alt || product.name} loading="lazy" />}
+        {product.isAccessory && hoverImage && <img className="store-product-hover-image" src={hoverImage.src} alt="" loading="lazy" />}
         {product.isAccessory && <span>Accessory</span>}
       </a>
 
@@ -1133,7 +1279,7 @@ function ProductCard({ product, currency }) {
   );
 }
 
-function ProductDetailPage({ product, currency }) {
+function ProductDetailPage({ product, currency, products }) {
   const [activeImage, setActiveImage] = useState(0);
   const currentImage = product.images[activeImage] || product.images[0];
 
@@ -1141,7 +1287,7 @@ function ProductDetailPage({ product, currency }) {
     setActiveImage(0);
   }, [product.id]);
 
-  const relatedProducts = storeProducts
+  const relatedProducts = products
     .filter(
       (item) =>
         item.id !== product.id &&
@@ -1672,7 +1818,7 @@ function TrendsNewsSection() {
           resources here.
         </h2>
 
-        <a className="trends-news-cta" href="#store">
+        <a className="trends-news-cta" href="#blog">
           Kente Trends and News
         </a>
       </div>
@@ -2300,6 +2446,8 @@ function App() {
         <GraduationStolePage />
       ) : currentPage === "store" ? (
         <StorePage productSlug={productSlug} />
+      ) : currentPage === "blog" ? (
+        <BlogPage />
       ) : (
         <Hero />
       )}

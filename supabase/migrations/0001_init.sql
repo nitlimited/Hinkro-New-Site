@@ -276,7 +276,8 @@ create table categories (
   name text not null,
   slug text not null unique,
   kind text not null check (kind in ('product', 'accessory', 'blog')),
-  position int not null default 0
+  position int not null default 0,
+  image_url text
 );
 
 create table products (
@@ -308,7 +309,8 @@ create table product_images (
   product_id bigint not null references products (id) on delete cascade,
   src text not null,
   alt text,
-  position int not null default 0
+  position int not null default 0,
+  role text not null default 'gallery' check (role in ('primary', 'gallery', 'hover'))
 );
 
 create table product_variations (
@@ -342,8 +344,11 @@ create table media_library (
   kind media_kind not null default 'image',
   title text,
   alt text,
+  caption text,
+  description text,
   folder text not null default '',
   size_bytes bigint,
+  exclude_from_sitemap boolean not null default false,
   uploaded_by uuid references profiles (id),
   created_at timestamptz not null default now()
 );

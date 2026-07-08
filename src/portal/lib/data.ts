@@ -8,12 +8,20 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase, isSupabaseConfigured } from "./supabaseClient";
 import type { UserRole } from "../types";
 import type {
+  BlogPostRow,
+  CategoryKind,
+  CategoryRow,
   ClientRow,
+  LibraryAssetRow,
+  MediaKind,
   MediaRow,
   MessageAudience,
   MessageRow,
   NotificationRow,
   ProfileRow,
+  ProductImageRow,
+  ProductRow,
+  ProductVariationRow,
   ProjectRow,
   StageRow,
   UpdateRow,
@@ -23,8 +31,12 @@ import type {
 } from "./rows";
 import {
   demoClients,
+  demoBlogPosts,
+  demoCatalogProducts,
+  demoCategories,
   demoId,
   demoIdentity,
+  demoLibraryAssets,
   demoMedia,
   demoMessages,
   demoNotifications,
@@ -285,6 +297,136 @@ export function useTeam(): { team: ProfileRow[]; loading: boolean } {
   }, [demo, demoV]);
 
   return { team, loading };
+}
+
+export function useCatalogProducts(opts: {
+  accessories?: boolean;
+  refreshKey?: number;
+} = {}): { products: ProductRow[]; loading: boolean } {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [products, setProducts] = useState<ProductRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (demo) {
+      setProducts(
+        demoCatalogProducts
+          .filter((p) =>
+            typeof opts.accessories === "boolean"
+              ? p.is_accessory === opts.accessories
+              : true,
+          )
+          .sort((a, b) => a.sort - b.sort),
+      );
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    let query = supabase
+      .from("products")
+      .select("*, images:product_images(*), variations:product_variations(*)")
+      .order("sort");
+    if (typeof opts.accessories === "boolean") {
+      query = query.eq("is_accessory", opts.accessories);
+    }
+    query.then(({ data }) => {
+      setProducts((data as unknown as ProductRow[]) ?? []);
+      setLoading(false);
+    });
+  }, [demo, demoV, opts.accessories, opts.refreshKey]);
+
+  return { products, loading };
+}
+
+export function useCategories(kind?: CategoryKind): {
+  categories: CategoryRow[];
+  loading: boolean;
+} {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [categories, setCategories] = useState<CategoryRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (demo) {
+      setCategories(
+        demoCategories
+          .filter((c) => (kind ? c.kind === kind : true))
+          .sort((a, b) => a.position - b.position),
+      );
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    let query = supabase.from("categories").select("*").order("position");
+    if (kind) query = query.eq("kind", kind);
+    query.then(({ data }) => {
+      setCategories((data as CategoryRow[]) ?? []);
+      setLoading(false);
+    });
+  }, [demo, demoV, kind]);
+
+  return { categories, loading };
+}
+
+export function useBlogPosts(): { posts: BlogPostRow[]; loading: boolean } {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [posts, setPosts] = useState<BlogPostRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (demo) {
+      setPosts([...demoBlogPosts].sort((a, b) => b.created_at.localeCompare(a.created_at)));
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setPosts((data as BlogPostRow[]) ?? []);
+        setLoading(false);
+      });
+  }, [demo, demoV]);
+
+  return { posts, loading };
+}
+
+export function useLibraryAssets(): {
+  assets: LibraryAssetRow[];
+  loading: boolean;
+} {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [assets, setAssets] = useState<LibraryAssetRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (demo) {
+      setAssets([...demoLibraryAssets].sort((a, b) => b.created_at.localeCompare(a.created_at)));
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("media_library")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        const rows = ((data as LibraryAssetRow[]) ?? []).map((asset) => ({
+          ...asset,
+          url: supabase!.storage.from("media-library").getPublicUrl(asset.storage_path).data.publicUrl,
+        }));
+        setAssets(rows);
+        setLoading(false);
+      });
+  }, [demo, demoV]);
+
+  return { assets, loading };
 }
 
 export function useNotifications(userId: string | undefined): {
@@ -807,5 +949,300 @@ export async function updateProjectFields(
     return;
   }
   const { error } = await supabase!.from("projects").update(patch).eq("id", projectId);
+  if (error) throw error;
+}
+
+export type ProductSaveInput = Partial<ProductRow> & {
+  name: string;
+  slug: string;
+  is_accessory: boolean;
+  images?: ProductImageRow[];
+  variations?: ProductVariationRow[];
+};
+
+export async function saveProduct(input: ProductSaveInput): Promise<ProductRow> {
+  const payload = {
+    slug: input.slug,
+    name: input.name,
+    type: input.type ?? "simple",
+    categories: input.categories ?? [],
+    tags: input.tags ?? [],
+    colors: input.colors ?? [],
+    is_accessory: input.is_accessory,
+    is_featured: input.is_featured ?? false,
+    stock_text: input.stock_text ?? "In stock",
+    prices: input.prices ?? {},
+    short_description: input.short_description || null,
+    description: input.description || null,
+    seo: input.seo ?? {},
+    status: input.status ?? "draft",
+    sort: input.sort ?? 0,
+  };
+
+  if (!isSupabaseConfigured) {
+    const existing = typeof input.id === "number"
+      ? demoCatalogProducts.find((p) => p.id === input.id)
+      : null;
+    if (existing) {
+      Object.assign(existing, payload, {
+        images: input.images ?? existing.images ?? [],
+        variations: input.variations ?? existing.variations ?? [],
+        updated_at: new Date().toISOString(),
+      });
+      emitDemo();
+      return existing;
+    }
+    const row: ProductRow = {
+      id: Math.max(...demoCatalogProducts.map((p) => p.id), 0) + 1,
+      ...payload,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      images: input.images ?? [],
+      variations: input.variations ?? [],
+    };
+    demoCatalogProducts.unshift(row);
+    emitDemo();
+    return row;
+  }
+
+  const query = typeof input.id === "number"
+    ? supabase!.from("products").update(payload).eq("id", input.id)
+    : supabase!.from("products").insert(payload);
+  const { data, error } = await query.select().single();
+  if (error) throw error;
+  const row = data as ProductRow;
+  if (input.images) {
+    await supabase!.from("product_images").delete().eq("product_id", row.id);
+    if (input.images.length > 0) {
+      const { error: imageError } = await supabase!.from("product_images").insert(
+        input.images.map((image, index) => ({
+          product_id: row.id,
+          src: image.src,
+          alt: image.alt || input.name,
+          position: index,
+          role: image.role ?? (index === 0 ? "primary" : "gallery"),
+        })),
+      );
+      if (imageError) throw imageError;
+    }
+  }
+  if (input.variations) {
+    await supabase!.from("product_variations").delete().eq("product_id", row.id);
+    if (input.variations.length > 0) {
+      const { error: variationError } = await supabase!.from("product_variations").insert(
+        input.variations.map((variation) => ({
+          product_id: row.id,
+          attributes: variation.attributes ?? {},
+          prices: variation.prices ?? {},
+        })),
+      );
+      if (variationError) throw variationError;
+    }
+  }
+  return row;
+}
+
+export async function deleteProduct(productId: number): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const index = demoCatalogProducts.findIndex((p) => p.id === productId);
+    if (index >= 0) demoCatalogProducts.splice(index, 1);
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!.from("products").delete().eq("id", productId);
+  if (error) throw error;
+}
+
+export type BlogPostSaveInput = Partial<BlogPostRow> & {
+  title: string;
+  slug: string;
+};
+
+export async function saveBlogPost(
+  input: BlogPostSaveInput,
+  authorId: string,
+): Promise<BlogPostRow> {
+  const payload = {
+    title: input.title,
+    slug: input.slug,
+    excerpt: input.excerpt || null,
+    content: input.content || null,
+    featured_image: input.featured_image || null,
+    status: input.status ?? "draft",
+    publish_at: input.publish_at || null,
+    seo: input.seo ?? {},
+    author_id: input.author_id ?? authorId,
+  };
+
+  if (!isSupabaseConfigured) {
+    const existing = input.id ? demoBlogPosts.find((p) => p.id === input.id) : null;
+    if (existing) {
+      Object.assign(existing, payload, { updated_at: new Date().toISOString() });
+      emitDemo();
+      return existing;
+    }
+    const row: BlogPostRow = {
+      id: demoId("bp"),
+      ...payload,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    demoBlogPosts.unshift(row);
+    emitDemo();
+    return row;
+  }
+
+  const query = input.id
+    ? supabase!.from("blog_posts").update(payload).eq("id", input.id)
+    : supabase!.from("blog_posts").insert(payload);
+  const { data, error } = await query.select().single();
+  if (error) throw error;
+  return data as BlogPostRow;
+}
+
+export async function deleteBlogPost(postId: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const index = demoBlogPosts.findIndex((p) => p.id === postId);
+    if (index >= 0) demoBlogPosts.splice(index, 1);
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!.from("blog_posts").delete().eq("id", postId);
+  if (error) throw error;
+}
+
+export async function saveCategory(input: Partial<CategoryRow> & {
+  name: string;
+  slug: string;
+  kind: CategoryKind;
+}): Promise<CategoryRow> {
+  const payload = {
+    name: input.name,
+    slug: input.slug,
+    kind: input.kind,
+    position: input.position ?? 0,
+    image_url: input.image_url ?? null,
+  };
+
+  if (!isSupabaseConfigured) {
+    const existing = input.id ? demoCategories.find((c) => c.id === input.id) : null;
+    if (existing) {
+      Object.assign(existing, payload);
+      emitDemo();
+      return existing;
+    }
+    const row: CategoryRow = { id: demoId("cat"), ...payload };
+    demoCategories.push(row);
+    emitDemo();
+    return row;
+  }
+
+  const query = input.id
+    ? supabase!.from("categories").update(payload).eq("id", input.id)
+    : supabase!.from("categories").insert(payload);
+  const { data, error } = await query.select().single();
+  if (error) throw error;
+  return data as CategoryRow;
+}
+
+export async function deleteCategory(categoryId: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const index = demoCategories.findIndex((c) => c.id === categoryId);
+    if (index >= 0) demoCategories.splice(index, 1);
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!.from("categories").delete().eq("id", categoryId);
+  if (error) throw error;
+}
+
+export async function addLibraryAsset(input: {
+  title: string;
+  alt: string;
+  caption?: string;
+  description?: string;
+  folder: string;
+  kind: MediaKind;
+  exclude_from_sitemap?: boolean;
+  file?: File;
+  storage_path?: string;
+  uploaded_by?: string;
+}): Promise<LibraryAssetRow> {
+  if (!isSupabaseConfigured) {
+    const url = input.file ? URL.createObjectURL(input.file) : input.storage_path || "";
+    const row: LibraryAssetRow = {
+      id: demoId("lib"),
+      storage_path: url,
+      kind: input.kind,
+      title: input.title || input.file?.name || null,
+      alt: input.alt || null,
+      caption: input.caption || null,
+      description: input.description || null,
+      folder: input.folder || "",
+      size_bytes: input.file?.size ?? null,
+      exclude_from_sitemap: input.exclude_from_sitemap ?? false,
+      uploaded_by: input.uploaded_by ?? null,
+      created_at: new Date().toISOString(),
+      url,
+    };
+    demoLibraryAssets.unshift(row);
+    emitDemo();
+    return row;
+  }
+
+  if (!input.file) {
+    throw new Error("Choose a file to upload.");
+  }
+  const safeName = input.file.name.replace(/[^\w.\-]/g, "_");
+  const path = `${input.folder || "uploads"}/${Date.now()}-${safeName}`;
+  const { error: uploadError } = await supabase!.storage
+    .from("media-library")
+    .upload(path, input.file);
+  if (uploadError) throw uploadError;
+  const { data, error } = await supabase!
+    .from("media_library")
+    .insert({
+      storage_path: path,
+      kind: input.kind,
+      title: input.title || input.file.name,
+      alt: input.alt || null,
+      caption: input.caption || null,
+      description: input.description || null,
+      folder: input.folder || "",
+      size_bytes: input.file.size,
+      exclude_from_sitemap: input.exclude_from_sitemap ?? false,
+      uploaded_by: input.uploaded_by ?? null,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data as LibraryAssetRow;
+}
+
+export async function updateLibraryAsset(
+  id: string,
+  patch: Partial<Pick<
+    LibraryAssetRow,
+    "title" | "alt" | "caption" | "description" | "folder" | "exclude_from_sitemap"
+  >>,
+): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const asset = demoLibraryAssets.find((item) => item.id === id);
+    if (asset) Object.assign(asset, patch);
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!.from("media_library").update(patch).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteLibraryAsset(id: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const index = demoLibraryAssets.findIndex((item) => item.id === id);
+    if (index >= 0) demoLibraryAssets.splice(index, 1);
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!.from("media_library").delete().eq("id", id);
   if (error) throw error;
 }

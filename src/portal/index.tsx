@@ -22,6 +22,12 @@ import { UsersPage } from "./features/users/UsersPage";
 import { NotificationsPage } from "./features/notifications/NotificationsPage";
 import { MessagesPage } from "./features/messages/MessagesPage";
 import { ComingSoon } from "./features/ComingSoon";
+import {
+  BlogPage,
+  CategoriesPage,
+  MediaLibraryPage,
+  ProductsPage,
+} from "./features/content/ContentManagementPages";
 import { CONTENT_ROLES, STAFF_ROLES } from "./types";
 import "./portal.css";
 
@@ -45,9 +51,11 @@ const router = createBrowserRouter([
         path: "notifications",
         element: <NotificationsPage projectBase="/portal/admin/projects" />,
       },
-      { path: "products", element: <ComingSoon phase={3} what="Products" /> },
-      { path: "blog", element: <ComingSoon phase={3} what="Blog" /> },
-      { path: "media", element: <ComingSoon phase={3} what="Media library" /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "accessories", element: <ProductsPage accessories /> },
+      { path: "blog", element: <BlogPage /> },
+      { path: "media", element: <MediaLibraryPage /> },
+      { path: "categories", element: <CategoriesPage /> },
       { path: "messages", element: <MessagesPage /> },
       { path: "settings", element: <ComingSoon phase={4} what="Settings" /> },
       { path: "*", element: <Navigate to="/portal/admin" replace /> },
@@ -62,9 +70,11 @@ const router = createBrowserRouter([
     ),
     children: [
       { index: true, element: <ContentDashboard /> },
-      { path: "products", element: <ComingSoon phase={3} what="Products" /> },
-      { path: "blog", element: <ComingSoon phase={3} what="Blog" /> },
-      { path: "media", element: <ComingSoon phase={3} what="Media library" /> },
+      { path: "products", element: <ProductsPage /> },
+      { path: "accessories", element: <ProductsPage accessories /> },
+      { path: "blog", element: <BlogPage /> },
+      { path: "media", element: <MediaLibraryPage /> },
+      { path: "categories", element: <CategoriesPage /> },
       { path: "*", element: <Navigate to="/portal/content" replace /> },
     ],
   },
