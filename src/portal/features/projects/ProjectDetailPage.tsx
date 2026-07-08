@@ -147,9 +147,16 @@ export function ProjectDetailPage() {
             <EmptyState title="No updates yet" body="Updates will appear here as work begins." />
           ) : (
             <ol className="portal-timeline">
-              {updates.map((u) => (
-                <TimelineItem key={u.id} update={u} />
-              ))}
+              {updates
+                .filter((u) => !u.parent_update_id)
+                .map((u) => (
+                  <TimelineItem
+                    key={u.id}
+                    update={u}
+                    replies={updates.filter((r) => r.parent_update_id === u.id)}
+                    onReplied={refresh}
+                  />
+                ))}
             </ol>
           )}
         </div>
@@ -189,13 +196,53 @@ export function ProjectDetailPage() {
 
 /* ---------- timeline ---------- */
 
-function TimelineItem({ update }: { update: UpdateRow }) {
+function TimelineItem({
+  update,
+  replies = [],
+  onReplied,
+}: {
+  update: UpdateRow;
+  replies?: UpdateRow[];
+  onReplied?: () => void;
+}) {
+  const { profile } = useAuth();
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [replyBody, setReplyBody] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  // Anyone who isn't the author can reply to a question; staff and weavers
+  // can also reply to replies (keeps conversations going).
+  const canReply =
+    profile &&
+    onReplied &&
+    (update.type === "question" || update.type === "reply") &&
+    update.author_id !== profile.id;
+
+  const sendReply = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!profile || !replyBody.trim() || !onReplied) return;
+    setBusy(true);
+    await postUpdate(
+      {
+        project_id: update.project_id,
+        type: "reply",
+        body: replyBody,
+        parent_update_id: update.id,
+      },
+      { id: profile.id, full_name: profile.full_name, role: profile.role },
+    );
+    setReplyBody("");
+    setReplyOpen(false);
+    setBusy(false);
+    onReplied();
+  };
+
   return (
     <li>
       <span className="portal-timeline-dot">
         {UPDATE_ICONS[update.type] ?? <StickyNote size={15} />}
       </span>
-      <div>
+      <div className="portal-timeline-body">
         <strong>
           {update.author?.full_name ?? "Team"}
           <span className={`portal-update-type portal-update-${update.type}`}>
@@ -220,6 +267,54 @@ function TimelineItem({ update }: { update: UpdateRow }) {
           </div>
         )}
         <time>{formatDateTime(update.created_at)}</time>
+
+        {canReply && !replyOpen && (
+          <button
+            className="portal-reply-btn"
+            type="button"
+            onClick={() => setReplyOpen(true)}
+          >
+            <MessageSquare size={13} /> Reply
+          </button>
+        )}
+        {replyOpen && (
+          <form className="portal-reply-form" onSubmit={sendReply}>
+            <textarea
+              rows={2}
+              autoFocus
+              placeholder="Write a reply…"
+              value={replyBody}
+              onChange={(e) => setReplyBody(e.target.value)}
+            />
+            <div className="portal-composer-actions">
+              <button
+                className="portal-btn-primary portal-btn-sm"
+                type="submit"
+                disabled={busy || !replyBody.trim()}
+              >
+                {busy ? "Sending…" : "Send reply"}
+              </button>
+              <button
+                className="portal-btn-secondary"
+                type="button"
+                onClick={() => setReplyOpen(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        {replies.length > 0 && (
+          <ol className="portal-timeline portal-timeline-replies">
+            {replies
+              .slice()
+              .sort((a, b) => a.created_at.localeCompare(b.created_at))
+              .map((r) => (
+                <TimelineItem key={r.id} update={r} onReplied={onReplied} />
+              ))}
+          </ol>
+        )}
       </div>
     </li>
   );

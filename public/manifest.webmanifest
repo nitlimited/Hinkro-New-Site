@@ -1,0 +1,25 @@
+{
+  "name": "Hinkro Kente Studio",
+  "short_name": "Hinkro",
+  "description": "Follow your bespoke Kente order and manage the Hinkro Kente studio.",
+  "start_url": "/portal",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0c2141",
+  "background_color": "#f6f1e8",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bell, CheckCheck } from "lucide-react";
+import { Bell, BellRing, CheckCheck } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
 import { useNotifications } from "../../lib/data";
+import { enablePush } from "../../lib/push";
 import { EmptyState, formatDateTime } from "../../components/ui";
 
 export function NotificationsPage({ projectBase }: { projectBase: string }) {
@@ -10,6 +11,14 @@ export function NotificationsPage({ projectBase }: { projectBase: string }) {
   const { notifications, unread, markRead, markAllRead } = useNotifications(
     profile?.id,
   );
+  const [pushState, setPushState] = useState<string>("");
+
+  const onEnablePush = async () => {
+    if (!profile) return;
+    setPushState("working");
+    const result = await enablePush(profile.id);
+    setPushState(result.ok ? "enabled" : result.reason);
+  };
 
   return (
     <section>
@@ -30,6 +39,36 @@ export function NotificationsPage({ projectBase }: { projectBase: string }) {
           </button>
         )}
       </div>
+
+      <div className="portal-card portal-push-card">
+        <div>
+          <strong>
+            <BellRing size={15} /> Device notifications
+          </strong>
+          <p className="portal-muted-text">
+            Get an alert on this device the moment your projects have news —
+            even when the site is closed. On iPhone, first add this site to
+            your Home Screen.
+          </p>
+        </div>
+        {pushState === "enabled" ? (
+          <span className="portal-stage">Enabled ✓</span>
+        ) : (
+          <button
+            className="portal-btn-primary portal-btn-sm"
+            type="button"
+            disabled={pushState === "working"}
+            onClick={() => void onEnablePush()}
+          >
+            {pushState === "working" ? "Enabling…" : "Enable"}
+          </button>
+        )}
+      </div>
+      {pushState && pushState !== "enabled" && pushState !== "working" && (
+        <div className="portal-alert" style={{ marginBottom: 14 }}>
+          {pushState}
+        </div>
+      )}
 
       {notifications.length === 0 && (
         <EmptyState

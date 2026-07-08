@@ -7,6 +7,7 @@
 import type {
   ClientRow,
   MediaRow,
+  MessageRow,
   NotificationRow,
   ProfileRow,
   ProjectRow,
@@ -354,6 +355,31 @@ export const demoNotifications: NotificationRow[] = [
   },
 ];
 
+export const demoMessages: MessageRow[] = [
+  {
+    id: "ms-1",
+    project_id: null,
+    sender_id: "demo-user",
+    recipient_id: null,
+    audience: "all",
+    body: "The studio will be closed this Friday for the Homowo festival. All project timelines have been adjusted accordingly — enjoy the celebration!",
+    created_at: daysAgo(2),
+    sender: { full_name: "Ama Serwaa", role: "admin" },
+    recipient: null,
+  },
+  {
+    id: "ms-2",
+    project_id: "pr-1",
+    sender_id: "demo-user",
+    recipient_id: "weaver-1",
+    audience: "user",
+    body: "Kwabena — Deborah's wedding moved up two days. Please prioritise the border work this week.",
+    created_at: daysAgo(1, 4),
+    sender: { full_name: "Ama Serwaa", role: "admin" },
+    recipient: { full_name: "Kwabena Owusu" },
+  },
+];
+
 /* ---------- tiny reactive store ---------- */
 
 type Listener = () => void;
@@ -387,6 +413,7 @@ function persistDemo() {
         workLogs: demoWorkLogs,
         media: demoMedia.filter((m) => !m.storage_path.startsWith("blob:")),
         notifications: demoNotifications,
+        messages: demoMessages,
         seq,
       }),
     );
@@ -406,6 +433,7 @@ function hydrateDemo() {
     demoWorkLogs.splice(0, demoWorkLogs.length, ...saved.workLogs);
     demoMedia.splice(0, demoMedia.length, ...saved.media);
     demoNotifications.splice(0, demoNotifications.length, ...saved.notifications);
+    if (saved.messages) demoMessages.splice(0, demoMessages.length, ...saved.messages);
     if (typeof saved.seq === "number") seq = saved.seq;
   } catch {
     /* corrupted snapshot — fall back to fixtures */

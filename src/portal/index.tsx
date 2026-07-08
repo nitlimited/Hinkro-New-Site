@@ -20,6 +20,7 @@ import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
 import { ClientsPage } from "./features/clients/ClientsPage";
 import { UsersPage } from "./features/users/UsersPage";
 import { NotificationsPage } from "./features/notifications/NotificationsPage";
+import { MessagesPage } from "./features/messages/MessagesPage";
 import { ComingSoon } from "./features/ComingSoon";
 import { CONTENT_ROLES, STAFF_ROLES } from "./types";
 import "./portal.css";
@@ -47,7 +48,7 @@ const router = createBrowserRouter([
       { path: "products", element: <ComingSoon phase={3} what="Products" /> },
       { path: "blog", element: <ComingSoon phase={3} what="Blog" /> },
       { path: "media", element: <ComingSoon phase={3} what="Media library" /> },
-      { path: "messages", element: <ComingSoon phase={2} what="Messages" /> },
+      { path: "messages", element: <MessagesPage /> },
       { path: "settings", element: <ComingSoon phase={4} what="Settings" /> },
       { path: "*", element: <Navigate to="/portal/admin" replace /> },
     ],
@@ -81,6 +82,7 @@ const router = createBrowserRouter([
         path: "notifications",
         element: <NotificationsPage projectBase="/portal/weaver/projects" />,
       },
+      { path: "messages", element: <MessagesPage /> },
       { path: "*", element: <Navigate to="/portal/weaver" replace /> },
     ],
   },
@@ -98,11 +100,21 @@ const router = createBrowserRouter([
         path: "notifications",
         element: <NotificationsPage projectBase="/portal/client/projects" />,
       },
+      { path: "messages", element: <MessagesPage /> },
       { path: "*", element: <Navigate to="/portal/client" replace /> },
     ],
   },
   { path: "*", element: <Navigate to="/portal" replace /> },
 ]);
+
+// Register the service worker (push display + offline shell) in production.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {
+      /* SW is progressive enhancement — the portal works without it */
+    });
+  });
+}
 
 export default function PortalApp() {
   return (

@@ -119,6 +119,21 @@ export interface NotificationRow {
   created_at: string;
 }
 
+export type MessageAudience = "user" | "clients" | "weavers" | "all";
+
+export interface MessageRow {
+  id: string;
+  project_id: string | null;
+  sender_id: string;
+  recipient_id: string | null;
+  audience: MessageAudience;
+  body: string;
+  created_at: string;
+  /* joined */
+  sender?: { full_name: string; role: UserRole };
+  recipient?: { full_name: string } | null;
+}
+
 export interface ProfileRow {
   id: string;
   full_name: string;

@@ -49,10 +49,12 @@ const NAV: Record<string, NavEntry[]> = {
   weaver: [
     { to: "/portal/weaver", label: "My projects", icon: <FolderKanban size={18} />, end: true },
     { to: "/portal/weaver/notifications", label: "Notifications", icon: <Bell size={18} /> },
+    { to: "/portal/weaver/messages", label: "Messages", icon: <MessageSquare size={18} /> },
   ],
   client: [
     { to: "/portal/client", label: "My projects", icon: <Package size={18} />, end: true },
     { to: "/portal/client/notifications", label: "Notifications", icon: <Bell size={18} /> },
+    { to: "/portal/client/messages", label: "Messages", icon: <MessageSquare size={18} /> },
   ],
 };
 

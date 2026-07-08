@@ -10,6 +10,8 @@ import type { UserRole } from "../types";
 import type {
   ClientRow,
   MediaRow,
+  MessageAudience,
+  MessageRow,
   NotificationRow,
   ProfileRow,
   ProjectRow,
@@ -24,6 +26,7 @@ import {
   demoId,
   demoIdentity,
   demoMedia,
+  demoMessages,
   demoNotifications,
   demoProfiles,
   demoProjects,
@@ -384,6 +387,122 @@ export function useNotifications(userId: string | undefined): {
     markRead,
     markAllRead,
   };
+}
+
+export function useMessages(role: UserRole, userId: string | undefined): {
+  messages: MessageRow[];
+  loading: boolean;
+} {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [messages, setMessages] = useState<MessageRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!userId) return;
+    if (demo) {
+      const { profileId } = demoIdentity(role);
+      const isAdminRole = role === "super_admin" || role === "admin";
+      setMessages(
+        demoMessages
+          .filter((m) => {
+            if (isAdminRole) return true; // admins see everything they sent
+            if (m.recipient_id === profileId) return true;
+            if (m.audience === "all") return true;
+            if (m.audience === "clients" && role === "client") return true;
+            if (m.audience === "weavers" && role === "weaver") return true;
+            return false;
+          })
+          .sort((a, b) => b.created_at.localeCompare(a.created_at)),
+      );
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+
+    const load = () =>
+      supabase!
+        .from("messages")
+        .select(
+          "*, sender:profiles!messages_sender_id_fkey(full_name,role), recipient:profiles!messages_recipient_id_fkey(full_name)",
+        )
+        .order("created_at", { ascending: false })
+        .limit(100)
+        .then(({ data }) => {
+          setMessages((data as unknown as MessageRow[]) ?? []);
+          setLoading(false);
+        });
+
+    load();
+    const channel = supabase
+      .channel(`messages-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "messages" },
+        () => load(),
+      )
+      .subscribe();
+
+    return () => {
+      supabase?.removeChannel(channel);
+    };
+  }, [demo, demoV, role, userId]);
+
+  return { messages, loading };
+}
+
+export interface SendMessageInput {
+  audience: MessageAudience;
+  recipient_id?: string;
+  body: string;
+  project_id?: string;
+}
+
+export async function sendMessage(
+  input: SendMessageInput,
+  sender: { id: string; full_name: string; role: UserRole },
+): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const recipient =
+      input.recipient_id != null
+        ? demoProfiles.find((p) => p.id === input.recipient_id)
+        : null;
+    demoMessages.unshift({
+      id: demoId("ms"),
+      project_id: input.project_id ?? null,
+      sender_id: sender.id,
+      recipient_id: input.recipient_id ?? null,
+      audience: input.audience,
+      body: input.body,
+      created_at: new Date().toISOString(),
+      sender: { full_name: sender.full_name, role: sender.role },
+      recipient: recipient ? { full_name: recipient.full_name } : null,
+    });
+    // simulate the notification fan-out for the demo user's own feed
+    demoNotifications.unshift({
+      id: demoId("nt"),
+      user_id: "demo-user",
+      type: "message",
+      title:
+        input.audience === "user"
+          ? "New message from Hinkro Kente"
+          : "Announcement from Hinkro Kente",
+      body: input.body.slice(0, 180),
+      data: {},
+      read_at: null,
+      created_at: new Date().toISOString(),
+    });
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!.from("messages").insert({
+    audience: input.audience,
+    recipient_id: input.recipient_id ?? null,
+    body: input.body,
+    project_id: input.project_id ?? null,
+    sender_id: sender.id,
+  });
+  if (error) throw error;
 }
 
 /* ================= mutations ================= */
