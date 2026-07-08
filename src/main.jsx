@@ -694,7 +694,6 @@ function AccessoriesPage() {
         </div>
       </section>
       <TrendsNewsSection />
-      <SiteFooter />
     </main>
   );
 }
@@ -1094,7 +1093,6 @@ function BespokePage() {
 
       <BespokeFaqSection />
       <TrendsNewsSection />
-      <SiteFooter />
     </main>
   );
 }
@@ -1175,7 +1173,6 @@ function DesignPage() {
       <DesignOfferingsSection />
       <DesignStudioSection />
       <DesignTeamSection />
-      <SiteFooter />
     </main>
   );
 }
@@ -1371,7 +1368,6 @@ function InspiringTradition() {
       <HistorySection />
       <ReviewsFaqSection />
       <TrendsNewsSection />
-      <SiteFooter />
     </main>
   );
 }
@@ -1434,6 +1430,17 @@ function TrendsNewsSection() {
   );
 }
 
+const footerPolicyLinks = [
+  ["Privacy Policy", "https://www.hinkrokente.com/privacy-policy/"],
+  ["Bespoke Service Terms", "https://www.hinkrokente.com/terms-and-conditions-bespoke-service/"],
+  ["Lead Time & Rush Orders", "https://www.hinkrokente.com/lead-time-and-rush-orders/"],
+  ["Refund Policy", "https://www.hinkrokente.com/terms-and-conditions-refund-policy/"],
+  [
+    "Sample Strip & Pattern Development",
+    "https://www.hinkrokente.com/terms-and-conditions-sample-strip-policy-and-pattern-development/",
+  ],
+];
+
 function SiteFooter() {
   return (
     <>
@@ -1447,27 +1454,63 @@ function SiteFooter() {
       </section>
 
       <footer className="site-footer" aria-label="Website footer">
-        <nav className="footer-socials" aria-label="Hinkro Kente social media">
-          <a href="https://www.instagram.com/hinkrokente/" aria-label="Instagram">
-            <FooterSocialIcon type="instagram" />
-          </a>
-          <a href="https://web.facebook.com/hinkro" aria-label="Facebook">
-            <FooterSocialIcon type="facebook" />
-          </a>
-          <a href="https://www.pinterest.com/hinkrokente/" aria-label="Pinterest">
-            <FooterSocialIcon type="pinterest" />
-          </a>
-        </nav>
+        <div className="footer-main">
+          <section className="footer-institutional-copy" aria-labelledby="footer-about-title">
+            <p className="footer-eyebrow">Hinkro Kente Client Information</p>
+            <h2 id="footer-about-title">Traditional Kente, refined for modern milestones.</h2>
+            <p>
+              Hinkro Kente creates bespoke Kente fabrics, ready-to-wear designs,
+              ceremonial pieces, graduation stoles, bridal accessories, and curated
+              services for clients who value cultural meaning, careful finishing,
+              and a clear consultation process.
+            </p>
+          </section>
 
-        <p className="footer-copyright">
-          Copyright © Hinkro Kente 2026 All Rights Reserved. <a href="#terms">Terms of Use</a> and <a href="#privacy">Privacy Policy</a>
-        </p>
+          <div className="footer-divider" aria-hidden="true" />
 
-        <img
-          className="footer-payments"
-          src="/images/hinkro-kente-payment-options-paystack.svg"
-          alt="Payment options including Mastercard, Visa, MTN MoMo, Apple Pay, and AirtelTigo Money"
-        />
+          <section className="footer-client-note" aria-labelledby="footer-client-care-title">
+            <h3 id="footer-client-care-title">Client care notice</h3>
+            <p>
+              Before confirming a bespoke order, sample strip, rush request,
+              ready-to-wear purchase, or delivery arrangement, clients are encouraged
+              to review the policies below. These terms explain timelines, refund
+              conditions, privacy practices, pattern development expectations, and
+              the responsibilities that help every Hinkro Kente order move smoothly.
+            </p>
+          </section>
+
+          <nav className="footer-policy-links" aria-label="Important Hinkro Kente policies">
+            {footerPolicyLinks.map(([label, href]) => (
+              <a href={href} key={href}>
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          <nav className="footer-socials" aria-label="Hinkro Kente social media">
+            <a href="https://www.instagram.com/hinkrokente/" aria-label="Instagram">
+              <FooterSocialIcon type="instagram" />
+            </a>
+            <a href="https://web.facebook.com/hinkro" aria-label="Facebook">
+              <FooterSocialIcon type="facebook" />
+            </a>
+            <a href="https://www.pinterest.com/hinkrokente/" aria-label="Pinterest">
+              <FooterSocialIcon type="pinterest" />
+            </a>
+          </nav>
+        </div>
+
+        <div className="footer-bottom">
+          <p className="footer-copyright">
+            Copyright © Hinkro Kente 2026. All Rights Reserved.
+          </p>
+
+          <img
+            className="footer-payments"
+            src="/images/hinkro-kente-payment-options-paystack.svg"
+            alt="Payment options including Mastercard, Visa, MTN MoMo, Apple Pay, and AirtelTigo Money"
+          />
+        </div>
       </footer>
     </>
   );
