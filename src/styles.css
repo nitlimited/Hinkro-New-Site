@@ -2916,6 +2916,449 @@ button {
   transform: translateY(-3px);
 }
 
+.graduation-page {
+  min-height: 100vh;
+  color: white;
+  background: var(--deep-navy);
+}
+
+.graduation-hero {
+  position: relative;
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.graduation-hero-video {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.graduation-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.48), rgba(12, 33, 65, 0.72)),
+    radial-gradient(circle at center, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.38));
+}
+
+.graduation-hero-content {
+  display: grid;
+  width: min(100% - 52px, 1050px);
+  justify-items: center;
+  padding-top: 80px;
+  text-align: center;
+}
+
+.graduation-hero-content p,
+.graduation-intro > p,
+.graduation-gallery-heading p {
+  margin: 0 0 18px;
+  color: var(--gold-bright);
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.graduation-hero-content h1 {
+  max-width: 980px;
+  margin: 0;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(38px, 4vw, 70px);
+  font-weight: 800;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.graduation-hero-content span {
+  max-width: 760px;
+  margin-top: 28px;
+  color: rgba(255, 255, 255, 0.86);
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(16px, 1.05vw, 20px);
+  font-weight: 400;
+  line-height: 1.7;
+}
+
+.graduation-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 54px;
+}
+
+.graduation-hero-actions a,
+.graduation-feature-copy a,
+.graduation-final-cta a {
+  display: inline-flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 32px;
+  border-radius: 4px;
+  background: var(--gold-bright);
+  color: white;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    background 180ms ease,
+    transform 180ms ease;
+}
+
+.graduation-hero-actions a:nth-child(2) {
+  color: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.graduation-hero-actions a:hover,
+.graduation-feature-copy a:hover,
+.graduation-final-cta a:hover {
+  background: #ffae24;
+  transform: translateY(-2px);
+}
+
+.graduation-hero-actions a:nth-child(2):hover {
+  color: var(--gold-bright);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.graduation-intro {
+  display: grid;
+  justify-items: center;
+  padding: clamp(76px, 8vw, 130px) clamp(26px, 7vw, 150px);
+  text-align: center;
+}
+
+.graduation-intro h2 {
+  max-width: 980px;
+  margin: 0;
+  color: var(--gold-bright);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 4.4vw, 76px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.graduation-intro span {
+  max-width: 960px;
+  margin-top: 30px;
+  color: rgba(255, 255, 255, 0.78);
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(16px, 1.12vw, 20px);
+  font-weight: 400;
+  line-height: 1.82;
+}
+
+.graduation-feature {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.06fr);
+  min-height: clamp(620px, 44vw, 850px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.graduation-feature.is-reversed figure {
+  order: 2;
+}
+
+.graduation-feature figure {
+  margin: 0;
+  min-height: 100%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.graduation-feature img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.graduation-feature-copy {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: clamp(64px, 8vw, 160px) clamp(38px, 9vw, 180px);
+}
+
+.graduation-feature-copy h2 {
+  margin: 0;
+  color: var(--gold-bright);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(34px, 3vw, 58px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.05;
+}
+
+.graduation-feature-copy p {
+  max-width: 680px;
+  margin: 28px 0 0;
+  color: rgba(255, 255, 255, 0.82);
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(15px, 1vw, 18px);
+  font-weight: 400;
+  line-height: 1.82;
+}
+
+.graduation-feature-copy a {
+  min-width: 190px;
+  margin-top: 46px;
+}
+
+.graduation-faq-section {
+  padding: clamp(100px, 10vw, 160px) clamp(28px, 8vw, 160px) clamp(80px, 8vw, 120px);
+  background: var(--deep-navy);
+}
+
+.graduation-faq-section h2 {
+  margin: 0 0 clamp(46px, 5vw, 70px);
+  color: white;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(34px, 3.2vw, 56px);
+  font-style: italic;
+  font-weight: 800;
+  text-align: center;
+}
+
+.graduation-faq-list {
+  display: grid;
+  gap: 12px;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+}
+
+.graduation-faq-item {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.028);
+  transition:
+    border-color 240ms ease,
+    background 240ms ease,
+    transform 240ms ease;
+}
+
+.graduation-faq-item:hover {
+  border-color: rgba(245, 160, 24, 0.28);
+  background: rgba(255, 255, 255, 0.045);
+  transform: translateY(-2px);
+}
+
+.graduation-faq-item button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 19px 26px;
+  color: rgba(255, 255, 255, 0.96);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(16px, 1.05vw, 20px);
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: left;
+}
+
+.graduation-faq-item button > span:last-child {
+  flex: 0 0 auto;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 24px;
+  line-height: 1;
+  transition: transform 260ms ease;
+}
+
+.graduation-faq-item button[aria-expanded="true"] > span:last-child {
+  transform: rotate(180deg);
+}
+
+.graduation-faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.graduation-faq-answer.is-open {
+  grid-template-rows: 1fr;
+}
+
+.graduation-faq-answer p {
+  min-height: 0;
+  max-width: 900px;
+  margin: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.58);
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.75;
+}
+
+.graduation-faq-answer.is-open p {
+  padding: 0 60px 28px 26px;
+}
+
+.graduation-gallery-section {
+  padding: 0 clamp(26px, 7vw, 150px);
+  overflow: hidden;
+  background: var(--deep-navy);
+  color: white;
+}
+
+.graduation-gallery-heading {
+  position: relative;
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(76px, 7vw, 116px) 0 clamp(68px, 7vw, 102px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: center;
+}
+
+.graduation-gallery-heading::before {
+  content: "";
+  display: block;
+  width: min(100%, 1720px);
+  height: 1px;
+  margin: 0 auto clamp(72px, 7vw, 118px);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.graduation-gallery-heading h2 {
+  max-width: 1280px;
+  margin: 0 auto;
+  color: var(--gold-bright);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(38px, 3vw, 54px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.graduation-gallery-carousel {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  gap: 24px;
+  margin-right: calc(clamp(26px, 7vw, 150px) * -1);
+  margin-left: calc(clamp(26px, 7vw, 150px) * -1);
+  padding: 0 48px 48px;
+}
+
+.graduation-gallery-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.graduation-gallery-carousel figure {
+  position: relative;
+  flex: 0 0 clamp(260px, 22vw, 380px);
+  height: clamp(340px, 28vw, 480px);
+  margin: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  scroll-snap-align: center;
+  opacity: 0;
+  animation: trendPhotoIn 720ms cubic-bezier(0.22, 1, 0.36, 1) var(--trend-delay, 0ms) both;
+  transition:
+    box-shadow 320ms ease,
+    transform 320ms ease;
+}
+
+.graduation-gallery-carousel figure:nth-child(2) { --trend-delay: 90ms; }
+.graduation-gallery-carousel figure:nth-child(3) { --trend-delay: 180ms; }
+.graduation-gallery-carousel figure:nth-child(4) { --trend-delay: 270ms; }
+.graduation-gallery-carousel figure:nth-child(5) { --trend-delay: 360ms; }
+.graduation-gallery-carousel figure:nth-child(6) { --trend-delay: 450ms; }
+.graduation-gallery-carousel figure:nth-child(7) { --trend-delay: 540ms; }
+.graduation-gallery-carousel figure:nth-child(8) { --trend-delay: 630ms; }
+.graduation-gallery-carousel figure:nth-child(9) { --trend-delay: 720ms; }
+.graduation-gallery-carousel figure:nth-child(10) { --trend-delay: 810ms; }
+
+.graduation-gallery-carousel figure::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(12, 33, 65, 0.06) 20%, rgba(12, 33, 65, 0.5) 60%, #0c2141 100%),
+    radial-gradient(circle at 30% 20%, rgba(245, 160, 24, 0.15), transparent 40%);
+  opacity: 0.75;
+  transition: opacity 360ms ease;
+}
+
+.graduation-gallery-carousel figure:hover {
+  box-shadow: 0 32px 70px rgba(0, 0, 0, 0.32);
+  transform: translateY(-6px) scale(1.015);
+}
+
+.graduation-gallery-carousel figure:hover::after {
+  opacity: 0.88;
+}
+
+.graduation-gallery-carousel img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.graduation-gallery-carousel figure:hover img {
+  transform: scale(1.055);
+}
+
+.graduation-final-cta {
+  display: grid;
+  justify-items: center;
+  padding: clamp(76px, 8vw, 128px) clamp(26px, 7vw, 150px) clamp(86px, 9vw, 150px);
+  text-align: center;
+  background: var(--deep-navy);
+}
+
+.graduation-final-cta h2 {
+  max-width: 1480px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(30px, 3vw, 54px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.graduation-final-cta a {
+  min-width: 184px;
+  margin-top: 44px;
+  background: #2db742;
+}
+
+.graduation-final-cta a:hover {
+  background: #249a37;
+}
+
 .store-page,
 .product-detail-page {
   min-height: 100vh;
@@ -5054,6 +5497,31 @@ button {
   .accessories-dreams-copy {
     justify-self: center;
   }
+
+  .graduation-feature,
+  .graduation-feature.is-reversed {
+    grid-template-columns: 1fr;
+  }
+
+  .graduation-feature.is-reversed figure {
+    order: 0;
+  }
+
+  .graduation-feature {
+    min-height: auto;
+  }
+
+  .graduation-feature figure {
+    min-height: clamp(420px, 66vw, 620px);
+  }
+
+  .graduation-feature-copy {
+    min-height: clamp(420px, 66vw, 620px);
+    align-content: center;
+    justify-items: center;
+    padding: clamp(72px, 10vw, 118px) 32px;
+    text-align: center;
+  }
 }
 
 @media (max-width: 720px) {
@@ -5077,6 +5545,91 @@ button {
 
   .store-hero-stats {
     justify-content: flex-start;
+  }
+
+  .graduation-hero {
+    min-height: 88vh;
+  }
+
+  .graduation-hero-content {
+    width: calc(100% - 44px);
+    justify-items: start;
+    padding-top: 90px;
+    text-align: left;
+  }
+
+  .graduation-hero-content h1 {
+    font-size: 36px;
+  }
+
+  .graduation-hero-actions {
+    justify-content: flex-start;
+    margin-top: 38px;
+  }
+
+  .graduation-hero-actions a,
+  .graduation-feature-copy a,
+  .graduation-final-cta a {
+    width: 100%;
+  }
+
+  .graduation-intro {
+    padding: 58px 22px;
+    text-align: left;
+    justify-items: start;
+  }
+
+  .graduation-intro h2 {
+    font-size: 40px;
+  }
+
+  .graduation-feature figure {
+    min-height: clamp(390px, 120vw, 520px);
+  }
+
+  .graduation-feature-copy {
+    min-height: clamp(390px, 120vw, 520px);
+    align-content: center;
+    justify-items: start;
+    padding: clamp(70px, 18vw, 96px) 24px;
+    text-align: left;
+  }
+
+  .graduation-faq-section {
+    padding: 58px 22px;
+  }
+
+  .graduation-faq-item button {
+    padding: 18px 18px;
+    font-size: 18px;
+  }
+
+  .graduation-faq-answer.is-open p {
+    padding: 0 18px 22px;
+  }
+
+  .graduation-gallery-heading {
+    padding: 58px 0 56px;
+    text-align: center;
+  }
+
+  .graduation-gallery-heading::before {
+    margin-bottom: 48px;
+  }
+
+  .graduation-gallery-carousel {
+    margin-right: -22px;
+    margin-left: -22px;
+    padding: 0 22px 42px;
+  }
+
+  .graduation-gallery-carousel figure {
+    flex-basis: min(78vw, 340px);
+    height: 380px;
+  }
+
+  .graduation-final-cta {
+    padding: 60px 22px 78px;
   }
 
   .store-controls {

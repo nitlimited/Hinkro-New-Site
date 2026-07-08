@@ -134,6 +134,112 @@ const trendsNewsImages = [
   },
 ];
 
+const graduationStoleImages = [
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-university-of-ghana-deborah.jpg",
+    alt: "University of Ghana graduate wearing a custom Kente Graduation Stole",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-custom-name-closeup.jpg",
+    alt: "Close-up of a personalized Kente Graduation Stole with embroidered name",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-red-dress-portrait.jpg",
+    alt: "Graduate in red dress wearing a black authentic Kente Graduation Stole",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-business-admin-portrait.jpg",
+    alt: "Business Administration graduate wearing a personalized Kente Graduation Stole",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-group-green-campus.jpg",
+    alt: "Group of graduates wearing African Kente Graduation Stoles on campus",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-group-honours-campus.jpg",
+    alt: "Graduates in formal wear with authentic Kente Graduation Stoles and medals",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-english-graduate.jpg",
+    alt: "Female graduate smiling in cap and gown with a Kente Graduation Stole",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-personalized-name.jpg",
+    alt: "Graduate presenting a personalized Kente Graduation Stole and sash",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-jeffery-suit.jpg",
+    alt: "Male graduate in suit wearing a black and gold Kente Graduation Stole",
+  },
+  {
+    src: "/images/graduation-stole/kente-graduation-stole-koforidua-technical-university-portrait.jpg",
+    alt: "Koforidua Technical University graduate wearing a custom Kente Graduation Stole",
+  },
+];
+
+const graduationFeatureSections = [
+  {
+    title: "Authentic Craftsmanship",
+    cta: "Design Process",
+    image: graduationStoleImages[0],
+    text: "Every Kente Graduation Stole and sash is woven with patient craftsmanship, rich Ghanaian heritage, and ceremonial detail. Hinkro Kente creates graduation stoles that feel personal, photograph beautifully, and carry the pride of your academic journey.",
+  },
+  {
+    title: "Premium Quality",
+    image: graduationStoleImages[1],
+    text: "Our Kente Graduation Stole pieces are made with premium yarns, durable finishing, clean embroidery, and carefully selected colors. The result is a graduation sash that remains elegant in portraits, procession photos, family celebrations, and keepsake memories.",
+  },
+  {
+    title: "Unique Designs",
+    cta: "Bespoke",
+    image: graduationStoleImages[9],
+    text: "Choose your school colors, program details, name, class year, institutional crest, symbols, stripes, and custom Kente patterns. A personalized Kente Graduation Stole lets every graduate celebrate achievement with identity and meaning.",
+  },
+  {
+    title: "Perfect for Photos",
+    image: graduationStoleImages[3],
+    text: "A Hinkro Kente Graduation Stole gives your graduation pictures a bold cultural statement. Whether you are taking studio portraits, campus photos, family images, or convocation shots, the stole completes your look with elegance.",
+  },
+];
+
+const graduationFaqItems = [
+  {
+    question: "What is a Kente Graduation Stole?",
+    answer:
+      "A Kente Graduation Stole is a ceremonial sash worn over a graduation gown to represent achievement, heritage, school pride, and personal identity. Hinkro Kente creates authentic African Kente Graduation Stoles with custom colors, names, programs, crests, and class details.",
+  },
+  {
+    question: "Who wears a Kente Graduation Stole or sash?",
+    answer:
+      "Graduates from universities, colleges, high schools, professional programs, and student associations wear Kente Graduation Stoles. They are also popular for group orders, class sets, departments, international students, and Ghanaian or African graduation celebrations.",
+  },
+  {
+    question: "How do you make the Kente Graduation Stole?",
+    answer:
+      "We begin with your preferred colors, wording, symbols, crest, and design direction. The Kente is woven and finished by skilled artisans, then personalized with the graduate’s details so the final stole or sash feels distinctive and photo-ready.",
+  },
+  {
+    question: "How can I order a Kente Graduation Stole for myself?",
+    answer:
+      "Use the WhatsApp order button on this page to send us your school, program, name, colors, deadline, and quantity. Our team will confirm the design direction, lead time, pricing, and delivery options before production begins.",
+  },
+  {
+    question: "How long does it take to finish a Kente Graduation Stole?",
+    answer:
+      "Lead time depends on the design complexity, quantity, season, and rush-order availability. We recommend ordering early before graduation season so your Kente Graduation Stole can be woven, personalized, reviewed, and delivered without pressure.",
+  },
+  {
+    question: "What is the price for a Kente Graduation Stole or sash?",
+    answer:
+      "Pricing depends on the size, design complexity, embroidery, crest work, quantity, and deadline. Message Hinkro Kente on WhatsApp with your preferred Kente Graduation Stole details and we will provide the right estimate.",
+  },
+  {
+    question: "Do you ship Kente Graduation Stoles abroad?",
+    answer:
+      "Yes. Hinkro Kente supports local and international clients. Share your destination and deadline when you order so we can advise on production timing and delivery arrangements for your graduation stole or sash.",
+  },
+];
+
 const designProcessSteps = [
   {
     number: "1",
@@ -507,6 +613,16 @@ function getWhatsAppUrl(product) {
   return `https://wa.me/${WHATSAPP_ORDER_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
+function getGraduationOrderUrl() {
+  const message = [
+    "Hello Hinkro Kente, I am interested in ordering a Kente Graduation Stole or sash.",
+    "Page: https://www.hinkrokente.com/authentic-african-kente-graduation-stole-sashe/",
+    "Please share design options, pricing, lead time, and delivery details.",
+  ].join("\n");
+
+  return `https://wa.me/${WHATSAPP_ORDER_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
 function cleanStoreCopy(text = "") {
   return text
     .replace(/\[njwa_button[^\]]*\]/gi, "")
@@ -539,17 +655,18 @@ function usePageSeo(title, description, keywords = []) {
 
 function getCurrentPage() {
   const path = window.location.pathname;
+  if (path === "/authentic-african-kente-graduation-stole-sashe/") return "graduation";
   if (path === "/authentic-kente-fabric/" || path.startsWith("/product/")) return "store";
 
   const hash = window.location.hash.replace("#", "");
-  if (["tradition", "design", "bespoke", "accessories", "store"].includes(hash)) return hash;
+  if (["tradition", "design", "bespoke", "accessories", "store", "graduation"].includes(hash)) return hash;
   if (hash.startsWith("store/")) return "store";
   return "home";
 }
 
 function Header({ currentPage }) {
   const [open, setOpen] = useState(false);
-  const isHome = currentPage === "home";
+  const isHome = currentPage === "home" || currentPage === "graduation";
 
   return (
     <header className={`site-header ${isHome ? "home-header" : "inner-header"}`}>
@@ -695,6 +812,152 @@ function AccessoriesPage() {
       </section>
       <TrendsNewsSection />
     </main>
+  );
+}
+
+function GraduationStolePage() {
+  usePageSeo(
+    "Kente Graduation Stole and Sash | Authentic African Graduation Stoles | Hinkro Kente",
+    "Order an authentic Kente Graduation Stole or sash from Hinkro Kente. Custom African graduation stoles with names, school colors, crests, class year, symbols, and rush-order guidance.",
+    [
+      "Kente Graduation Stole",
+      "Kente Graduation Sash",
+      "African Kente Graduation Stole",
+      "custom graduation stole Ghana",
+      "personalized Kente graduation sash",
+      "Hinkro Kente graduation stole",
+    ],
+  );
+
+  return (
+    <main className="graduation-page">
+      <section className="graduation-hero" aria-labelledby="graduation-title">
+        <video
+          className="graduation-hero-video"
+          src="/videos/kente-graduation-stole-sash-hero-video.mp4"
+          poster={graduationStoleImages[2].src}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+        <div className="graduation-hero-overlay" aria-hidden="true" />
+        <div className="graduation-hero-content">
+          <p>Kente Graduation Stole and Sash</p>
+          <h1 id="graduation-title">
+            Celebrate your achievements with authentic Kente Graduation Stoles and Sashes.
+          </h1>
+          <span>
+            Each Kente Graduation Stole is woven with African artistry, personalized
+            with meaning, and designed to help graduates stand out with pride,
+            culture, and confidence.
+          </span>
+          <div className="graduation-hero-actions">
+            <a href={getGraduationOrderUrl()}>
+              Get Started <span aria-hidden="true">→</span>
+            </a>
+            <a href="#graduation-faq">View FAQ</a>
+          </div>
+        </div>
+      </section>
+
+      <section className="graduation-intro" aria-labelledby="graduation-intro-title">
+        <p>Kente Graduation Stole</p>
+        <h2 id="graduation-intro-title">
+          A graduation stole that carries your school, story, colors, and heritage.
+        </h2>
+        <span>
+          Hinkro Kente designs Kente Graduation Stoles and sashes for individual
+          graduates, departments, associations, class groups, and international
+          clients. From institutional crests and class years to names, programs,
+          symbols, and colors, every Kente Graduation Stole is made to feel
+          ceremonial, personal, and ready for the big day.
+        </span>
+      </section>
+
+      <section className="graduation-features" aria-label="Kente Graduation Stole features">
+        {graduationFeatureSections.map((feature, index) => (
+          <article
+            className={`graduation-feature ${index % 2 === 1 ? "is-reversed" : ""}`}
+            key={feature.title}
+          >
+            <figure>
+              <img src={feature.image.src} alt={feature.image.alt} />
+            </figure>
+            <div className="graduation-feature-copy">
+              <h2>{feature.title}</h2>
+              <p>{feature.text}</p>
+              {feature.cta && (
+                <a href={feature.cta === "Bespoke" ? "#bespoke" : "#design"}>
+                  {feature.cta} <span aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <GraduationFaqSection />
+      <GraduationGalleryCarousel />
+
+      <section className="graduation-final-cta" aria-labelledby="graduation-final-title">
+        <h2 id="graduation-final-title">
+          Order your African Kente Graduation Stole and sash, make a statement on your big day,
+          and create memories that last a lifetime.
+        </h2>
+        <a href={getGraduationOrderUrl()}>
+          <WhatsAppIcon />
+          Order Now
+        </a>
+      </section>
+    </main>
+  );
+}
+
+function GraduationFaqSection() {
+  const [openFaq, setOpenFaq] = useState(0);
+
+  return (
+    <section className="graduation-faq-section" id="graduation-faq" aria-labelledby="graduation-faq-title">
+      <h2 id="graduation-faq-title">FAQ</h2>
+      <div className="graduation-faq-list">
+        {graduationFaqItems.map((item, index) => (
+          <article className="graduation-faq-item" key={item.question}>
+            <button
+              type="button"
+              aria-expanded={openFaq === index}
+              onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+            >
+              <span>{String(index + 1).padStart(2, "0")}. {item.question}</span>
+              <span aria-hidden="true">⌄</span>
+            </button>
+            <div className={openFaq === index ? "graduation-faq-answer is-open" : "graduation-faq-answer"}>
+              <p>{item.answer}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function GraduationGalleryCarousel() {
+  const loopImages = [...graduationStoleImages.slice(4), ...graduationStoleImages.slice(0, 4)];
+
+  return (
+    <section className="graduation-gallery-section" aria-labelledby="graduation-gallery-title">
+      <div className="graduation-gallery-heading">
+        <p>Kente Graduation Stole gallery</p>
+        <h2 id="graduation-gallery-title">See how graduates wear the story.</h2>
+      </div>
+      <div className="graduation-gallery-carousel" aria-label="Kente Graduation Stole image carousel">
+        {loopImages.map((image, index) => (
+          <figure key={`${image.src}-${index}`}>
+            <img src={image.src} alt={image.alt} loading="lazy" />
+          </figure>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -2033,6 +2296,8 @@ function App() {
         <BespokePage />
       ) : currentPage === "accessories" ? (
         <AccessoriesPage />
+      ) : currentPage === "graduation" ? (
+        <GraduationStolePage />
       ) : currentPage === "store" ? (
         <StorePage productSlug={productSlug} />
       ) : (
