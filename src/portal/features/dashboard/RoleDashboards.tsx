@@ -37,6 +37,7 @@ export function AdminDashboard() {
   const { projects } = useProjects({ role: "admin" });
   const { clients } = useClients();
   const { team } = useTeam();
+  const { products } = useCatalogProducts({});
 
   const active = projects.filter((p) => !p.actual_completion && !p.is_paused);
   const completed = projects.filter((p) => p.actual_completion);
@@ -52,6 +53,7 @@ export function AdminDashboard() {
     ["Delayed projects", delayed.length],
     ["Total clients", clients.length],
     ["Total weavers", weavers.length],
+    ["Total products", products.length],
   ];
 
   return (
