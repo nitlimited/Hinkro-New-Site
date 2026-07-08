@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/portal/:path*", "destination": "/index.html" },
+    { "source": "/product/:path*", "destination": "/index.html" },
+    { "source": "/authentic-kente-fabric/", "destination": "/index.html" },
+    { "source": "/authentic-african-kente-graduation-stole-sashe/", "destination": "/index.html" }
+  ]
+}

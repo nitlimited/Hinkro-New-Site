@@ -2308,4 +2308,17 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("root")).render(<App />);
+// The management portal is a separate, lazy-loaded bundle. Public visitors
+// never download it; the public site above stays untouched.
+const PortalApp = React.lazy(() => import("./portal/index.tsx"));
+const isPortal = window.location.pathname.startsWith("/portal");
+
+createRoot(document.getElementById("root")).render(
+  isPortal ? (
+    <React.Suspense fallback={null}>
+      <PortalApp />
+    </React.Suspense>
+  ) : (
+    <App />
+  ),
+);
