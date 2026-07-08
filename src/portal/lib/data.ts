@@ -78,18 +78,156 @@ function useDemoVersion(active: boolean) {
 
 /* ================= queries ================= */
 
-export function useStages(): StageRow[] {
-  const [rows, setRows] = useState<StageRow[]>(demoStages);
+export function useStages(opts?: { includeInactive?: boolean }): StageRow[] {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [rows, setRows] = useState<StageRow[]>([]);
+  const [refreshKey, setRefreshKey] = useState(0);
+
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return;
-    supabase
-      .from("workflow_stages")
-      .select("*")
-      .eq("is_active", true)
-      .order("position")
-      .then(({ data }) => data && setRows(data as StageRow[]));
-  }, []);
+    if (demo) {
+      setRows(
+        demoStages
+          .filter((s) => opts?.includeInactive || s.is_active)
+          .slice()
+          .sort((a, b) => a.position - b.position),
+      );
+      return;
+    }
+    if (!supabase) return;
+    let query = supabase.from("workflow_stages").select("*").order("position");
+    if (!opts?.includeInactive) query = query.eq("is_active", true);
+    query.then(({ data }) => data && setRows(data as StageRow[]));
+    return subscribeStageRefresh(() => setRefreshKey((k) => k + 1));
+  }, [demo, demoV, opts?.includeInactive, refreshKey]);
+
   return rows;
+}
+
+/* stage mutations notify all useStages instances in real mode */
+const stageListeners = new Set<() => void>();
+function subscribeStageRefresh(fn: () => void) {
+  stageListeners.add(fn);
+  return () => {
+    stageListeners.delete(fn);
+  };
+}
+
+export async function saveStage(
+  input: Partial<StageRow> & { name: string },
+): Promise<void> {
+  if (!isSupabaseConfigured) {
+    if (input.id) {
+      const s = demoStages.find((x) => x.id === input.id);
+      if (s) Object.assign(s, input);
+    } else {
+      demoStages.push({
+        id: demoId("stage"),
+        name: input.name,
+        position: demoStages.length + 1,
+        is_active: true,
+      });
+    }
+    emitDemo();
+    return;
+  }
+  if (input.id) {
+    const { error } = await supabase!
+      .from("workflow_stages")
+      .update({
+        name: input.name,
+        ...(input.position != null ? { position: input.position } : {}),
+        ...(input.is_active != null ? { is_active: input.is_active } : {}),
+      })
+      .eq("id", input.id);
+    if (error) throw error;
+  } else {
+    const { data: last } = await supabase!
+      .from("workflow_stages")
+      .select("position")
+      .order("position", { ascending: false })
+      .limit(1)
+      .single();
+    const { error } = await supabase!.from("workflow_stages").insert({
+      name: input.name,
+      position: (last?.position ?? 0) + 1,
+    });
+    if (error) throw error;
+  }
+  stageListeners.forEach((fn) => fn());
+}
+
+export async function swapStagePositions(a: StageRow, b: StageRow): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const sa = demoStages.find((x) => x.id === a.id);
+    const sb = demoStages.find((x) => x.id === b.id);
+    if (sa && sb) [sa.position, sb.position] = [sb.position, sa.position];
+    emitDemo();
+    return;
+  }
+  await supabase!.from("workflow_stages").update({ position: b.position }).eq("id", a.id);
+  await supabase!.from("workflow_stages").update({ position: a.position }).eq("id", b.id);
+  stageListeners.forEach((fn) => fn());
+}
+
+export interface AuditLogRow {
+  id: string;
+  actor_id: string | null;
+  action: string;
+  entity_type: string;
+  entity_id: string | null;
+  created_at: string;
+  actor?: { full_name: string } | null;
+}
+
+const demoAuditLogs: AuditLogRow[] = [
+  { id: "au-1", actor_id: "demo-user", action: "update", entity_type: "projects", entity_id: "pr-1", created_at: new Date(Date.now() - 3 * 3600000).toISOString(), actor: { full_name: "Ama Serwaa (Demo)" } },
+  { id: "au-2", actor_id: "weaver-1", action: "insert", entity_type: "project_updates", entity_id: "up-4", created_at: new Date(Date.now() - 4 * 3600000).toISOString(), actor: { full_name: "Kwabena Owusu" } },
+  { id: "au-3", actor_id: "demo-user", action: "insert", entity_type: "products", entity_id: "4299", created_at: new Date(Date.now() - 26 * 3600000).toISOString(), actor: { full_name: "Ama Serwaa (Demo)" } },
+  { id: "au-4", actor_id: "demo-user", action: "update", entity_type: "profiles", entity_id: "weaver-2", created_at: new Date(Date.now() - 50 * 3600000).toISOString(), actor: { full_name: "Ama Serwaa (Demo)" } },
+];
+
+export function useAuditLogs(): { logs: AuditLogRow[]; loading: boolean } {
+  const demo = !isSupabaseConfigured;
+  const [logs, setLogs] = useState<AuditLogRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (demo) {
+      setLogs(demoAuditLogs);
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("audit_logs")
+      .select("*, actor:profiles(full_name)")
+      .order("created_at", { ascending: false })
+      .limit(100)
+      .then(({ data }) => {
+        setLogs((data as unknown as AuditLogRow[]) ?? []);
+        setLoading(false);
+      });
+  }, [demo]);
+
+  return { logs, loading };
+}
+
+export async function updateProfileFields(
+  profileId: string,
+  patch: { status?: "active" | "suspended"; role?: UserRole },
+): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const p = demoProfiles.find((x) => x.id === profileId);
+    if (p) Object.assign(p, patch);
+    emitDemo();
+    return;
+  }
+  const { error } = await supabase!
+    .from("profiles")
+    .update(patch)
+    .eq("id", profileId);
+  if (error) throw error;
 }
 
 export function useProjects(opts: {

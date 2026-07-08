@@ -37,6 +37,33 @@ import type {
   PublishStatus,
 } from "../../lib/rows";
 import { EmptyState, Field, Modal, formatDate } from "../../components/ui";
+import { SeoPanel, SeoScoreChip } from "../../components/SeoPanel";
+import { analyzeSeo, type SchemaType } from "../../lib/seo";
+
+/** Compute the stored score for list rows (uses saved fields only). */
+function productSeoScore(p: ProductRow): number {
+  return analyzeSeo({
+    focusKeyword: String(p.seo?.focus_keyword ?? ""),
+    seoTitle: String(p.seo?.title ?? ""),
+    seoDescription: String(p.seo?.description ?? ""),
+    urlPath: publicProductPath(p.slug),
+    content: `${p.short_description ?? ""}\n\n${p.description ?? ""}`,
+    imageAlts: (p.images ?? []).map((i) => i.alt ?? ""),
+    usedKeywords: [],
+  }).score;
+}
+
+function blogSeoScore(p: BlogPostRow): number {
+  return analyzeSeo({
+    focusKeyword: String(p.seo?.focus_keyword ?? ""),
+    seoTitle: String(p.seo?.title ?? ""),
+    seoDescription: String(p.seo?.description ?? ""),
+    urlPath: `/blog/${p.slug}/`,
+    content: p.content ?? "",
+    imageAlts: p.featured_image ? [p.title] : [],
+    usedKeywords: [],
+  }).score;
+}
 
 const slugify = (value: string) =>
   value.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -124,10 +151,12 @@ function ProductEditor({
   product,
   isAccessory,
   onClose,
+  usedKeywords = [],
 }: {
   product?: ProductRow;
   isAccessory: boolean;
   onClose: () => void;
+  usedKeywords?: string[];
 }) {
   const [name, setName] = useState(product?.name ?? "");
   const [slug, setSlug] = useState(product?.slug ?? "");
@@ -140,6 +169,10 @@ function ProductEditor({
   const [description, setDescription] = useState(product?.description ?? "");
   const [seoTitle, setSeoTitle] = useState(String(product?.seo?.title ?? ""));
   const [seoDescription, setSeoDescription] = useState(String(product?.seo?.description ?? ""));
+  const [focusKeyword, setFocusKeyword] = useState(String(product?.seo?.focus_keyword ?? ""));
+  const [schemaType, setSchemaType] = useState<SchemaType>(
+    (product?.seo?.schema_type as SchemaType) ?? "Product",
+  );
   const [status, setStatus] = useState<PublishStatus>(product?.status ?? "draft");
   const [featured, setFeatured] = useState(product?.is_featured ?? false);
   const [images, setImages] = useState<ProductImageRow[]>(
@@ -242,7 +275,12 @@ function ProductEditor({
       },
       short_description: shortDescription,
       description,
-      seo: { title: seoTitle, description: seoDescription },
+      seo: {
+        title: seoTitle,
+        description: seoDescription,
+        focus_keyword: focusKeyword,
+        schema_type: schemaType,
+      },
       images: images
         .filter((image) => image.src.trim())
         .map((image, index) => ({ ...image, position: index })),
@@ -318,6 +356,28 @@ function ProductEditor({
           <Field label="SEO title"><input value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} /></Field>
           <Field label="SEO description"><input value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} /></Field>
         </div>
+        <SeoPanel
+          focusKeyword={focusKeyword}
+          onFocusKeywordChange={setFocusKeyword}
+          schemaType={schemaType}
+          onSchemaTypeChange={setSchemaType}
+          input={{
+            seoTitle,
+            seoDescription,
+            urlPath: publicProductPath(slug || slugify(name)),
+            content: `${shortDescription}\n\n${description}`,
+            imageAlts: images.map((i) => i.alt ?? ""),
+            usedKeywords,
+          }}
+          schemaFields={{
+            name,
+            description: seoDescription || shortDescription,
+            url: publicProductPath(slug || slugify(name)),
+            image: images[0]?.src || undefined,
+            priceGhs: ghs ? Number(ghs) : null,
+            priceUsd: usd ? Number(usd) : null,
+          }}
+        />
         <div className="portal-form-row">
           <Field label="Status">
             <select value={status} onChange={(e) => setStatus(e.target.value as PublishStatus)}>
@@ -389,7 +449,7 @@ export function ProductsPage({ accessories = false }: { accessories?: boolean })
       {!loading && filtered.length === 0 ? <EmptyState title="No listings found" body="Create a listing or adjust the filter." /> : (
         <div className="portal-card portal-table-card">
           <table className="portal-table">
-            <thead><tr><th>Image</th><th>Listing</th><th>Category</th><th>Price</th><th>Status</th><th>Featured</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Image</th><th>Listing</th><th>Category</th><th>Price</th><th>SEO</th><th>Status</th><th>Featured</th><th>Actions</th></tr></thead>
             <tbody>
               {pagedProducts.map((p) => (
                 <tr key={p.id}>
@@ -401,6 +461,7 @@ export function ProductsPage({ accessories = false }: { accessories?: boolean })
                   <td><strong>{p.name}</strong><span className="portal-muted-line">{p.slug}</span></td>
                   <td>{p.categories.slice(0, 2).join(", ") || "-"}</td>
                   <td>{String((p.prices?.ghana as { min?: number } | undefined)?.min ?? "-")} GHS / {String((p.prices?.international as { min?: number } | undefined)?.min ?? "-")} USD</td>
+                  <td><SeoScoreChip score={productSeoScore(p)} /></td>
                   <td><StatusBadge status={p.status} /></td>
                   <td>{p.is_featured ? "Yes" : "No"}</td>
                   <td>
@@ -417,12 +478,30 @@ export function ProductsPage({ accessories = false }: { accessories?: boolean })
           <Pager page={page} totalPages={totalPages} onPageChange={setPage} />
         </div>
       )}
-      {editing && <ProductEditor product={editing === "new" ? undefined : editing} isAccessory={accessories} onClose={() => setEditing(null)} />}
+      {editing && (
+        <ProductEditor
+          product={editing === "new" ? undefined : editing}
+          isAccessory={accessories}
+          onClose={() => setEditing(null)}
+          usedKeywords={products
+            .filter((p) => editing === "new" || p.id !== editing.id)
+            .map((p) => String(p.seo?.focus_keyword ?? ""))
+            .filter(Boolean)}
+        />
+      )}
     </section>
   );
 }
 
-function BlogEditor({ post, onClose }: { post?: BlogPostRow; onClose: () => void }) {
+function BlogEditor({
+  post,
+  onClose,
+  usedKeywords = [],
+}: {
+  post?: BlogPostRow;
+  onClose: () => void;
+  usedKeywords?: string[];
+}) {
   const { profile } = useAuth();
   const [title, setTitle] = useState(post?.title ?? "");
   const [slug, setSlug] = useState(post?.slug ?? "");
@@ -433,6 +512,10 @@ function BlogEditor({ post, onClose }: { post?: BlogPostRow; onClose: () => void
   const [publishAt, setPublishAt] = useState(post?.publish_at?.slice(0, 16) ?? "");
   const [seoTitle, setSeoTitle] = useState(String(post?.seo?.title ?? ""));
   const [seoDescription, setSeoDescription] = useState(String(post?.seo?.description ?? ""));
+  const [focusKeyword, setFocusKeyword] = useState(String(post?.seo?.focus_keyword ?? ""));
+  const [schemaType, setSchemaType] = useState<SchemaType>(
+    (post?.seo?.schema_type as SchemaType) ?? "BlogPosting",
+  );
 
   const submit = async (nextStatus = status) => {
     await saveBlogPost({
@@ -444,7 +527,12 @@ function BlogEditor({ post, onClose }: { post?: BlogPostRow; onClose: () => void
       featured_image: featuredImage,
       status: nextStatus,
       publish_at: publishAt ? new Date(publishAt).toISOString() : null,
-      seo: { title: seoTitle, description: seoDescription },
+      seo: {
+        title: seoTitle,
+        description: seoDescription,
+        focus_keyword: focusKeyword,
+        schema_type: schemaType,
+      },
     }, profile?.id ?? "demo-user");
     onClose();
   };
@@ -473,6 +561,28 @@ function BlogEditor({ post, onClose }: { post?: BlogPostRow; onClose: () => void
           <Field label="SEO title"><input value={seoTitle} onChange={(e) => setSeoTitle(e.target.value)} /></Field>
           <Field label="SEO description"><input value={seoDescription} onChange={(e) => setSeoDescription(e.target.value)} /></Field>
         </div>
+        <SeoPanel
+          focusKeyword={focusKeyword}
+          onFocusKeywordChange={setFocusKeyword}
+          schemaType={schemaType}
+          onSchemaTypeChange={setSchemaType}
+          input={{
+            seoTitle: seoTitle || title,
+            seoDescription: seoDescription || excerpt,
+            urlPath: `/blog/${slug || slugify(title)}/`,
+            content,
+            imageAlts: featuredImage ? [title] : [],
+            usedKeywords,
+          }}
+          schemaFields={{
+            name: seoTitle || title,
+            description: seoDescription || excerpt,
+            url: `/blog/${slug || slugify(title)}/`,
+            image: featuredImage || undefined,
+            author: "Hinkro Kente",
+            datePublished: publishAt ? new Date(publishAt).toISOString() : undefined,
+          }}
+        />
         <div className="portal-actions">
           <button className="portal-btn-secondary" type="button" onClick={onClose}>Cancel</button>
           <button className="portal-btn-primary portal-btn-sm" type="submit">Save</button>
@@ -516,7 +626,7 @@ export function BlogPage() {
         {pagedPosts.map((post) => (
           <article className="portal-card portal-content-card" key={post.id}>
             {post.featured_image && <img src={post.featured_image} alt="" />}
-            <div><StatusBadge status={post.status} /><span className="portal-muted-line">{formatDate(post.publish_at ?? post.created_at)}</span></div>
+            <div><StatusBadge status={post.status} /><SeoScoreChip score={blogSeoScore(post)} /><span className="portal-muted-line">{formatDate(post.publish_at ?? post.created_at)}</span></div>
             <h3>{post.title}</h3>
             <p>{post.excerpt}</p>
             <div className="portal-card-actions">
@@ -528,7 +638,16 @@ export function BlogPage() {
         ))}
       </div>
       <Pager page={page} totalPages={totalPages} onPageChange={setPage} />
-      {editing && <BlogEditor post={editing === "new" ? undefined : editing} onClose={() => setEditing(null)} />}
+      {editing && (
+        <BlogEditor
+          post={editing === "new" ? undefined : editing}
+          onClose={() => setEditing(null)}
+          usedKeywords={posts
+            .filter((p) => editing === "new" || p.id !== editing.id)
+            .map((p) => String(p.seo?.focus_keyword ?? ""))
+            .filter(Boolean)}
+        />
+      )}
     </section>
   );
 }

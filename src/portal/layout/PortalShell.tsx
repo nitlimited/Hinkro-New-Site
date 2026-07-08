@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
+  BarChart3,
   Bell,
   FileText,
   FolderKanban,
@@ -41,6 +42,7 @@ const NAV: Record<string, NavEntry[]> = {
     { to: "/portal/admin/media", label: "Media library", icon: <Image size={18} /> },
     { to: "/portal/admin/categories", label: "Categories", icon: <ListTree size={18} /> },
     { to: "/portal/admin/messages", label: "Messages", icon: <MessageSquare size={18} /> },
+    { to: "/portal/admin/reports", label: "Reports", icon: <BarChart3 size={18} /> },
     { to: "/portal/admin/settings", label: "Settings", icon: <Settings size={18} /> },
   ],
   content: [

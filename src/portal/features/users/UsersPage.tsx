@@ -1,7 +1,9 @@
-import React from "react";
-import { useTeam } from "../../lib/data";
+import React, { useState } from "react";
+import { useAuth } from "../../auth/useAuth";
+import { updateProfileFields, useTeam } from "../../lib/data";
 import { isSupabaseConfigured } from "../../lib/supabaseClient";
 import { formatDate } from "../../components/ui";
+import type { UserRole } from "../../types";
 
 const ROLE_LABEL: Record<string, string> = {
   super_admin: "Super Admin",
@@ -12,8 +14,32 @@ const ROLE_LABEL: Record<string, string> = {
   client: "Client",
 };
 
+const ASSIGNABLE_ROLES: UserRole[] = [
+  "admin",
+  "editor",
+  "content_manager",
+  "weaver",
+];
+
 export function UsersPage() {
+  const { profile } = useAuth();
   const { team } = useTeam();
+  const [busyId, setBusyId] = useState("");
+  const isSuperAdmin = profile?.role === "super_admin";
+
+  const toggleStatus = async (id: string, status: string) => {
+    setBusyId(id);
+    await updateProfileFields(id, {
+      status: status === "active" ? "suspended" : "active",
+    });
+    setBusyId("");
+  };
+
+  const changeRole = async (id: string, role: UserRole) => {
+    setBusyId(id);
+    await updateProfileFields(id, { role });
+    setBusyId("");
+  };
 
   return (
     <section>
@@ -30,8 +56,9 @@ export function UsersPage() {
       {!isSupabaseConfigured && (
         <div className="portal-alert" style={{ marginBottom: 16 }}>
           In preview mode this list is sample data. Once the backend is
-          connected, new team members are invited by email from here (via the
-          admin-create-user function), and only Super Admins can change roles.
+          connected, new team members are invited by email (via the
+          admin-create-user function). Role changes are restricted to Super
+          Admins and enforced by the database.
         </div>
       )}
 
@@ -44,22 +71,58 @@ export function UsersPage() {
               <th>Role</th>
               <th>Status</th>
               <th>Joined</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {team.map((member) => (
-              <tr key={member.id}>
-                <td className="portal-td-strong">{member.full_name}</td>
-                <td>{member.email}</td>
-                <td>
-                  <span className="portal-stage">
-                    {ROLE_LABEL[member.role] ?? member.role}
-                  </span>
-                </td>
-                <td>{member.status === "active" ? "Active" : "Suspended"}</td>
-                <td>{formatDate(member.created_at)}</td>
-              </tr>
-            ))}
+            {team.map((member) => {
+              const isSelf = member.id === profile?.id;
+              return (
+                <tr
+                  key={member.id}
+                  style={{ opacity: member.status === "active" ? 1 : 0.55 }}
+                >
+                  <td className="portal-td-strong">{member.full_name}</td>
+                  <td>{member.email}</td>
+                  <td>
+                    {isSuperAdmin && !isSelf && member.role !== "super_admin" ? (
+                      <select
+                        className="portal-inline-input"
+                        value={member.role}
+                        disabled={busyId === member.id}
+                        onChange={(e) =>
+                          void changeRole(member.id, e.target.value as UserRole)
+                        }
+                      >
+                        {ASSIGNABLE_ROLES.map((r) => (
+                          <option key={r} value={r}>
+                            {ROLE_LABEL[r]}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <span className="portal-stage">
+                        {ROLE_LABEL[member.role] ?? member.role}
+                      </span>
+                    )}
+                  </td>
+                  <td>{member.status === "active" ? "Active" : "Suspended"}</td>
+                  <td>{formatDate(member.created_at)}</td>
+                  <td>
+                    {!isSelf && member.role !== "super_admin" && (
+                      <button
+                        className="portal-btn-secondary"
+                        type="button"
+                        disabled={busyId === member.id}
+                        onClick={() => void toggleStatus(member.id, member.status)}
+                      >
+                        {member.status === "active" ? "Suspend" : "Reactivate"}
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

@@ -22,6 +22,8 @@ import { UsersPage } from "./features/users/UsersPage";
 import { NotificationsPage } from "./features/notifications/NotificationsPage";
 import { MessagesPage } from "./features/messages/MessagesPage";
 import { ComingSoon } from "./features/ComingSoon";
+import { SettingsPage } from "./features/settings/SettingsPage";
+import { ReportsPage } from "./features/reports/ReportsPage";
 import {
   BlogPage,
   CategoriesPage,
@@ -57,7 +59,8 @@ const router = createBrowserRouter([
       { path: "media", element: <MediaLibraryPage /> },
       { path: "categories", element: <CategoriesPage /> },
       { path: "messages", element: <MessagesPage /> },
-      { path: "settings", element: <ComingSoon phase={4} what="Settings" /> },
+      { path: "settings", element: <SettingsPage /> },
+      { path: "reports", element: <ReportsPage /> },
       { path: "*", element: <Navigate to="/portal/admin" replace /> },
     ],
   },
