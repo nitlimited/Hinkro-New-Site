@@ -2569,7 +2569,7 @@ button {
 .accessories-intro {
   display: grid;
   place-items: center;
-  padding: clamp(54px, 6vw, 86px) clamp(24px, 6vw, 120px) clamp(178px, 17vw, 292px);
+  padding: clamp(54px, 6vw, 86px) clamp(24px, 6vw, 120px) clamp(72px, 6vw, 96px);
   text-align: center;
 }
 
@@ -2577,9 +2577,9 @@ button {
   margin: 0;
   color: var(--gold-bright);
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(42px, 3.9vw, 72px);
+  font-size: clamp(32px, 3.5vw, 52px);
   font-style: italic;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.05;
   letter-spacing: -0.02em;
 }
@@ -2589,8 +2589,8 @@ button {
   margin: clamp(32px, 3vw, 50px) auto 0;
   color: rgba(255, 255, 255, 0.86);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: clamp(18px, 1.25vw, 24px);
-  font-weight: 600;
+  font-size: clamp(16px, 1.05vw, 20px);
+  font-weight: 400;
   line-height: 1.45;
 }
 
@@ -2641,7 +2641,7 @@ button {
   color: rgba(255, 255, 255, 0.34);
   font-family: Overpass, system-ui, sans-serif;
   font-size: clamp(13px, 0.86vw, 17px);
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: 0;
   line-height: 1.2;
   text-transform: uppercase;
@@ -2651,9 +2651,9 @@ button {
   margin: 0;
   color: var(--gold-bright);
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(28px, 1.62vw, 36px);
+  font-size: clamp(24px, 1.4vw, 30px);
   font-style: italic;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.18;
   letter-spacing: -0.02em;
 }
@@ -2663,8 +2663,8 @@ button {
   margin: clamp(22px, 1.6vw, 30px) 0 0;
   color: rgba(255, 255, 255, 0.82);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: clamp(16px, 1.02vw, 20px);
-  font-weight: 500;
+  font-size: clamp(15px, 0.95vw, 18px);
+  font-weight: 400;
   line-height: 1.72;
 }
 
@@ -2691,8 +2691,8 @@ button {
   margin: 0;
   color: rgba(255, 255, 255, 0.88);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   letter-spacing: 0.38em;
   line-height: 1.45;
   text-transform: uppercase;
@@ -2701,25 +2701,26 @@ button {
 .accessory-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px;
+  gap: 10px;
   margin-top: 30px;
 }
 
 .accessory-actions a {
   display: inline-flex;
-  min-height: 48px;
+  min-height: 40px;
   align-items: center;
   justify-content: center;
-  padding: 0 28px;
+  padding: 0 20px;
   color: rgba(255, 255, 255, 0.94);
   border: 2px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.15);
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1;
+  white-space: nowrap;
   transition:
     background 220ms ease,
     border-color 220ms ease,
@@ -2745,13 +2746,14 @@ button {
 
 .accessories-dreams-image {
   margin: 0;
+  overflow: hidden;
+  border-radius: 6px;
 }
 
 .accessories-dreams-image img {
   display: block;
   width: min(100%, 610px);
   margin-left: auto;
-  filter: drop-shadow(0 28px 36px rgba(0, 0, 0, 0.15));
 }
 
 .accessories-dreams-copy {
@@ -2762,9 +2764,9 @@ button {
   margin: 0;
   color: var(--deep-navy);
   font-family: "Cormorant Garamond", Georgia, serif;
-  font-size: clamp(58px, 4.4vw, 86px);
+  font-size: clamp(40px, 4vw, 60px);
   font-style: italic;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.02;
   letter-spacing: -0.04em;
 }
@@ -2773,15 +2775,15 @@ button {
   margin: clamp(42px, 3.8vw, 62px) 0 0;
   color: var(--deep-navy);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: clamp(18px, 1.15vw, 23px);
-  font-weight: 500;
+  font-size: clamp(16px, 1vw, 19px);
+  font-weight: 400;
   line-height: 1.85;
 }
 
 .accessories-dreams-copy a {
   display: inline-flex;
-  min-width: 322px;
-  min-height: 70px;
+  min-width: 280px;
+  min-height: 58px;
   align-items: center;
   justify-content: center;
   gap: 18px;
@@ -2791,7 +2793,7 @@ button {
   border-radius: 4px;
   background: var(--deep-navy);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   transition:
     background 220ms ease,
@@ -4213,7 +4215,7 @@ button {
   }
 
   .accessories-intro h1 {
-    font-size: 38px;
+    font-size: 34px;
   }
 
   .accessories-intro p {
@@ -4234,11 +4236,11 @@ button {
   }
 
   .accessory-card h2 {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .accessory-description {
-    font-size: 16px;
+    font-size: 15px;
   }
 
   .accessory-availability-label,
@@ -4247,8 +4249,9 @@ button {
   }
 
   .accessory-actions a {
-    min-height: 46px;
-    padding: 0 22px;
+    min-height: 38px;
+    padding: 0 16px;
+    font-size: 12px;
   }
 
   .accessories-dreams {
@@ -4257,7 +4260,7 @@ button {
   }
 
   .accessories-dreams-copy h2 {
-    font-size: 42px;
+    font-size: 36px;
   }
 
   .accessories-dreams-copy p {

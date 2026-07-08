@@ -586,6 +586,8 @@ function AccessoriesPage() {
           </a>
         </div>
       </section>
+      <TrendsNewsSection />
+      <SiteFooter />
     </main>
   );
 }
