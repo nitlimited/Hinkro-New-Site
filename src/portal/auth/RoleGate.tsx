@@ -15,14 +15,14 @@ export function RoleGate({
   allow: UserRole[];
   children: React.ReactNode;
 }) {
-  const { session, profile, loading } = useAuth();
+  const { session, profile, loading, isDemo } = useAuth();
   const location = useLocation();
 
   if (loading) {
     return <div className="portal-loading">Loading…</div>;
   }
 
-  if (!session || !profile) {
+  if ((!session && !isDemo) || !profile) {
     return <Navigate to="/portal" replace state={{ from: location }} />;
   }
 

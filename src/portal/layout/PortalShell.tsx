@@ -71,7 +71,7 @@ const ROLE_LABEL: Record<UserRole, string> = {
 };
 
 export function PortalShell() {
-  const { profile, signOut } = useAuth();
+  const { profile, signOut, isDemo } = useAuth();
   const [navOpen, setNavOpen] = useState(false);
 
   if (!profile) return null;
@@ -136,6 +136,11 @@ export function PortalShell() {
             <Menu size={22} />
           </button>
           <span className="portal-topbar-title">Hinkro Kente Studio</span>
+          {isDemo && (
+            <span className="portal-demo-badge">
+              Preview mode — sample data
+            </span>
+          )}
         </header>
         <div className="portal-content">
           <Outlet />

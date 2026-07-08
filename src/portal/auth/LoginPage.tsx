@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
-import { useAuth } from "./useAuth";
-import { ROLE_HOME } from "../types";
+import { startDemo, useAuth } from "./useAuth";
+import { ROLE_HOME, type UserRole } from "../types";
 
 const logoUrl = "/images/hinkro-kente-bespoke-kente-weaving-services-logo.png";
 
@@ -92,9 +92,32 @@ export function LoginPage() {
         </p>
 
         {!isSupabaseConfigured && (
-          <div className="portal-alert">
-            The portal backend is not configured yet. Add
-            VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment.
+          <div className="portal-demo">
+            <div className="portal-alert">
+              The backend isn&rsquo;t connected yet, so sign-in is disabled.
+              Meanwhile you can preview each dashboard with sample data:
+            </div>
+            <div className="portal-demo-buttons">
+              {(
+                [
+                  ["admin", "Administrator"],
+                  ["content_manager", "Content"],
+                  ["weaver", "Weaver"],
+                  ["client", "Client"],
+                ] as [UserRole, string][]
+              ).map(([role, label]) => (
+                <button
+                  key={role}
+                  type="button"
+                  onClick={() => {
+                    startDemo(role);
+                    window.location.assign(ROLE_HOME[role]);
+                  }}
+                >
+                  Preview as {label}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
