@@ -15,10 +15,46 @@ export type UpdateType =
   | "resume"
   | "completed"
   | "question"
-  | "reply";
+  | "reply"
+  | "approval_request"
+  | "approval_granted";
 export type MediaKind = "image" | "video" | "doc";
 export type PublishStatus = "draft" | "scheduled" | "published";
 export type CategoryKind = "product" | "accessory" | "blog";
+
+/* ---- weaving specification ---- */
+export type Gender = "man" | "woman";
+export type GarmentType = "3_pieces" | "dansikran";
+export type ThreadType = "silk" | "rayon";
+export type MediaPurpose = "progress" | "inspiration" | "embroidery_symbol";
+export type ApprovalStatus = "pending" | "approved";
+
+export interface OmbreColor {
+  color: string;
+  percentage: number;
+}
+
+/** Detailed weaving brief captured when a project is assigned. */
+export interface ProjectSpec {
+  design_yards: number | null;
+  plain_yards: number | null;
+  gender: Gender | null;
+  garment_type: GarmentType | null; // women only
+  has_border: boolean;
+  has_shimmers: boolean;
+  thread_type: ThreadType | null;
+  is_ombre: boolean;
+  ombre_colors: OmbreColor[];
+  has_embroidery: boolean;
+}
+
+/** Client sign-off gates. Weaving cannot proceed until both are approved. */
+export interface ProjectApprovals {
+  thread: ApprovalStatus;
+  thread_at: string | null;
+  pattern: ApprovalStatus;
+  pattern_at: string | null;
+}
 
 export interface ClientRow {
   id: string;
@@ -59,6 +95,10 @@ export interface ProjectRow {
   delivery_status: DeliveryStatus;
   payment_status: PaymentStatus;
   is_paused: boolean;
+  /** detailed weaving brief (optional; normalise with getSpec) */
+  spec?: ProjectSpec | null;
+  /** client sign-off gates (optional; normalise with getApprovals) */
+  approvals?: ProjectApprovals | null;
   created_at: string;
   updated_at: string;
   /* joined */
@@ -105,6 +145,8 @@ export interface MediaRow {
   kind: MediaKind;
   caption: string | null;
   uploaded_by: string | null;
+  /** what the attachment is for — progress photos vs assignment references */
+  purpose?: MediaPurpose;
   created_at: string;
   /** resolved display URL (signed URL in real mode, direct path in demo) */
   url?: string;
@@ -223,4 +265,35 @@ export interface ProfileRow {
   role: UserRole;
   status: UserStatus;
   created_at: string;
+}
+
+/**
+ * Weaver onboarding profile. Client-visible fields: full_name (from profile),
+ * years_experience, specialties, bio, portrait_url. The rest (address,
+ * phone, id_number, emergency_contact) are admin-only.
+ */
+export interface WeaverProfileRow {
+  profile_id: string;
+  years_experience: number | null;
+  specialties: string[]; // types of weaving mastered
+  bio: string | null;
+  portrait_url: string | null;
+  hometown: string | null;
+  languages: string[];
+  // admin-only:
+  address: string | null;
+  id_number: string | null;
+  emergency_contact: string | null;
+  /* joined */
+  profile?: { full_name: string; email: string; phone: string | null; status: UserStatus };
+}
+
+/** Computed weaver performance snapshot (not stored — derived from projects). */
+export interface WeaverPerformance {
+  completed: number;
+  active: number;
+  onTime: number;
+  thisYear: number;
+  score: number; // 0–100
+  onTimeRate: number; // 0–100
 }

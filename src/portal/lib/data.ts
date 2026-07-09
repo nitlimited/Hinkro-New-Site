@@ -8,12 +8,14 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase, isSupabaseConfigured } from "./supabaseClient";
 import type { UserRole } from "../types";
 import type {
+  ApprovalStatus,
   BlogPostRow,
   CategoryKind,
   CategoryRow,
   ClientRow,
   LibraryAssetRow,
   MediaKind,
+  MediaPurpose,
   MediaRow,
   MessageAudience,
   MessageRow,
@@ -23,12 +25,15 @@ import type {
   ProductRow,
   ProductVariationRow,
   ProjectRow,
+  ProjectSpec,
   StageRow,
   UpdateRow,
   UpdateType,
+  WeaverProfileRow,
   WorkLogRow,
   Priority,
 } from "./rows";
+import { defaultApprovals } from "./projectSpec";
 import {
   demoClients,
   demoBlogPosts,
@@ -44,6 +49,7 @@ import {
   demoProjects,
   demoStages,
   demoUpdates,
+  demoWeaverProfiles,
   demoWorkLogs,
   emitDemo,
   subscribeDemo,
@@ -833,6 +839,67 @@ export interface CreateProjectInput {
   est_start: string | null;
   est_completion: string | null;
   design_notes: string;
+  spec: ProjectSpec;
+  inspirationFiles?: File[];
+  embroiderySymbolFiles?: File[];
+}
+
+async function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });
+}
+
+/** Push assignment reference files into the demo media store. */
+async function addDemoAttachments(
+  projectId: string,
+  files: File[],
+  purpose: MediaPurpose,
+  authorId: string,
+) {
+  await Promise.all(
+    files.map(async (file) => {
+      const url = await fileToDataUrl(file);
+      demoMedia.unshift({
+        id: demoId("md"),
+        project_id: projectId,
+        update_id: null,
+        work_log_id: null,
+        storage_path: url,
+        kind: file.type.startsWith("video") ? "video" : "image",
+        caption: file.name,
+        uploaded_by: authorId,
+        purpose,
+        created_at: new Date().toISOString(),
+        url,
+      });
+    }),
+  );
+}
+
+async function uploadAttachments(
+  projectId: string,
+  files: File[],
+  purpose: MediaPurpose,
+  authorId: string,
+) {
+  for (const file of files) {
+    const path = `${projectId}/${purpose}-${Date.now()}-${file.name.replace(/[^\w.\-]/g, "_")}`;
+    const { error: upErr } = await supabase!.storage
+      .from("project-media")
+      .upload(path, file);
+    if (upErr) throw upErr;
+    await supabase!.from("project_media").insert({
+      project_id: projectId,
+      storage_path: path,
+      kind: file.type.startsWith("video") ? "video" : "image",
+      caption: file.name,
+      uploaded_by: authorId,
+      purpose,
+    });
+  }
 }
 
 export async function createProject(
@@ -852,6 +919,8 @@ export async function createProject(
     est_start: input.est_start,
     est_completion: input.est_completion,
     design_notes: input.design_notes || null,
+    spec: input.spec,
+    approvals: defaultApprovals(),
   };
 
   if (!isSupabaseConfigured) {
@@ -872,6 +941,13 @@ export async function createProject(
       updated_at: new Date().toISOString(),
     };
     demoProjects.unshift(row);
+    await addDemoAttachments(row.id, input.inspirationFiles ?? [], "inspiration", authorId);
+    await addDemoAttachments(
+      row.id,
+      input.embroiderySymbolFiles ?? [],
+      "embroidery_symbol",
+      authorId,
+    );
     demoUpdates.push({
       id: demoId("up"),
       project_id: row.id,
@@ -879,7 +955,7 @@ export async function createProject(
       type: "note",
       stage_id: demoStages[0].id,
       progress_pct: 0,
-      body: "Project created.",
+      body: "Project created. Awaiting client approval of thread colours and pattern.",
       new_est_completion: null,
       parent_update_id: null,
       created_at: new Date().toISOString(),
@@ -902,17 +978,355 @@ export async function createProject(
     .select(PROJECT_SELECT)
     .single();
   if (error) throw error;
+  const newId = (data as { id: string }).id;
+
+  await uploadAttachments(newId, input.inspirationFiles ?? [], "inspiration", authorId);
+  await uploadAttachments(
+    newId,
+    input.embroiderySymbolFiles ?? [],
+    "embroidery_symbol",
+    authorId,
+  );
 
   await supabase!.from("project_updates").insert({
-    project_id: (data as { id: string }).id,
+    project_id: newId,
     author_id: authorId,
     type: "note",
     stage_id: stage.data?.id,
     progress_pct: 0,
-    body: "Project created.",
+    body: "Project created. Awaiting client approval of thread colours and pattern.",
   });
 
   return data as unknown as ProjectRow;
+}
+
+/** Client (or admin on their behalf) approves a gate; unblocks the weaver. */
+export async function grantApproval(
+  projectId: string,
+  kind: "thread" | "pattern",
+  actor: { id: string; full_name: string; role: UserRole },
+): Promise<void> {
+  const nowIso = new Date().toISOString();
+  const label = kind === "thread" ? "thread colours" : "pattern & design";
+  const body = `${actor.full_name} approved the ${label}.`;
+
+  if (!isSupabaseConfigured) {
+    const p = demoProjects.find((x) => x.id === projectId);
+    if (p) {
+      const approvals = { ...defaultApprovals(), ...(p.approvals ?? {}) };
+      approvals[kind] = "approved" as ApprovalStatus;
+      approvals[`${kind}_at`] = nowIso;
+      p.approvals = approvals;
+      p.updated_at = nowIso;
+    }
+    demoUpdates.push({
+      id: demoId("up"),
+      project_id: projectId,
+      author_id: actor.id,
+      type: "approval_granted",
+      stage_id: null,
+      progress_pct: null,
+      body,
+      new_est_completion: null,
+      parent_update_id: null,
+      created_at: nowIso,
+      author: { full_name: actor.full_name, role: actor.role },
+    });
+    demoNotifications.unshift({
+      id: demoId("nt"),
+      user_id: "demo-user",
+      type: "approval_granted",
+      title: `Approval received on ${p?.reference ?? "project"}`,
+      body,
+      data: { project_id: projectId },
+      read_at: null,
+      created_at: nowIso,
+    });
+    emitDemo();
+    return;
+  }
+
+  const { data: current } = await supabase!
+    .from("projects")
+    .select("approvals")
+    .eq("id", projectId)
+    .single();
+  const approvals = {
+    ...defaultApprovals(),
+    ...((current?.approvals as object) ?? {}),
+    [kind]: "approved",
+    [`${kind}_at`]: nowIso,
+  };
+  await supabase!.from("projects").update({ approvals }).eq("id", projectId);
+  await supabase!.from("project_updates").insert({
+    project_id: projectId,
+    author_id: actor.id,
+    type: "approval_granted",
+    body,
+  });
+}
+
+/* ================= weaver profiles ================= */
+
+/**
+ * The weaver id to use for "my own" views. In demo mode the signed-in weaver
+ * maps to a fixture weaver (weaver-1); with a real backend it's their own id.
+ */
+export function resolveWeaverSelfId(profileId: string | undefined): string | undefined {
+  if (!isSupabaseConfigured) return demoIdentity("weaver").profileId;
+  return profileId;
+}
+
+const WEAVER_PROFILE_SELECT =
+  "*, profile:profiles!weaver_profiles_profile_id_fkey(full_name,email,phone,status)";
+
+export function useWeaverProfiles(): {
+  weavers: WeaverProfileRow[];
+  loading: boolean;
+} {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [weavers, setWeavers] = useState<WeaverProfileRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (demo) {
+      setWeavers([...demoWeaverProfiles]);
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("weaver_profiles")
+      .select(WEAVER_PROFILE_SELECT)
+      .then(({ data }) => {
+        setWeavers((data as unknown as WeaverProfileRow[]) ?? []);
+        setLoading(false);
+      });
+  }, [demo, demoV]);
+
+  return { weavers, loading };
+}
+
+/** Full profile for the weaver themselves or an admin. */
+export function useWeaverProfile(profileId: string | undefined): {
+  weaver: WeaverProfileRow | null;
+  loading: boolean;
+} {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [weaver, setWeaver] = useState<WeaverProfileRow | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!profileId) return;
+    if (demo) {
+      setWeaver(demoWeaverProfiles.find((w) => w.profile_id === profileId) ?? null);
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("weaver_profiles")
+      .select(WEAVER_PROFILE_SELECT)
+      .eq("profile_id", profileId)
+      .maybeSingle()
+      .then(({ data }) => {
+        setWeaver((data as unknown as WeaverProfileRow) ?? null);
+        setLoading(false);
+      });
+  }, [demo, demoV, profileId]);
+
+  return { weaver, loading };
+}
+
+/** Client-safe subset (name, experience, specialties, bio, portrait only). */
+export function useWeaverPublicProfile(profileId: string | null | undefined): {
+  weaver: Pick<
+    WeaverProfileRow,
+    "profile_id" | "years_experience" | "specialties" | "bio" | "portrait_url"
+  > & { full_name: string } | null;
+} {
+  const demo = !isSupabaseConfigured;
+  const [weaver, setWeaver] = useState<
+    | (Pick<WeaverProfileRow, "profile_id" | "years_experience" | "specialties" | "bio" | "portrait_url"> & {
+        full_name: string;
+      })
+    | null
+  >(null);
+
+  useEffect(() => {
+    if (!profileId) {
+      setWeaver(null);
+      return;
+    }
+    if (demo) {
+      const w = demoWeaverProfiles.find((x) => x.profile_id === profileId);
+      setWeaver(
+        w
+          ? {
+              profile_id: w.profile_id,
+              full_name: w.profile?.full_name ?? "",
+              years_experience: w.years_experience,
+              specialties: w.specialties,
+              bio: w.bio,
+              portrait_url: w.portrait_url,
+            }
+          : null,
+      );
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("weaver_public")
+      .select("*")
+      .eq("profile_id", profileId)
+      .maybeSingle()
+      .then(({ data }) => setWeaver((data as typeof weaver) ?? null));
+  }, [demo, profileId]);
+
+  return { weaver };
+}
+
+/** Projects assigned to a specific weaver (admin viewing, or performance calc). */
+export function useWeaverProjects(weaverId: string | undefined): {
+  projects: ProjectRow[];
+  loading: boolean;
+} {
+  const demo = !isSupabaseConfigured;
+  const demoV = useDemoVersion(demo);
+  const [projects, setProjects] = useState<ProjectRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!weaverId) return;
+    if (demo) {
+      setProjects(
+        demoProjects.filter((p) => p.weaver_id === weaverId).map(decorateDemoProject),
+      );
+      setLoading(false);
+      return;
+    }
+    if (!supabase) return;
+    supabase
+      .from("projects")
+      .select(PROJECT_SELECT)
+      .eq("weaver_id", weaverId)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setProjects((data as unknown as ProjectRow[]) ?? []);
+        setLoading(false);
+      });
+  }, [demo, demoV, weaverId]);
+
+  return { projects, loading };
+}
+
+export type WeaverProfileInput = Partial<WeaverProfileRow> & { profile_id: string };
+
+export async function saveWeaverProfile(input: WeaverProfileInput): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const existing = demoWeaverProfiles.find((w) => w.profile_id === input.profile_id);
+    if (existing) {
+      Object.assign(existing, input);
+    } else {
+      demoWeaverProfiles.push({
+        profile_id: input.profile_id,
+        years_experience: input.years_experience ?? null,
+        specialties: input.specialties ?? [],
+        bio: input.bio ?? null,
+        portrait_url: input.portrait_url ?? null,
+        hometown: input.hometown ?? null,
+        languages: input.languages ?? [],
+        address: input.address ?? null,
+        id_number: input.id_number ?? null,
+        emergency_contact: input.emergency_contact ?? null,
+        profile: input.profile,
+      });
+    }
+    emitDemo();
+    return;
+  }
+  const { profile: _joined, ...row } = input;
+  void _joined;
+  const { error } = await supabase!
+    .from("weaver_profiles")
+    .upsert(row, { onConflict: "profile_id" });
+  if (error) throw error;
+}
+
+export interface AddWeaverInput {
+  full_name: string;
+  email: string;
+  phone?: string;
+  years_experience?: number | null;
+  specialties?: string[];
+  bio?: string;
+  portrait_url?: string;
+  hometown?: string;
+  languages?: string[];
+  address?: string;
+  id_number?: string;
+  emergency_contact?: string;
+}
+
+export async function addWeaver(input: AddWeaverInput): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const id = demoId("weaver");
+    demoProfiles.push({
+      id,
+      full_name: input.full_name,
+      email: input.email,
+      phone: input.phone ?? null,
+      role: "weaver",
+      status: "active",
+      created_at: new Date().toISOString(),
+    });
+    demoWeaverProfiles.push({
+      profile_id: id,
+      years_experience: input.years_experience ?? null,
+      specialties: input.specialties ?? [],
+      bio: input.bio ?? null,
+      portrait_url: input.portrait_url ?? null,
+      hometown: input.hometown ?? null,
+      languages: input.languages ?? [],
+      address: input.address ?? null,
+      id_number: input.id_number ?? null,
+      emergency_contact: input.emergency_contact ?? null,
+      profile: {
+        full_name: input.full_name,
+        email: input.email,
+        phone: input.phone ?? null,
+        status: "active",
+      },
+    });
+    emitDemo();
+    return;
+  }
+  // Real mode: create the auth user + weaver role via the edge function,
+  // then attach the profile. The function returns the new user id.
+  const { data, error } = await supabase!.functions.invoke("admin-create-user", {
+    body: { email: input.email, full_name: input.full_name, role: "weaver" },
+  });
+  if (error) throw error;
+  const userId = (data as { user_id?: string })?.user_id;
+  if (userId) {
+    await supabase!.from("weaver_profiles").insert({
+      profile_id: userId,
+      years_experience: input.years_experience ?? null,
+      specialties: input.specialties ?? [],
+      bio: input.bio ?? null,
+      portrait_url: input.portrait_url ?? null,
+      hometown: input.hometown ?? null,
+      languages: input.languages ?? [],
+      address: input.address ?? null,
+      id_number: input.id_number ?? null,
+      emergency_contact: input.emergency_contact ?? null,
+    });
+    if (input.phone) {
+      await supabase!.from("profiles").update({ phone: input.phone }).eq("id", userId);
+    }
+  }
 }
 
 export interface PostUpdateInput {

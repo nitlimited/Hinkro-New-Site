@@ -10,6 +10,7 @@ import {
   Milestone,
   Pause,
   Play,
+  ShieldCheck,
   StickyNote,
 } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
@@ -21,7 +22,16 @@ import {
   useStages,
   useTeam,
 } from "../../lib/data";
-import type { UpdateRow, UpdateType } from "../../lib/rows";
+import type { ProjectApprovals, StageRow, UpdateRow, UpdateType } from "../../lib/rows";
+import { getApprovals } from "../../lib/projectSpec";
+import {
+  ApprovalPanel,
+  AttachmentGallery,
+  ClientWeaverCard,
+  SpecCard,
+  StageTracker,
+  WeaverGateBanner,
+} from "./SpecViews";
 import {
   EmptyState,
   Field,
@@ -43,6 +53,8 @@ const UPDATE_ICONS: Partial<Record<UpdateType, React.ReactNode>> = {
   completed: <CheckCircle2 size={15} />,
   question: <MessageSquare size={15} />,
   reply: <MessageSquare size={15} />,
+  approval_request: <ShieldCheck size={15} />,
+  approval_granted: <ShieldCheck size={15} />,
 };
 
 export function ProjectDetailPage() {
@@ -50,6 +62,7 @@ export function ProjectDetailPage() {
   const { profile } = useAuth();
   const { project, updates, workLogs, media, loading, refresh } =
     useProject(projectId);
+  const stages = useStages();
 
   if (loading) return <div className="portal-loading-inline">Loading…</div>;
   if (!project || !profile) {
@@ -64,6 +77,13 @@ export function ProjectDetailPage() {
   const isAdmin = profile.role === "super_admin" || profile.role === "admin";
   const isWeaver = profile.role === "weaver";
   const isClient = profile.role === "client";
+
+  const progressMedia = media.filter(
+    (m) => (m.purpose ?? "progress") === "progress",
+  );
+  const inspirationMedia = media.filter((m) => m.purpose === "inspiration");
+  const symbolMedia = media.filter((m) => m.purpose === "embroidery_symbol");
+  const approvals = getApprovals(project);
 
   return (
     <section>
@@ -132,14 +152,61 @@ export function ProjectDetailPage() {
             )}
           </div>
 
+          <SpecCard project={project} />
+
+          <ApprovalPanel
+            project={project}
+            role={profile.role}
+            currentUser={{
+              id: profile.id,
+              full_name: profile.full_name,
+              role: profile.role,
+            }}
+            onChanged={refresh}
+          />
+
+          {(isWeaver || isAdmin) && inspirationMedia.length > 0 && (
+            <AttachmentGallery
+              title="Inspiration & guidance"
+              hint="Reference images from the studio to guide your weaving."
+              items={inspirationMedia}
+            />
+          )}
+          {symbolMedia.length > 0 && (
+            <AttachmentGallery
+              title="Embroidery symbols"
+              hint="Symbols to be embroidered on this piece."
+              items={symbolMedia}
+            />
+          )}
+
           {isWeaver && !project.actual_completion && (
-            <UpdateComposer projectId={project.id} onPosted={refresh} isPaused={project.is_paused} />
+            <>
+              <WeaverGateBanner project={project} />
+              <UpdateComposer
+                projectId={project.id}
+                onPosted={refresh}
+                isPaused={project.is_paused}
+                approvals={approvals}
+              />
+            </>
           )}
           {isClient && (
             <QuestionBox projectId={project.id} onPosted={refresh} />
           )}
           {isAdmin && (
-            <AdminNoteBox projectId={project.id} onPosted={refresh} />
+            <>
+              <AdminNoteBox projectId={project.id} onPosted={refresh} />
+              {!project.actual_completion && (
+                <UpdateComposer
+                  projectId={project.id}
+                  onPosted={refresh}
+                  isPaused={project.is_paused}
+                  approvals={approvals}
+                  onBehalf
+                />
+              )}
+            </>
           )}
 
           <h2 className="portal-section-title">Timeline</h2>
@@ -164,11 +231,15 @@ export function ProjectDetailPage() {
         <aside className="portal-detail-side">
           {isAdmin && <AdminControls project={project} onChanged={refresh} />}
 
-          {media.length > 0 && (
+          {isClient && <ClientWeaverCard weaverId={project.weaver_id} />}
+
+          <StageTracker stages={stages} project={project} />
+
+          {progressMedia.length > 0 && (
             <>
-              <h2 className="portal-section-title">Gallery</h2>
+              <h2 className="portal-section-title">Progress gallery</h2>
               <div className="portal-gallery">
-                {media
+                {progressMedia
                   .filter((m) => m.kind === "image" && m.url)
                   .map((m) => (
                     <a key={m.id} href={m.url} target="_blank" rel="noreferrer">
@@ -322,17 +393,48 @@ function TimelineItem({
 
 /* ---------- weaver composer ---------- */
 
+/** Which stages the weaver is blocked from selecting given pending approvals. */
+function blockedStageIds(
+  stages: StageRow[],
+  approvals: ProjectApprovals,
+): Set<string> {
+  const ordered = stages.slice().sort((a, b) => a.position - b.position);
+  const idx = (match: string) =>
+    ordered.findIndex((s) => s.name.toLowerCase().includes(match));
+  const threadSetup = idx("thread setup");
+  const weavingProgress = idx("weaving in progress");
+  const blocked = new Set<string>();
+  ordered.forEach((s, i) => {
+    if (approvals.thread !== "approved" && threadSetup >= 0 && i > threadSetup) {
+      blocked.add(s.id);
+    }
+    if (
+      approvals.pattern !== "approved" &&
+      weavingProgress >= 0 &&
+      i >= weavingProgress
+    ) {
+      blocked.add(s.id);
+    }
+  });
+  return blocked;
+}
+
 function UpdateComposer({
   projectId,
   onPosted,
   isPaused,
+  approvals,
+  onBehalf = false,
 }: {
   projectId: string;
   onPosted: () => void;
   isPaused: boolean;
+  approvals: ProjectApprovals;
+  onBehalf?: boolean;
 }) {
   const { profile } = useAuth();
   const stages = useStages();
+  const blocked = blockedStageIds(stages, approvals);
   const [body, setBody] = useState("");
   const [progress, setProgress] = useState<number | "">("");
   const [stageId, setStageId] = useState("");
@@ -376,7 +478,7 @@ function UpdateComposer({
 
   return (
     <div className="portal-card portal-composer">
-      <h2>Post an update</h2>
+      <h2>{onBehalf ? "Post an update (on behalf of weaver)" : "Post an update"}</h2>
       <textarea
         rows={3}
         placeholder="What happened today? The client sees this."
@@ -396,12 +498,13 @@ function UpdateComposer({
             }
           />
         </Field>
-        <Field label="Stage">
+        <Field label="Stage" hint={blocked.size > 0 ? "Some stages are locked until client approval." : undefined}>
           <select value={stageId} onChange={(e) => setStageId(e.target.value)}>
             <option value="">No change</option>
             {stages.map((s) => (
-              <option key={s.id} value={s.id}>
+              <option key={s.id} value={s.id} disabled={blocked.has(s.id)}>
                 {s.name}
+                {blocked.has(s.id) ? " 🔒" : ""}
               </option>
             ))}
           </select>

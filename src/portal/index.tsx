@@ -19,6 +19,8 @@ import { ProjectCreatePage } from "./features/projects/ProjectCreatePage";
 import { ProjectDetailPage } from "./features/projects/ProjectDetailPage";
 import { ClientsPage } from "./features/clients/ClientsPage";
 import { UsersPage } from "./features/users/UsersPage";
+import { WeaversPage } from "./features/weavers/WeaversPage";
+import { WeaverProfilePage } from "./features/weavers/WeaverProfilePage";
 import { NotificationsPage } from "./features/notifications/NotificationsPage";
 import { MessagesPage } from "./features/messages/MessagesPage";
 import { ComingSoon } from "./features/ComingSoon";
@@ -48,6 +50,8 @@ const router = createBrowserRouter([
       { path: "projects/new", element: <ProjectCreatePage /> },
       { path: "projects/:projectId", element: <ProjectDetailPage /> },
       { path: "clients", element: <ClientsPage /> },
+      { path: "weavers", element: <WeaversPage /> },
+      { path: "weavers/:weaverId", element: <WeaverProfilePage base="admin" /> },
       { path: "users", element: <UsersPage /> },
       {
         path: "notifications",
@@ -91,6 +95,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <WeaverDashboard /> },
       { path: "projects/:projectId", element: <ProjectDetailPage /> },
+      { path: "profile", element: <WeaverProfilePage base="self" /> },
       {
         path: "notifications",
         element: <NotificationsPage projectBase="/portal/weaver/projects" />,

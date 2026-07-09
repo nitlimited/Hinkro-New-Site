@@ -17,6 +17,7 @@ import type {
   ProjectRow,
   StageRow,
   UpdateRow,
+  WeaverProfileRow,
   WorkLogRow,
 } from "./rows";
 import { defaultBlogPosts } from "../../blogArchive";
@@ -41,6 +42,7 @@ export const demoStages: StageRow[] = [
   "Weaving Started",
   "Weaving in Progress",
   "Design Verification",
+  "Embroidery",
   "Quality Inspection",
   "Finishing",
   "Packaging",
@@ -92,6 +94,45 @@ export const demoProfiles: ProfileRow[] = [
     role: "client",
     status: "active",
     created_at: daysAgo(12),
+  },
+];
+
+export const demoWeaverProfiles: WeaverProfileRow[] = [
+  {
+    profile_id: "weaver-1",
+    years_experience: 14,
+    specialties: ["Adweneasa", "Bridal Kente", "Ombre / Transition"],
+    bio: "Master weaver from Bonwire with a passion for intricate Adweneasa borders and bridal commissions.",
+    portrait_url: "/images/hinkro-kente-eric-boafo-asante-ceo.jpg",
+    hometown: "Bonwire, Ashanti Region",
+    languages: ["Twi", "English"],
+    address: "House 14, Weavers Lane, Bonwire",
+    id_number: "GHA-0912-2288-1",
+    emergency_contact: "Akosua Owusu · +233 20 999 0001",
+    profile: {
+      full_name: "Kwabena Owusu",
+      email: "kwabena@hinkrokente.com",
+      phone: "+233 20 111 2222",
+      status: "active",
+    },
+  },
+  {
+    profile_id: "weaver-2",
+    years_experience: 8,
+    specialties: ["Plain Weave", "Graduation Stoles", "Shimmer Kente"],
+    bio: "Detail-focused weaver specialising in clean plain weaves and personalised graduation stoles.",
+    portrait_url: "/images/graduation-stole/kente-graduation-stole-jeffery-suit.jpg",
+    hometown: "Adanwomase, Ashanti Region",
+    languages: ["Twi", "English", "Ga"],
+    address: "Plot 7, Adanwomase",
+    id_number: "GHA-0714-9931-4",
+    emergency_contact: "Yaa Asantewaa · +233 24 555 0002",
+    profile: {
+      full_name: "Yaw Asare",
+      email: "yaw@hinkrokente.com",
+      phone: "+233 24 333 4444",
+      status: "active",
+    },
   },
 ];
 
@@ -148,6 +189,24 @@ export const demoProjects: ProjectRow[] = [
     actual_completion: null,
     design_notes:
       "Client wants the Adweneasa motif dense at the borders, lighter toward the centre panels.",
+    spec: {
+      design_yards: 4,
+      plain_yards: 2,
+      gender: "woman",
+      garment_type: "3_pieces",
+      has_border: true,
+      has_shimmers: true,
+      thread_type: "silk",
+      is_ombre: false,
+      ombre_colors: [],
+      has_embroidery: false,
+    },
+    approvals: {
+      thread: "approved",
+      thread_at: daysAgo(9),
+      pattern: "approved",
+      pattern_at: daysAgo(8),
+    },
     delivery_status: "pending",
     payment_status: "partial",
     is_paused: false,
@@ -172,6 +231,28 @@ export const demoProjects: ProjectRow[] = [
     est_completion: daysAhead(25),
     actual_completion: null,
     design_notes: null,
+    spec: {
+      design_yards: 4,
+      plain_yards: 2,
+      gender: "woman",
+      garment_type: "dansikran",
+      has_border: false,
+      has_shimmers: true,
+      thread_type: "rayon",
+      is_ombre: true,
+      ombre_colors: [
+        { color: "Emerald", percentage: 45 },
+        { color: "Silver", percentage: 30 },
+        { color: "White", percentage: 25 },
+      ],
+      has_embroidery: false,
+    },
+    approvals: {
+      thread: "pending",
+      thread_at: null,
+      pattern: "pending",
+      pattern_at: null,
+    },
     delivery_status: "pending",
     payment_status: "unpaid",
     is_paused: false,
@@ -196,6 +277,24 @@ export const demoProjects: ProjectRow[] = [
     est_completion: daysAhead(4),
     actual_completion: null,
     design_notes: "Each stole carries the graduate's embroidered name.",
+    spec: {
+      design_yards: 4,
+      plain_yards: 1,
+      gender: "man",
+      garment_type: null,
+      has_border: false,
+      has_shimmers: false,
+      thread_type: "rayon",
+      is_ombre: false,
+      ombre_colors: [],
+      has_embroidery: true,
+    },
+    approvals: {
+      thread: "approved",
+      thread_at: daysAgo(16),
+      pattern: "approved",
+      pattern_at: daysAgo(15),
+    },
     delivery_status: "pending",
     payment_status: "paid",
     is_paused: false,
@@ -239,7 +338,47 @@ export const demoMedia: MediaRow[] = [
     caption: "Approved design sketch",
     uploaded_by: "demo-user",
     created_at: daysAgo(11),
+    purpose: "progress",
     url: "/images/hinkro-kente-design-process-sketch.png",
+  },
+  {
+    id: "md-insp-1",
+    project_id: "pr-1",
+    update_id: null,
+    work_log_id: null,
+    storage_path: "/images/hinkro-bespoke-storytelling-pattern.jpg",
+    kind: "image",
+    caption: "Reference: dense border, lighter centre",
+    uploaded_by: "demo-user",
+    created_at: daysAgo(12),
+    purpose: "inspiration",
+    url: "/images/hinkro-bespoke-storytelling-pattern.jpg",
+  },
+  {
+    id: "md-insp-2",
+    project_id: "pr-1",
+    update_id: null,
+    work_log_id: null,
+    storage_path: "/images/hinkro-bespoke-custom-color-way.jpg",
+    kind: "image",
+    caption: "Reference: gold & royal blue colour way",
+    uploaded_by: "demo-user",
+    created_at: daysAgo(12),
+    purpose: "inspiration",
+    url: "/images/hinkro-bespoke-custom-color-way.jpg",
+  },
+  {
+    id: "md-sym-1",
+    project_id: "pr-3",
+    update_id: null,
+    work_log_id: null,
+    storage_path: "/images/hinkro-kente-shuttle-illustration.png",
+    kind: "image",
+    caption: "Embroidery symbol: university crest placement",
+    uploaded_by: "demo-user",
+    created_at: daysAgo(20),
+    purpose: "embroidery_symbol",
+    url: "/images/hinkro-kente-shuttle-illustration.png",
   },
 ];
 
@@ -708,6 +847,7 @@ function persistDemo() {
         media: demoMedia,
         notifications: demoNotifications,
         messages: demoMessages,
+        weaverProfiles: demoWeaverProfiles,
         seq,
       }),
     );
@@ -728,6 +868,8 @@ function hydrateDemo() {
     demoMedia.splice(0, demoMedia.length, ...saved.media);
     demoNotifications.splice(0, demoNotifications.length, ...saved.notifications);
     if (saved.messages) demoMessages.splice(0, demoMessages.length, ...saved.messages);
+    if (saved.weaverProfiles)
+      demoWeaverProfiles.splice(0, demoWeaverProfiles.length, ...saved.weaverProfiles);
     if (typeof saved.seq === "number") seq = saved.seq;
   } catch {
     /* corrupted snapshot — fall back to fixtures */

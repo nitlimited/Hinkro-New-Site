@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Camera, Plus, X } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
 import {
   createClient,
@@ -8,7 +9,15 @@ import {
   useTeam,
 } from "../../lib/data";
 import { Field } from "../../components/ui";
-import type { Priority } from "../../lib/rows";
+import { emptySpec, totalYards } from "../../lib/projectSpec";
+import type {
+  GarmentType,
+  Gender,
+  OmbreColor,
+  Priority,
+  ProjectSpec,
+  ThreadType,
+} from "../../lib/rows";
 
 export function ProjectCreatePage() {
   const navigate = useNavigate();
@@ -33,8 +42,36 @@ export function ProjectCreatePage() {
     est_completion: "",
     design_notes: "",
   });
+  const [spec, setSpec] = useState<ProjectSpec>(emptySpec());
+  const [inspirationFiles, setInspirationFiles] = useState<File[]>([]);
+  const [symbolFiles, setSymbolFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+
+  const patchSpec = (patch: Partial<ProjectSpec>) =>
+    setSpec((s) => ({ ...s, ...patch }));
+
+  const setOmbre = (index: number, patch: Partial<OmbreColor>) =>
+    setSpec((s) => ({
+      ...s,
+      ombre_colors: s.ombre_colors.map((c, i) =>
+        i === index ? { ...c, ...patch } : c,
+      ),
+    }));
+
+  const addOmbre = () =>
+    setSpec((s) => ({
+      ...s,
+      ombre_colors: [...s.ombre_colors, { color: "", percentage: 0 }],
+    }));
+
+  const removeOmbre = (index: number) =>
+    setSpec((s) => ({
+      ...s,
+      ombre_colors: s.ombre_colors.filter((_, i) => i !== index),
+    }));
+
+  const ombreTotal = spec.ombre_colors.reduce((sum, c) => sum + (c.percentage || 0), 0);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +79,11 @@ export function ProjectCreatePage() {
     setBusy(true);
     setError("");
     try {
+      if (spec.is_ombre && ombreTotal !== 100 && spec.ombre_colors.length > 0) {
+        setError("Ombre colour percentages should add up to 100%.");
+        setBusy(false);
+        return;
+      }
       let clientId = form.client_id;
       if (clientMode === "new") {
         const created = await createClient(newClient);
@@ -72,6 +114,9 @@ export function ProjectCreatePage() {
           est_start: form.est_start || null,
           est_completion: form.est_completion || null,
           design_notes: form.design_notes,
+          spec,
+          inspirationFiles,
+          embroiderySymbolFiles: spec.has_embroidery ? symbolFiles : [],
         },
         profile.id,
       );
@@ -87,9 +132,9 @@ export function ProjectCreatePage() {
     <section className="portal-narrow">
       <h1 className="portal-page-title">New project</h1>
       <p className="portal-page-sub">
-        A reference number is generated automatically. Once created, the
-        assigned weaver sees it instantly and the client can be invited to
-        follow along.
+        A reference number is generated automatically. The assigned weaver sees
+        the full brief instantly, and the client confirms thread colours and
+        pattern before weaving begins.
       </p>
 
       <form onSubmit={submit} className="portal-form portal-card portal-form-card">
@@ -207,7 +252,195 @@ export function ProjectCreatePage() {
             />
           </Field>
         </div>
-        <Field label="Thread colours" hint="Separate with commas.">
+
+        <h2 className="portal-form-section">Weaving specification</h2>
+
+        <div className="portal-form-row portal-yards-row">
+          <Field label="Design yards" hint="Patterned weaving">
+            <input
+              type="number"
+              min={0}
+              step="0.5"
+              value={spec.design_yards ?? ""}
+              onChange={(e) =>
+                patchSpec({
+                  design_yards: e.target.value === "" ? null : Number(e.target.value),
+                })
+              }
+            />
+          </Field>
+          <Field label="Plain yards" hint="Plain weaving">
+            <input
+              type="number"
+              min={0}
+              step="0.5"
+              value={spec.plain_yards ?? ""}
+              onChange={(e) =>
+                patchSpec({
+                  plain_yards: e.target.value === "" ? null : Number(e.target.value),
+                })
+              }
+            />
+          </Field>
+          <div className="portal-yards-total">
+            <span className="portal-yards-total-label">Total yards</span>
+            <span className="portal-yards-total-value">{totalYards(spec)}</span>
+          </div>
+        </div>
+
+        <div className="portal-form-row">
+          <Field label="Made for">
+            <select
+              value={spec.gender ?? ""}
+              onChange={(e) =>
+                patchSpec({
+                  gender: (e.target.value || null) as Gender | null,
+                  garment_type: e.target.value === "woman" ? spec.garment_type : null,
+                })
+              }
+            >
+              <option value="">Select…</option>
+              <option value="man">Man</option>
+              <option value="woman">Woman</option>
+            </select>
+          </Field>
+          {spec.gender === "woman" && (
+            <Field label="Garment style">
+              <select
+                value={spec.garment_type ?? ""}
+                onChange={(e) =>
+                  patchSpec({ garment_type: (e.target.value || null) as GarmentType | null })
+                }
+              >
+                <option value="">Select…</option>
+                <option value="3_pieces">3 Pieces</option>
+                <option value="dansikran">Dansikran</option>
+              </select>
+            </Field>
+          )}
+          <Field label="Thread type">
+            <select
+              value={spec.thread_type ?? ""}
+              onChange={(e) =>
+                patchSpec({ thread_type: (e.target.value || null) as ThreadType | null })
+              }
+            >
+              <option value="">Select…</option>
+              <option value="silk">Silk</option>
+              <option value="rayon">Rayon</option>
+            </select>
+          </Field>
+        </div>
+
+        <div className="portal-check-row">
+          <label className="portal-check">
+            <input
+              type="checkbox"
+              checked={spec.has_border}
+              onChange={(e) => patchSpec({ has_border: e.target.checked })}
+            />
+            Border design
+          </label>
+          <label className="portal-check">
+            <input
+              type="checkbox"
+              checked={spec.has_shimmers}
+              onChange={(e) => patchSpec({ has_shimmers: e.target.checked })}
+            />
+            Shimmers
+          </label>
+          <label className="portal-check">
+            <input
+              type="checkbox"
+              checked={spec.is_ombre}
+              onChange={(e) => patchSpec({ is_ombre: e.target.checked })}
+            />
+            Ombre / transition
+          </label>
+          <label className="portal-check">
+            <input
+              type="checkbox"
+              checked={spec.has_embroidery}
+              onChange={(e) => patchSpec({ has_embroidery: e.target.checked })}
+            />
+            Embroidered symbols
+          </label>
+        </div>
+
+        {spec.is_ombre && (
+          <div className="portal-subpanel">
+            <div className="portal-subpanel-head">
+              <h4>Colour transition</h4>
+              <span
+                className={`portal-ombre-total ${ombreTotal === 100 ? "is-ok" : "is-warn"}`}
+              >
+                {ombreTotal}%
+              </span>
+            </div>
+            {spec.ombre_colors.map((c, i) => (
+              <div className="portal-ombre-row" key={i}>
+                <input
+                  className="portal-ombre-swatch"
+                  type="color"
+                  value={/^#/.test(c.color) ? c.color : "#cd8c23"}
+                  onChange={(e) => setOmbre(i, { color: e.target.value })}
+                  aria-label="Colour swatch"
+                />
+                <input
+                  placeholder="Colour name (e.g. Emerald)"
+                  value={c.color}
+                  onChange={(e) => setOmbre(i, { color: e.target.value })}
+                />
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  value={c.percentage || ""}
+                  onChange={(e) => setOmbre(i, { percentage: Number(e.target.value) || 0 })}
+                  aria-label="Percentage"
+                />
+                <span className="portal-ombre-pct">%</span>
+                <button
+                  className="portal-icon-btn"
+                  type="button"
+                  aria-label="Remove colour"
+                  onClick={() => removeOmbre(i)}
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            ))}
+            <button className="portal-btn-secondary" type="button" onClick={addOmbre}>
+              <Plus size={15} /> Add colour
+            </button>
+          </div>
+        )}
+
+        {spec.has_embroidery && (
+          <div className="portal-subpanel">
+            <div className="portal-subpanel-head">
+              <h4>Embroidery symbols</h4>
+            </div>
+            <p className="portal-muted-text">
+              Attach the symbols to be embroidered. The client and weaver both
+              see these.
+            </p>
+            <label className="portal-file-label">
+              <Camera size={16} />
+              {symbolFiles.length > 0
+                ? `${symbolFiles.length} symbol${symbolFiles.length > 1 ? "s" : ""} attached`
+                : "Attach symbol images"}
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => setSymbolFiles(Array.from(e.target.files ?? []))}
+              />
+            </label>
+          </div>
+        )}
+
+        <Field label="Thread colours" hint="Separate with commas. The client confirms these before weaving.">
           <input
             placeholder="Gold, Royal Blue, Ivory"
             value={form.thread_colors}
@@ -224,7 +457,7 @@ export function ProjectCreatePage() {
         <Field label="Measurements">
           <textarea
             rows={2}
-            placeholder="e.g. 12 yards, standard adult width"
+            placeholder="e.g. standard adult width"
             value={form.measurements_note}
             onChange={(e) =>
               setForm({ ...form, measurements_note: e.target.value })
@@ -232,16 +465,38 @@ export function ProjectCreatePage() {
           />
         </Field>
 
+        <h2 className="portal-form-section">Inspiration &amp; guidance</h2>
+        <p className="portal-muted-text">
+          Attach reference images to guide the weaver — colour ways, motifs,
+          finished looks. The weaver sees these on the project.
+        </p>
+        <label className="portal-file-label">
+          <Camera size={16} />
+          {inspirationFiles.length > 0
+            ? `${inspirationFiles.length} image${inspirationFiles.length > 1 ? "s" : ""} attached`
+            : "Attach inspiration images"}
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={(e) => setInspirationFiles(Array.from(e.target.files ?? []))}
+          />
+        </label>
+
         <h2 className="portal-form-section">Timeline</h2>
+        <p className="portal-muted-text">
+          The promised window covers loom preparation through quality inspection.
+          Consultation, packaging and delivery sit outside it.
+        </p>
         <div className="portal-form-row">
-          <Field label="Estimated start">
+          <Field label="Estimated start" hint="Loom preparation begins">
             <input
               type="date"
               value={form.est_start}
               onChange={(e) => setForm({ ...form, est_start: e.target.value })}
             />
           </Field>
-          <Field label="Estimated completion">
+          <Field label="Estimated completion" hint="Quality inspection done">
             <input
               type="date"
               value={form.est_completion}

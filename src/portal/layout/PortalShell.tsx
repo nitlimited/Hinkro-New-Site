@@ -12,8 +12,10 @@ import {
   Menu,
   MessageSquare,
   Package,
+  Scissors,
   Settings,
   ShoppingBag,
+  UserCircle,
   Users,
   X,
 } from "lucide-react";
@@ -34,6 +36,7 @@ const NAV: Record<string, NavEntry[]> = {
     { to: "/portal/admin", label: "Dashboard", icon: <LayoutDashboard size={18} />, end: true },
     { to: "/portal/admin/projects", label: "Projects", icon: <FolderKanban size={18} /> },
     { to: "/portal/admin/clients", label: "Clients", icon: <Users size={18} /> },
+    { to: "/portal/admin/weavers", label: "Weavers", icon: <Scissors size={18} /> },
     { to: "/portal/admin/notifications", label: "Notifications", icon: <Bell size={18} /> },
     { to: "/portal/admin/users", label: "Users & roles", icon: <Users size={18} /> },
     { to: "/portal/admin/products", label: "Products", icon: <ShoppingBag size={18} /> },
@@ -55,6 +58,7 @@ const NAV: Record<string, NavEntry[]> = {
   ],
   weaver: [
     { to: "/portal/weaver", label: "My projects", icon: <FolderKanban size={18} />, end: true },
+    { to: "/portal/weaver/profile", label: "My profile", icon: <UserCircle size={18} /> },
     { to: "/portal/weaver/notifications", label: "Notifications", icon: <Bell size={18} /> },
     { to: "/portal/weaver/messages", label: "Messages", icon: <MessageSquare size={18} /> },
   ],
