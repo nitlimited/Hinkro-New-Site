@@ -6,6 +6,7 @@ import {
   Menu,
   Play,
   Search,
+  UserRound,
   X,
 } from "lucide-react";
 import { WHATSAPP_ORDER_NUMBER } from "./storeProducts";
@@ -315,6 +316,7 @@ const designOfferings = [
     imageAlt: "Custom graduation stole and sash by Hinkro Kente",
     layout: "text-first",
     cta: true,
+    ctaHref: "#graduation",
   },
 ];
 
@@ -488,6 +490,19 @@ const bespokeFaqItems = [
 ];
 
 const accessoryItems = [
+  {
+    category: "Ceremonial",
+    title: "Kente Graduation Stole & Sash",
+    image: "/images/graduation-stole/kente-graduation-stole-custom-name-closeup.jpg",
+    hoverImage: "/images/graduation-stole/kente-graduation-stole-personalized-name.jpg",
+    imageAlt: "Personalized Kente graduation stole with embroidered name",
+    text: "Celebrate your achievement with a custom Kente graduation stole — woven in your school colours with your name, program, crest, and class year. A ceremonial keepsake that photographs beautifully and carries the pride of your journey.",
+    availability: "Graduation Season · Group Orders Welcome",
+    actions: [
+      ["View Graduation Stoles", "#graduation"],
+      ["Order on WhatsApp", "https://wa.me/233209707235"],
+    ],
+  },
   {
     category: "Protection and Storage",
     title: "Men Duffel Bag",
@@ -684,9 +699,19 @@ function Header({ currentPage }) {
         ))}
       </nav>
 
-      <a className="nav-cta" href="https://hinkrokente.com/appointment/">
-        Your Kente Awaits
-      </a>
+      <div className="nav-actions">
+        <a
+          className="nav-portal"
+          href="/portal"
+          aria-label="Client and team portal"
+          title="Client & team portal"
+        >
+          <PortalIcon />
+        </a>
+        <a className="nav-cta" href="https://hinkrokente.com/appointment/">
+          Your Kente Awaits
+        </a>
+      </div>
 
       <button
         className="menu-toggle"
@@ -722,6 +747,15 @@ function Header({ currentPage }) {
 
             <a className="mobile-panel-cta" href="https://hinkrokente.com/appointment/">
               Your Kente Awaits
+            </a>
+
+            <a
+              className="mobile-panel-portal"
+              href="/portal"
+              onClick={() => setOpen(false)}
+            >
+              <PortalIcon />
+              <span>Client &amp; team portal</span>
             </a>
 
             <div className="mobile-socials" aria-label="Social links">
@@ -1040,11 +1074,14 @@ function StorePage({ productSlug }) {
     <main className="store-page" id="store">
       <section className="store-hero" aria-labelledby="store-title">
         <p className="store-kicker">Authentic Kente Fabric Store</p>
-        <h1 id="store-title">Shop Hinkro Kente by color, ceremony, and story.</h1>
+        <h1 id="store-title">
+          Buy authentic Kente online — own a piece of tradition.
+        </h1>
         <p>
-          Explore handwoven Kente fabrics and refined Hinkro pieces by color,
-          occasion, and meaning. Choose the design you love, then chat with us
-          on WhatsApp to confirm availability, styling, delivery, and custom options.
+          Shop handwoven Ghanaian Kente fabric, ready-to-wear pieces, and
+          bespoke designs for weddings, engagements, graduations, and cultural
+          celebrations. Find the Kente you love, then chat with us on WhatsApp
+          to confirm availability, styling, delivery, and custom options.
         </p>
       </section>
 
@@ -1617,7 +1654,10 @@ function DesignOfferingsSection() {
               <h3>{offering.title}</h3>
               <p>{offering.text}</p>
               {offering.cta && (
-                <a href="#bespoke" className="design-offering-cta">
+                <a
+                  href={offering.ctaHref || "#bespoke"}
+                  className="design-offering-cta"
+                >
                   Learn More <span aria-hidden="true">→</span>
                 </a>
               )}
@@ -1839,6 +1879,20 @@ function TrendsNewsSection() {
   );
 }
 
+function PortalIcon() {
+  return <UserRound size={17} strokeWidth={1.8} aria-hidden="true" />;
+}
+
+const footerSitemapLinks = [
+  ["Home", "#home"],
+  ["Inspiring Tradition", "#tradition"],
+  ["Design", "#design"],
+  ["Bespoke", "#bespoke"],
+  ["Accessories", "#accessories"],
+  ["Store", "#store"],
+  ["Graduation Stoles", "#graduation"],
+];
+
 const footerPolicyLinks = [
   ["Privacy Policy", "https://www.hinkrokente.com/privacy-policy/"],
   ["Bespoke Service Terms", "https://www.hinkrokente.com/terms-and-conditions-bespoke-service/"],
@@ -1864,21 +1918,32 @@ function SiteFooter() {
 
       <footer className="site-footer" aria-label="Website footer">
         <div className="footer-main">
-          <section className="footer-institutional-copy" aria-labelledby="footer-about-title">
-            <p className="footer-eyebrow">Hinkro Kente Client Information</p>
-            <h2 id="footer-about-title">Traditional Kente, refined for modern milestones.</h2>
-            <p>
-              Hinkro Kente creates bespoke Kente fabrics, ready-to-wear designs,
-              ceremonial pieces, graduation stoles, bridal accessories, and curated
-              services for clients who value cultural meaning, careful finishing,
-              and a clear consultation process.
-            </p>
+          <section className="footer-sitemap" aria-labelledby="footer-sitemap-title">
+            <p className="footer-eyebrow">Hinkro Kente</p>
+            <h3 id="footer-sitemap-title">Sitemap</h3>
+            <nav className="footer-sitemap-links" aria-label="Site pages">
+              {footerSitemapLinks.map(([label, href]) => (
+                <a href={href} key={href}>
+                  {label}
+                </a>
+              ))}
+            </nav>
+            <a className="footer-portal-link" href="/portal">
+              <PortalIcon />
+              <span>Client &amp; team portal</span>
+            </a>
           </section>
 
           <div className="footer-divider" aria-hidden="true" />
 
           <section className="footer-client-note" aria-labelledby="footer-client-care-title">
             <h3 id="footer-client-care-title">Client care notice</h3>
+            <p>
+              Hinkro Kente creates bespoke Kente fabrics, ready-to-wear designs,
+              ceremonial pieces, graduation stoles, bridal accessories, and curated
+              services for clients who value cultural meaning, careful finishing,
+              and a clear consultation process.
+            </p>
             <p>
               Before confirming a bespoke order, sample strip, rush request,
               ready-to-wear purchase, or delivery arrangement, clients are encouraged
@@ -2451,7 +2516,7 @@ function App() {
       ) : (
         <Hero />
       )}
-      <SiteFooter />
+      {currentPage !== "home" && <SiteFooter />}
     </>
   );
 }

@@ -42,6 +42,7 @@ export interface ProjectSpec {
   garment_type: GarmentType | null; // women only
   has_border: boolean;
   has_shimmers: boolean;
+  shimmer_colors: string[]; // e.g. Gold, Silver, Green
   thread_type: ThreadType | null;
   is_ombre: boolean;
   ombre_colors: OmbreColor[];

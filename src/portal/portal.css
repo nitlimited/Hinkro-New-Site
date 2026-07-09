@@ -1862,6 +1862,16 @@
   align-items: end;
 }
 
+.portal-spec-guidance {
+  margin: -4px 0 4px;
+  font-size: 0.82rem;
+  color: #8a5a0d;
+  background: #fdf3e3;
+  border: 1px solid #f0d9ab;
+  border-radius: 8px;
+  padding: 8px 11px;
+}
+
 .portal-yards-total {
   display: flex;
   flex-direction: column;

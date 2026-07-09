@@ -196,6 +196,7 @@ export const demoProjects: ProjectRow[] = [
       garment_type: "3_pieces",
       has_border: true,
       has_shimmers: true,
+      shimmer_colors: ["Gold"],
       thread_type: "silk",
       is_ombre: false,
       ombre_colors: [],
@@ -238,6 +239,7 @@ export const demoProjects: ProjectRow[] = [
       garment_type: "dansikran",
       has_border: false,
       has_shimmers: true,
+      shimmer_colors: ["Silver", "Green"],
       thread_type: "rayon",
       is_ombre: true,
       ombre_colors: [
@@ -284,6 +286,7 @@ export const demoProjects: ProjectRow[] = [
       garment_type: null,
       has_border: false,
       has_shimmers: false,
+      shimmer_colors: [],
       thread_type: "rayon",
       is_ombre: false,
       ombre_colors: [],

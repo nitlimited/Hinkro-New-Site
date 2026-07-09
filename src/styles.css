@@ -5844,3 +5844,146 @@ button {
     font-size: 17px;
   }
 }
+
+/* ============================================================
+   Unified frontend buttons — same size, compact, cute, not bold
+   ============================================================ */
+.nav-cta,
+.mobile-panel-cta,
+.value-cta,
+.shop-footer-button,
+.design-offering-cta,
+.design-team-cta,
+.bespoke-dreams-cta,
+.bespoke-service-cta,
+.graduation-final-cta,
+.trends-news-cta,
+.product-whatsapp-cta,
+.store-whatsapp-link,
+.accessory-actions a,
+.graduation-hero-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 9px 18px;
+  border-radius: 6px;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  box-shadow: none;
+}
+
+/* keep the two-line ombre/text CTAs readable but still compact on mobile */
+@media (max-width: 720px) {
+  .nav-cta,
+  .mobile-panel-cta,
+  .value-cta,
+  .shop-footer-button,
+  .design-offering-cta,
+  .design-team-cta,
+  .bespoke-dreams-cta,
+  .bespoke-service-cta,
+  .graduation-final-cta,
+  .trends-news-cta,
+  .product-whatsapp-cta,
+  .store-whatsapp-link,
+  .accessory-actions a,
+  .graduation-hero-actions a {
+    padding: 9px 16px;
+    font-size: 13px;
+    min-height: 0;
+  }
+}
+
+/* ---- header portal access ---- */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-portal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 37px;
+  height: 37px;
+  border-radius: 50%;
+  border: 1px solid rgba(205, 140, 35, 0.5);
+  color: var(--gold);
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.nav-portal:hover {
+  background: var(--gold);
+  color: #fff;
+}
+
+.home-header .nav-portal {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+
+.home-header .nav-portal:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.mobile-panel-portal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: 1px solid rgba(205, 140, 35, 0.6);
+  color: var(--gold);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ---- footer sitemap + portal ---- */
+.footer-sitemap-links {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.footer-sitemap-links a {
+  font-size: 14px;
+  color: inherit;
+  opacity: 0.85;
+  transition: opacity 160ms ease, color 160ms ease;
+}
+
+.footer-sitemap-links a:hover {
+  opacity: 1;
+  color: var(--gold-bright);
+}
+
+.footer-portal-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 9px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(205, 140, 35, 0.55);
+  color: var(--gold-bright);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 160ms ease;
+}
+
+.footer-portal-link:hover {
+  background: rgba(205, 140, 35, 0.12);
+}

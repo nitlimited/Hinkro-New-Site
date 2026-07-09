@@ -11,6 +11,7 @@ import {
   stageCategory,
   stagesForProject,
   totalYards,
+  yardsToPieces,
 } from "../../lib/projectSpec";
 import { grantApproval, useWeaverPublicProfile } from "../../lib/data";
 import { formatDate } from "../../components/ui";
@@ -42,14 +43,6 @@ export function SpecCard({ project }: { project: ProjectRow }) {
       <h2 className="portal-side-title">Weaving specification</h2>
       <dl className="portal-kv portal-kv-row">
         <div>
-          <dt>Yards</dt>
-          <dd>
-            {spec.design_yards ?? 0} design + {spec.plain_yards ?? 0} plain
-            {" = "}
-            <strong>{totalYards(spec)} yards</strong>
-          </dd>
-        </div>
-        <div>
           <dt>Made for</dt>
           <dd>
             {spec.gender ? GENDER_LABEL[spec.gender] : "—"}
@@ -59,9 +52,23 @@ export function SpecCard({ project }: { project: ProjectRow }) {
           </dd>
         </div>
         <div>
+          <dt>Yards</dt>
+          <dd>
+            {spec.design_yards ?? 0} design + {spec.plain_yards ?? 0} plain
+            {" = "}
+            <strong>{totalYards(spec)} yd</strong> ({yardsToPieces(spec)} pieces)
+          </dd>
+        </div>
+        <div>
           <dt>Thread type</dt>
           <dd>{spec.thread_type ? THREAD_LABEL[spec.thread_type] : "—"}</dd>
         </div>
+        {spec.has_shimmers && spec.shimmer_colors.length > 0 && (
+          <div>
+            <dt>Shimmer colours</dt>
+            <dd>{spec.shimmer_colors.join(", ")}</dd>
+          </div>
+        )}
       </dl>
 
       <div className="portal-spec-features">

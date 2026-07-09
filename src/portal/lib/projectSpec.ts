@@ -24,11 +24,29 @@ export function emptySpec(): ProjectSpec {
     garment_type: null,
     has_border: false,
     has_shimmers: false,
+    shimmer_colors: [],
     thread_type: null,
     is_ombre: false,
     ombre_colors: [],
     has_embroidery: false,
   };
+}
+
+/** Kente yards are woven in even numbers only; 2 yards = 1 piece. */
+export const SHIMMER_COLOR_OPTIONS = ["Gold", "Silver", "Green"];
+
+export function yardsToPieces(spec: ProjectSpec): number {
+  return Math.round(totalYards(spec) / 2);
+}
+
+/** Guidance range for the total yardage based on who it's made for. */
+export function yardsGuidance(spec: ProjectSpec): string | null {
+  if (spec.gender === "man") return "Approximately 10–12 yards (even numbers).";
+  if (spec.gender === "woman" && spec.garment_type === "dansikran")
+    return "Approximately 6–8 yards (even numbers).";
+  if (spec.gender === "woman" && spec.garment_type === "3_pieces")
+    return "Define design and plain yards — even numbers only (2, 4, 6, 8). 2 yards = 1 piece.";
+  return null;
 }
 
 export function getSpec(project: Pick<ProjectRow, "spec">): ProjectSpec {

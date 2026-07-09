@@ -9,7 +9,13 @@ import {
   useTeam,
 } from "../../lib/data";
 import { Field } from "../../components/ui";
-import { emptySpec, totalYards } from "../../lib/projectSpec";
+import {
+  SHIMMER_COLOR_OPTIONS,
+  emptySpec,
+  totalYards,
+  yardsGuidance,
+  yardsToPieces,
+} from "../../lib/projectSpec";
 import type {
   GarmentType,
   Gender,
@@ -36,7 +42,6 @@ export function ProjectCreatePage() {
     measurements_note: "",
     thread_colors: "",
     accessories: "",
-    quantity: 1,
     priority: "normal" as Priority,
     est_start: "",
     est_completion: "",
@@ -73,12 +78,27 @@ export function ProjectCreatePage() {
 
   const ombreTotal = spec.ombre_colors.reduce((sum, c) => sum + (c.percentage || 0), 0);
 
+  const toggleShimmer = (color: string) =>
+    setSpec((s) => ({
+      ...s,
+      shimmer_colors: s.shimmer_colors.includes(color)
+        ? s.shimmer_colors.filter((c) => c !== color)
+        : [...s.shimmer_colors, color],
+    }));
+
+  const isOdd = (n: number | null) => n != null && n % 2 !== 0;
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile) return;
     setBusy(true);
     setError("");
     try {
+      if (isOdd(spec.design_yards) || isOdd(spec.plain_yards)) {
+        setError("Kente is woven in even yards only (2, 4, 6, 8).");
+        setBusy(false);
+        return;
+      }
       if (spec.is_ombre && ombreTotal !== 100 && spec.ombre_colors.length > 0) {
         setError("Ombre colour percentages should add up to 100%.");
         setBusy(false);
@@ -109,7 +129,7 @@ export function ProjectCreatePage() {
             .split(",")
             .map((s) => s.trim())
             .filter(Boolean),
-          quantity: form.quantity,
+          quantity: Math.max(1, yardsToPieces(spec)),
           priority: form.priority,
           est_start: form.est_start || null,
           est_completion: form.est_completion || null,
@@ -233,63 +253,23 @@ export function ProjectCreatePage() {
             </select>
           </Field>
         </div>
-        <div className="portal-form-row">
-          <Field label="Pattern">
-            <input
-              placeholder="e.g. Adweneasa"
-              value={form.pattern}
-              onChange={(e) => setForm({ ...form, pattern: e.target.value })}
-            />
-          </Field>
-          <Field label="Quantity">
-            <input
-              type="number"
-              min={1}
-              value={form.quantity}
-              onChange={(e) =>
-                setForm({ ...form, quantity: Number(e.target.value) || 1 })
-              }
-            />
-          </Field>
-        </div>
+        <Field label="Pattern">
+          <input
+            placeholder="e.g. Adweneasa"
+            value={form.pattern}
+            onChange={(e) => setForm({ ...form, pattern: e.target.value })}
+          />
+        </Field>
 
         <h2 className="portal-form-section">Weaving specification</h2>
+        <p className="portal-muted-text">
+          The client approves this brief before any work begins. Fields appear
+          in the order they&rsquo;re decided.
+        </p>
 
-        <div className="portal-form-row portal-yards-row">
-          <Field label="Design yards" hint="Patterned weaving">
-            <input
-              type="number"
-              min={0}
-              step="0.5"
-              value={spec.design_yards ?? ""}
-              onChange={(e) =>
-                patchSpec({
-                  design_yards: e.target.value === "" ? null : Number(e.target.value),
-                })
-              }
-            />
-          </Field>
-          <Field label="Plain yards" hint="Plain weaving">
-            <input
-              type="number"
-              min={0}
-              step="0.5"
-              value={spec.plain_yards ?? ""}
-              onChange={(e) =>
-                patchSpec({
-                  plain_yards: e.target.value === "" ? null : Number(e.target.value),
-                })
-              }
-            />
-          </Field>
-          <div className="portal-yards-total">
-            <span className="portal-yards-total-label">Total yards</span>
-            <span className="portal-yards-total-value">{totalYards(spec)}</span>
-          </div>
-        </div>
-
+        {/* 1 — Made for (determines garment & yardage) */}
         <div className="portal-form-row">
-          <Field label="Made for">
+          <Field label="Made for" hint="Decided first — sets the garment and yardage.">
             <select
               value={spec.gender ?? ""}
               onChange={(e) =>
@@ -318,55 +298,82 @@ export function ProjectCreatePage() {
               </select>
             </Field>
           )}
-          <Field label="Thread type">
-            <select
-              value={spec.thread_type ?? ""}
-              onChange={(e) =>
-                patchSpec({ thread_type: (e.target.value || null) as ThreadType | null })
-              }
-            >
-              <option value="">Select…</option>
-              <option value="silk">Silk</option>
-              <option value="rayon">Rayon</option>
-            </select>
-          </Field>
         </div>
+        {yardsGuidance(spec) && (
+          <p className="portal-spec-guidance">{yardsGuidance(spec)}</p>
+        )}
 
-        <div className="portal-check-row">
-          <label className="portal-check">
-            <input
-              type="checkbox"
-              checked={spec.has_border}
-              onChange={(e) => patchSpec({ has_border: e.target.checked })}
-            />
-            Border design
-          </label>
-          <label className="portal-check">
-            <input
-              type="checkbox"
-              checked={spec.has_shimmers}
-              onChange={(e) => patchSpec({ has_shimmers: e.target.checked })}
-            />
-            Shimmers
-          </label>
-          <label className="portal-check">
-            <input
-              type="checkbox"
-              checked={spec.is_ombre}
-              onChange={(e) => patchSpec({ is_ombre: e.target.checked })}
-            />
-            Ombre / transition
-          </label>
-          <label className="portal-check">
-            <input
-              type="checkbox"
-              checked={spec.has_embroidery}
-              onChange={(e) => patchSpec({ has_embroidery: e.target.checked })}
-            />
-            Embroidered symbols
-          </label>
-        </div>
+        {/* 2 — Thread type */}
+        <Field label="Thread type">
+          <select
+            value={spec.thread_type ?? ""}
+            onChange={(e) =>
+              patchSpec({ thread_type: (e.target.value || null) as ThreadType | null })
+            }
+          >
+            <option value="">Select…</option>
+            <option value="silk">Silk</option>
+            <option value="rayon">Rayon</option>
+          </select>
+        </Field>
 
+        {/* 3 — Shimmers + colours */}
+        <label className="portal-check">
+          <input
+            type="checkbox"
+            checked={spec.has_shimmers}
+            onChange={(e) =>
+              patchSpec({
+                has_shimmers: e.target.checked,
+                shimmer_colors: e.target.checked ? spec.shimmer_colors : [],
+              })
+            }
+          />
+          Shimmers
+        </label>
+        {spec.has_shimmers && (
+          <div className="portal-subpanel">
+            <div className="portal-subpanel-head">
+              <h4>Shimmer colours</h4>
+            </div>
+            <div className="portal-check-row">
+              {SHIMMER_COLOR_OPTIONS.map((c) => (
+                <label className="portal-check" key={c}>
+                  <input
+                    type="checkbox"
+                    checked={spec.shimmer_colors.includes(c)}
+                    onChange={() => toggleShimmer(c)}
+                  />
+                  {c}
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 4 — Border */}
+        <label className="portal-check">
+          <input
+            type="checkbox"
+            checked={spec.has_border}
+            onChange={(e) => patchSpec({ has_border: e.target.checked })}
+          />
+          Border design
+        </label>
+
+        {/* 5 — Weave style (regular / ombre), decided before yards */}
+        <Field
+          label="Weave style"
+          hint="Patterned & plain weave can transition. Decide before setting yards."
+        >
+          <select
+            value={spec.is_ombre ? "ombre" : "regular"}
+            onChange={(e) => patchSpec({ is_ombre: e.target.value === "ombre" })}
+          >
+            <option value="regular">Regular</option>
+            <option value="ombre">Ombre / transition</option>
+          </select>
+        </Field>
         {spec.is_ombre && (
           <div className="portal-subpanel">
             <div className="portal-subpanel-head">
@@ -416,6 +423,50 @@ export function ProjectCreatePage() {
           </div>
         )}
 
+        {/* 6 — Yards (even numbers only; 2 yards = 1 piece) */}
+        <div className="portal-form-row portal-yards-row">
+          <Field label="Design yards" hint="Patterned — even only">
+            <input
+              type="number"
+              min={0}
+              step={2}
+              value={spec.design_yards ?? ""}
+              onChange={(e) =>
+                patchSpec({
+                  design_yards: e.target.value === "" ? null : Number(e.target.value),
+                })
+              }
+            />
+          </Field>
+          <Field label="Plain yards" hint="Plain — even only">
+            <input
+              type="number"
+              min={0}
+              step={2}
+              value={spec.plain_yards ?? ""}
+              onChange={(e) =>
+                patchSpec({
+                  plain_yards: e.target.value === "" ? null : Number(e.target.value),
+                })
+              }
+            />
+          </Field>
+          <div className="portal-yards-total">
+            <span className="portal-yards-total-label">Total</span>
+            <span className="portal-yards-total-value">{totalYards(spec)} yd</span>
+            <span className="portal-yards-total-label">{yardsToPieces(spec)} pieces</span>
+          </div>
+        </div>
+
+        {/* 7 — Embroidery */}
+        <label className="portal-check">
+          <input
+            type="checkbox"
+            checked={spec.has_embroidery}
+            onChange={(e) => patchSpec({ has_embroidery: e.target.checked })}
+          />
+          Embroidered symbols
+        </label>
         {spec.has_embroidery && (
           <div className="portal-subpanel">
             <div className="portal-subpanel-head">
