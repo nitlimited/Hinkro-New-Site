@@ -945,8 +945,12 @@ export async function postUpdate(
       created_at: new Date().toISOString(),
       author: { full_name: author.full_name, role: author.role },
     });
-    (input.files ?? []).forEach((file) => {
-      const url = URL.createObjectURL(file);
+    await Promise.all((input.files ?? []).map(async (file) => {
+      const url = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
       demoMedia.unshift({
         id: demoId("md"),
         project_id: input.project_id,
@@ -959,7 +963,7 @@ export async function postUpdate(
         created_at: new Date().toISOString(),
         url,
       });
-    });
+    }));
     const p = demoProjects.find((x) => x.id === input.project_id);
     if (p) {
       if (typeof input.progress_pct === "number") p.progress_pct = input.progress_pct;
@@ -1010,7 +1014,7 @@ export async function postUpdate(
       .from("project-media")
       .upload(path, file);
     if (upErr) throw upErr;
-    await supabase!.from("project_media").insert({
+    const { error: mediaErr } = await supabase!.from("project_media").insert({
       project_id: input.project_id,
       update_id: (upd as { id: string }).id,
       storage_path: path,
@@ -1018,6 +1022,7 @@ export async function postUpdate(
       caption: file.name,
       uploaded_by: author.id,
     });
+    if (mediaErr) throw mediaErr;
   }
 
   const projectPatch: Record<string, unknown> = {};

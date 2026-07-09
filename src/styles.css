@@ -2725,6 +2725,7 @@ button {
 }
 
 .accessory-image {
+  position: relative;
   width: 100%;
   margin: 0 0 19px;
   overflow: hidden;
@@ -2747,10 +2748,7 @@ button {
   position: absolute;
   inset: 0;
   opacity: 0;
-}
-
-.accessory-image {
-  position: relative;
+  transition: opacity 360ms ease;
 }
 
 .accessory-card:hover .accessory-hover-image {

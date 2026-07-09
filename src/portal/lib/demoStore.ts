@@ -705,7 +705,7 @@ function persistDemo() {
         projects: demoProjects,
         updates: demoUpdates,
         workLogs: demoWorkLogs,
-        media: demoMedia.filter((m) => !m.storage_path.startsWith("blob:")),
+        media: demoMedia,
         notifications: demoNotifications,
         messages: demoMessages,
         seq,

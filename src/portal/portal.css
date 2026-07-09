@@ -1635,6 +1635,23 @@
   }
 }
 
+@media (max-width: 780px) {
+  .portal-inline-form {
+    grid-template-columns: 1fr 1fr;
+    overflow-x: auto;
+  }
+
+  .portal-image-editor-row {
+    grid-template-columns: 72px 1fr;
+    overflow-x: auto;
+  }
+
+  .portal-variation-row {
+    grid-template-columns: 1fr 1fr;
+    overflow-x: auto;
+  }
+}
+
 /* ---------- SEO analyzer ---------- */
 
 .portal-seo-panel {
