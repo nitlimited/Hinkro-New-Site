@@ -19,7 +19,6 @@ const navItems = [
   ["Bespoke", "bespoke"],
   ["Accessories", "accessories"],
   ["Store", "store"],
-  ["Trends & News", "blog"],
 ];
 
 const logoUrl =

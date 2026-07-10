@@ -3666,6 +3666,11 @@ button {
 
 .store-product-copy {
   padding: 20px;
+  text-align: center;
+}
+
+.store-product-copy .store-product-colors {
+  justify-content: center;
 }
 
 .store-product-copy > p:first-child {
@@ -3731,17 +3736,20 @@ button {
 
 .store-product-bottom {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 14px;
   margin-top: 22px;
 }
 
 .store-product-bottom strong {
-  color: rgba(255, 255, 255, 0.92);
-  font-family: Overpass, system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 500;
+  color: var(--gold-bright);
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.01em;
   white-space: nowrap;
 }
 
@@ -4140,8 +4148,10 @@ button {
     grid-template-columns: auto 1fr auto;
     min-height: 118px;
     padding: 0 42px;
-    background: rgba(18, 23, 34, 0.28);
-    backdrop-filter: none;
+    /* Opaque enough that content underneath doesn't show through. No
+       backdrop-filter here: it creates a containing block that would clamp
+       the position:fixed mobile menu to the header's height. */
+    background: rgba(12, 33, 65, 0.97);
   }
 
   .brand,
@@ -5012,12 +5022,16 @@ button {
   }
 
   .mobile-panel {
-    padding: 20px 24px calc(12px + env(safe-area-inset-bottom, 0px));
+    padding: 22px 24px calc(20px + env(safe-area-inset-bottom, 0px));
   }
 
+  /* Distribute rows to fill the screen instead of clustering at the top,
+     giving even breathing room between the logo, menu, CTAs, socials and
+     copyright. */
   .mobile-panel-inner {
-    min-height: auto;
-    gap: 8px;
+    min-height: calc(100dvh - 42px - env(safe-area-inset-bottom, 0px));
+    align-content: space-between;
+    gap: 10px;
   }
 
   .mobile-panel-logo {
@@ -5025,13 +5039,13 @@ button {
   }
 
   .mobile-panel-nav a {
-    padding: 9px 10px;
-    font-size: 15px;
+    padding: 14px 10px;
+    font-size: 16px;
   }
 
   .mobile-panel-cta,
   .mobile-hero-cta {
-    min-height: 44px;
+    min-height: 46px;
     padding: 0 26px;
     font-size: 14px;
   }
@@ -5778,10 +5792,14 @@ button {
   }
 
   .store-results-line,
-  .store-product-bottom,
   .product-price-panel {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .store-product-bottom {
+    flex-direction: column;
+    align-items: center;
   }
 
   .store-grid,
@@ -6272,4 +6290,32 @@ button {
 
 .footer-portal-link:hover {
   background: rgba(205, 140, 35, 0.12);
+}
+
+/* ============================================================
+   Inspiring Tradition — consistent typography
+   One size/style for every section header, one for every subheading.
+   Scoped to .tradition-page and higher-specificity than the per-section
+   rules (incl. their responsive overrides) so it wins at all viewports.
+   ============================================================ */
+.tradition-page .tradition-exclusivity h2,
+.tradition-page .value-copy h2,
+.tradition-page .history-sticky h2,
+.tradition-page .trends-news-inner h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(30px, 4.6vw, 40px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.14;
+  letter-spacing: -0.015em;
+}
+
+.tradition-page .tradition-carousel-copy h3,
+.tradition-page .value-card h3 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: clamp(22px, 3vw, 27px);
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1.16;
+  letter-spacing: 0;
 }
