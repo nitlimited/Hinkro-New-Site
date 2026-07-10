@@ -26,6 +26,7 @@ export type CategoryKind = "product" | "accessory" | "blog";
 export type Gender = "man" | "woman";
 export type GarmentType = "3_pieces" | "dansikran";
 export type ThreadType = "silk" | "rayon";
+export type OmbreScope = "plain" | "design" | "both";
 export type MediaPurpose = "progress" | "inspiration" | "embroidery_symbol";
 export type ApprovalStatus = "pending" | "approved";
 
@@ -45,6 +46,7 @@ export interface ProjectSpec {
   shimmer_colors: string[]; // e.g. Gold, Silver, Green
   thread_type: ThreadType | null;
   is_ombre: boolean;
+  ombre_scope: OmbreScope | null; // which weave transitions
   ombre_colors: OmbreColor[];
   has_embroidery: boolean;
 }

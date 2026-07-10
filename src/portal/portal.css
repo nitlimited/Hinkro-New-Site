@@ -1936,6 +1936,12 @@
   color: var(--portal-navy);
 }
 
+.portal-subpanel-head-spaced {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px solid var(--portal-line);
+}
+
 .portal-ombre-total {
   font-size: 0.78rem;
   font-weight: 800;

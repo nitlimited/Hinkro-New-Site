@@ -5,6 +5,7 @@ import type { UserRole } from "../../types";
 import {
   GARMENT_LABEL,
   GENDER_LABEL,
+  OMBRE_SCOPE_LABEL,
   THREAD_LABEL,
   getApprovals,
   getSpec,
@@ -84,7 +85,12 @@ export function SpecCard({ project }: { project: ProjectRow }) {
 
       {spec.is_ombre && spec.ombre_colors.length > 0 && (
         <div className="portal-ombre-view">
-          <span className="portal-ombre-view-label">Colour transition</span>
+          <span className="portal-ombre-view-label">
+            Colour transition
+            {spec.ombre_scope
+              ? ` · ${OMBRE_SCOPE_LABEL[spec.ombre_scope] ?? spec.ombre_scope}`
+              : ""}
+          </span>
           <div className="portal-ombre-bar">
             {spec.ombre_colors.map((c, i) => (
               <span

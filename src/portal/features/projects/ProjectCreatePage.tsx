@@ -10,8 +10,8 @@ import {
 } from "../../lib/data";
 import { Field } from "../../components/ui";
 import {
-  SHIMMER_COLOR_OPTIONS,
   emptySpec,
+  needsYardage,
   totalYards,
   yardsGuidance,
   yardsToPieces,
@@ -20,6 +20,7 @@ import type {
   GarmentType,
   Gender,
   OmbreColor,
+  OmbreScope,
   Priority,
   ProjectSpec,
   ThreadType,
@@ -78,15 +79,29 @@ export function ProjectCreatePage() {
 
   const ombreTotal = spec.ombre_colors.reduce((sum, c) => sum + (c.percentage || 0), 0);
 
-  const toggleShimmer = (color: string) =>
+  const setShimmer = (index: number, value: string) =>
     setSpec((s) => ({
       ...s,
-      shimmer_colors: s.shimmer_colors.includes(color)
-        ? s.shimmer_colors.filter((c) => c !== color)
-        : [...s.shimmer_colors, color],
+      shimmer_colors: s.shimmer_colors.map((c, i) => (i === index ? value : c)),
+    }));
+  const addShimmer = () =>
+    setSpec((s) => ({ ...s, shimmer_colors: [...s.shimmer_colors, ""] }));
+  const removeShimmer = (index: number) =>
+    setSpec((s) => ({
+      ...s,
+      shimmer_colors: s.shimmer_colors.filter((_, i) => i !== index),
     }));
 
-  const isOdd = (n: number | null) => n != null && n % 2 !== 0;
+  // Two checkboxes (Design, Plain) derive the ombre scope.
+  const scopeHas = (part: "design" | "plain") =>
+    spec.ombre_scope === part || spec.ombre_scope === "both";
+  const toggleScope = (part: "design" | "plain") => {
+    const design = part === "design" ? !scopeHas("design") : scopeHas("design");
+    const plain = part === "plain" ? !scopeHas("plain") : scopeHas("plain");
+    const next: OmbreScope | null =
+      design && plain ? "both" : design ? "design" : plain ? "plain" : null;
+    patchSpec({ ombre_scope: next });
+  };
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,11 +109,6 @@ export function ProjectCreatePage() {
     setBusy(true);
     setError("");
     try {
-      if (isOdd(spec.design_yards) || isOdd(spec.plain_yards)) {
-        setError("Kente is woven in even yards only (2, 4, 6, 8).");
-        setBusy(false);
-        return;
-      }
       if (spec.is_ombre && ombreTotal !== 100 && spec.ombre_colors.length > 0) {
         setError("Ombre colour percentages should add up to 100%.");
         setBusy(false);
@@ -299,76 +309,59 @@ export function ProjectCreatePage() {
             </Field>
           )}
         </div>
-        {yardsGuidance(spec) && (
-          <p className="portal-spec-guidance">{yardsGuidance(spec)}</p>
-        )}
-
-        {/* 2 — Thread type */}
-        <Field label="Thread type">
-          <select
-            value={spec.thread_type ?? ""}
-            onChange={(e) =>
-              patchSpec({ thread_type: (e.target.value || null) as ThreadType | null })
-            }
-          >
-            <option value="">Select…</option>
-            <option value="silk">Silk</option>
-            <option value="rayon">Rayon</option>
-          </select>
-        </Field>
-
-        {/* 3 — Shimmers + colours */}
-        <label className="portal-check">
-          <input
-            type="checkbox"
-            checked={spec.has_shimmers}
-            onChange={(e) =>
-              patchSpec({
-                has_shimmers: e.target.checked,
-                shimmer_colors: e.target.checked ? spec.shimmer_colors : [],
-              })
-            }
-          />
-          Shimmers
-        </label>
-        {spec.has_shimmers && (
-          <div className="portal-subpanel">
-            <div className="portal-subpanel-head">
-              <h4>Shimmer colours</h4>
-            </div>
-            <div className="portal-check-row">
-              {SHIMMER_COLOR_OPTIONS.map((c) => (
-                <label className="portal-check" key={c}>
-                  <input
-                    type="checkbox"
-                    checked={spec.shimmer_colors.includes(c)}
-                    onChange={() => toggleShimmer(c)}
-                  />
-                  {c}
-                </label>
-              ))}
+        {/* 2 — Yards: the 3 Pieces garment is the only one with explicit yardage */}
+        {needsYardage(spec) && (
+          <div className="portal-form-row portal-yards-row">
+            <Field label="Design yards" hint="Patterned weaving">
+              <input
+                type="number"
+                min={0}
+                step={2}
+                value={spec.design_yards ?? ""}
+                onChange={(e) =>
+                  patchSpec({
+                    design_yards: e.target.value === "" ? null : Number(e.target.value),
+                  })
+                }
+              />
+            </Field>
+            <Field label="Plain yards" hint="Plain weaving">
+              <input
+                type="number"
+                min={0}
+                step={2}
+                value={spec.plain_yards ?? ""}
+                onChange={(e) =>
+                  patchSpec({
+                    plain_yards: e.target.value === "" ? null : Number(e.target.value),
+                  })
+                }
+              />
+            </Field>
+            <div className="portal-yards-total">
+              <span className="portal-yards-total-label">Total</span>
+              <span className="portal-yards-total-value">{totalYards(spec)} yd</span>
+              <span className="portal-yards-total-label">{yardsToPieces(spec)} pieces</span>
             </div>
           </div>
         )}
+        {!needsYardage(spec) && yardsGuidance(spec) && (
+          <p className="portal-spec-guidance">{yardsGuidance(spec)}</p>
+        )}
 
-        {/* 4 — Border */}
-        <label className="portal-check">
-          <input
-            type="checkbox"
-            checked={spec.has_border}
-            onChange={(e) => patchSpec({ has_border: e.target.checked })}
-          />
-          Border design
-        </label>
-
-        {/* 5 — Weave style (regular / ombre), decided before yards */}
+        {/* 3 — Weave style (regular / ombre) */}
         <Field
           label="Weave style"
-          hint="Patterned & plain weave can transition. Decide before setting yards."
+          hint="Patterned & plain weave can transition (ombre)."
         >
           <select
             value={spec.is_ombre ? "ombre" : "regular"}
-            onChange={(e) => patchSpec({ is_ombre: e.target.value === "ombre" })}
+            onChange={(e) =>
+              patchSpec({
+                is_ombre: e.target.value === "ombre",
+                ombre_scope: e.target.value === "ombre" ? spec.ombre_scope : null,
+              })
+            }
           >
             <option value="regular">Regular</option>
             <option value="ombre">Ombre / transition</option>
@@ -377,6 +370,28 @@ export function ProjectCreatePage() {
         {spec.is_ombre && (
           <div className="portal-subpanel">
             <div className="portal-subpanel-head">
+              <h4>Which weave transitions?</h4>
+            </div>
+            <div className="portal-check-row">
+              <label className="portal-check">
+                <input
+                  type="checkbox"
+                  checked={scopeHas("design")}
+                  onChange={() => toggleScope("design")}
+                />
+                Design weave
+              </label>
+              <label className="portal-check">
+                <input
+                  type="checkbox"
+                  checked={scopeHas("plain")}
+                  onChange={() => toggleScope("plain")}
+                />
+                Plain weave
+              </label>
+            </div>
+
+            <div className="portal-subpanel-head portal-subpanel-head-spaced">
               <h4>Colour transition</h4>
               <span
                 className={`portal-ombre-total ${ombreTotal === 100 ? "is-ok" : "is-warn"}`}
@@ -423,40 +438,71 @@ export function ProjectCreatePage() {
           </div>
         )}
 
-        {/* 6 — Yards (even numbers only; 2 yards = 1 piece) */}
-        <div className="portal-form-row portal-yards-row">
-          <Field label="Design yards" hint="Patterned — even only">
-            <input
-              type="number"
-              min={0}
-              step={2}
-              value={spec.design_yards ?? ""}
-              onChange={(e) =>
-                patchSpec({
-                  design_yards: e.target.value === "" ? null : Number(e.target.value),
-                })
-              }
-            />
-          </Field>
-          <Field label="Plain yards" hint="Plain — even only">
-            <input
-              type="number"
-              min={0}
-              step={2}
-              value={spec.plain_yards ?? ""}
-              onChange={(e) =>
-                patchSpec({
-                  plain_yards: e.target.value === "" ? null : Number(e.target.value),
-                })
-              }
-            />
-          </Field>
-          <div className="portal-yards-total">
-            <span className="portal-yards-total-label">Total</span>
-            <span className="portal-yards-total-value">{totalYards(spec)} yd</span>
-            <span className="portal-yards-total-label">{yardsToPieces(spec)} pieces</span>
+        {/* 4 — Thread type */}
+        <Field label="Thread type">
+          <select
+            value={spec.thread_type ?? ""}
+            onChange={(e) =>
+              patchSpec({ thread_type: (e.target.value || null) as ThreadType | null })
+            }
+          >
+            <option value="">Select…</option>
+            <option value="silk">Silk</option>
+            <option value="rayon">Rayon</option>
+          </select>
+        </Field>
+
+        {/* 5 — Shimmers + colours (type any colour name) */}
+        <label className="portal-check">
+          <input
+            type="checkbox"
+            checked={spec.has_shimmers}
+            onChange={(e) =>
+              patchSpec({
+                has_shimmers: e.target.checked,
+                shimmer_colors: e.target.checked ? spec.shimmer_colors : [],
+              })
+            }
+          />
+          Shimmers
+        </label>
+        {spec.has_shimmers && (
+          <div className="portal-subpanel">
+            <div className="portal-subpanel-head">
+              <h4>Shimmer colours</h4>
+            </div>
+            {spec.shimmer_colors.map((c, i) => (
+              <div className="portal-ombre-row" key={i}>
+                <input
+                  placeholder="Colour name (e.g. Gold)"
+                  value={c}
+                  onChange={(e) => setShimmer(i, e.target.value)}
+                />
+                <button
+                  className="portal-icon-btn"
+                  type="button"
+                  aria-label="Remove colour"
+                  onClick={() => removeShimmer(i)}
+                >
+                  <X size={15} />
+                </button>
+              </div>
+            ))}
+            <button className="portal-btn-secondary" type="button" onClick={addShimmer}>
+              <Plus size={15} /> Add colour
+            </button>
           </div>
-        </div>
+        )}
+
+        {/* 6 — Border */}
+        <label className="portal-check">
+          <input
+            type="checkbox"
+            checked={spec.has_border}
+            onChange={(e) => patchSpec({ has_border: e.target.checked })}
+          />
+          Border design
+        </label>
 
         {/* 7 — Embroidery */}
         <label className="portal-check">

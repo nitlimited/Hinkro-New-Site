@@ -27,25 +27,29 @@ export function emptySpec(): ProjectSpec {
     shimmer_colors: [],
     thread_type: null,
     is_ombre: false,
+    ombre_scope: null,
     ombre_colors: [],
     has_embroidery: false,
   };
 }
 
-/** Kente yards are woven in even numbers only; 2 yards = 1 piece. */
-export const SHIMMER_COLOR_OPTIONS = ["Gold", "Silver", "Green"];
-
 export function yardsToPieces(spec: ProjectSpec): number {
   return Math.round(totalYards(spec) / 2);
 }
 
-/** Guidance range for the total yardage based on who it's made for. */
+/**
+ * The 3 Pieces garment is the only one with explicit design/plain yardage.
+ * Man and Dansikran use standard approximate yardage.
+ */
+export function needsYardage(spec: ProjectSpec): boolean {
+  return spec.gender === "woman" && spec.garment_type === "3_pieces";
+}
+
+/** Guidance range for garments that don't take explicit yardage. */
 export function yardsGuidance(spec: ProjectSpec): string | null {
-  if (spec.gender === "man") return "Approximately 10–12 yards (even numbers).";
+  if (spec.gender === "man") return "Approximately 10–12 yards.";
   if (spec.gender === "woman" && spec.garment_type === "dansikran")
-    return "Approximately 6–8 yards (even numbers).";
-  if (spec.gender === "woman" && spec.garment_type === "3_pieces")
-    return "Define design and plain yards — even numbers only (2, 4, 6, 8). 2 yards = 1 piece.";
+    return "Approximately 6–8 yards.";
   return null;
 }
 
@@ -70,6 +74,12 @@ export function totalYards(spec: ProjectSpec): number {
 export const GENDER_LABEL: Record<Gender, string> = {
   man: "Man",
   woman: "Woman",
+};
+
+export const OMBRE_SCOPE_LABEL: Record<string, string> = {
+  plain: "Plain weave",
+  design: "Design weave",
+  both: "Plain & design weave",
 };
 
 export const GARMENT_LABEL: Record<GarmentType, string> = {

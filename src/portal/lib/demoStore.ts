@@ -199,6 +199,7 @@ export const demoProjects: ProjectRow[] = [
       shimmer_colors: ["Gold"],
       thread_type: "silk",
       is_ombre: false,
+      ombre_scope: null,
       ombre_colors: [],
       has_embroidery: false,
     },
@@ -242,6 +243,7 @@ export const demoProjects: ProjectRow[] = [
       shimmer_colors: ["Silver", "Green"],
       thread_type: "rayon",
       is_ombre: true,
+      ombre_scope: "both",
       ombre_colors: [
         { color: "Emerald", percentage: 45 },
         { color: "Silver", percentage: 30 },
@@ -289,6 +291,7 @@ export const demoProjects: ProjectRow[] = [
       shimmer_colors: [],
       thread_type: "rayon",
       is_ombre: false,
+      ombre_scope: null,
       ombre_colors: [],
       has_embroidery: true,
     },
