@@ -811,7 +811,10 @@ function Header({ currentPage }) {
 
             <p className="mobile-copyright">
               © Hinkro Kente 2026. All rights reserved.<br />
-              Terms and Privacy. Built and managed by Nusite IT Consulting Limited
+              Terms and Privacy. Built and managed by{" "}
+              <a href="https://www.nitlimited.com/" target="_blank" rel="noopener noreferrer" style={{ color: "var(--gold)", textDecoration: "underline" }}>
+                Nusite IT Consulting Limited
+              </a>
             </p>
           </div>
         </div>

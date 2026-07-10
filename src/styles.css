@@ -4150,6 +4150,7 @@ button {
   }
 
   .desktop-nav,
+  .nav-actions,
   .nav-cta {
     display: none;
   }
