@@ -6192,6 +6192,16 @@ button {
   background: rgba(255, 255, 255, 0.16);
 }
 
+/* On mobile the desktop CTA + portal icon are replaced by the mobile portal
+   icon and the hamburger. This rule must come after the base .nav-actions
+   above so it wins the cascade and prevents the header wrapping to two rows. */
+@media (max-width: 980px) {
+  .nav-actions,
+  .nav-cta {
+    display: none;
+  }
+}
+
 .mobile-panel-portal {
   display: inline-flex;
   align-items: center;
