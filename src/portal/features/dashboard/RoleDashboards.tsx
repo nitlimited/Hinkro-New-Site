@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Calendar, Plus } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, Calendar, Plus } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
 import {
   useBlogPosts,
@@ -9,7 +9,9 @@ import {
   useLibraryAssets,
   useProjects,
   useTeam,
+  useWeaverProfiles,
 } from "../../lib/data";
+import { detectNotifications } from "../../lib/autoNotifications";
 import {
   EmptyState,
   PriorityBadge,
@@ -38,6 +40,7 @@ export function AdminDashboard() {
   const { clients } = useClients();
   const { team } = useTeam();
   const { products } = useCatalogProducts({});
+  const { weavers: weaverProfiles } = useWeaverProfiles();
 
   const active = projects.filter((p) => !p.actual_completion && !p.is_paused);
   const completed = projects.filter((p) => p.actual_completion);
@@ -46,6 +49,48 @@ export function AdminDashboard() {
     (p) => p.est_completion && p.est_completion < today,
   );
   const weavers = team.filter((t) => t.role === "weaver");
+
+  // Auto-detect notification triggers
+  const alerts = useMemo(
+    () => detectNotifications(projects, weaverProfiles),
+    [projects, weaverProfiles],
+  );
+
+  const alertIcon = (type: string) => {
+    switch (type) {
+      case "weaver_unavailable":
+      case "stale_project":
+        return <AlertTriangle size={16} className="portal-alert-icon" />;
+      case "weaving_completed":
+        return <CheckCircle size={16} className="portal-alert-icon" />;
+      default:
+        return <Info size={16} className="portal-alert-icon" />;
+    }
+  };
+
+  const alertAction = (alert: ReturnType<typeof detectNotifications>[0]) => {
+    if (alert.projectId) {
+      return (
+        <button
+          className="portal-alert-action"
+          onClick={() => navigate(`/portal/admin/projects/${alert.projectId}`)}
+        >
+          View project
+        </button>
+      );
+    }
+    if (alert.weaverId) {
+      return (
+        <button
+          className="portal-alert-action"
+          onClick={() => navigate(`/portal/admin/weavers/${alert.weaverId}`)}
+        >
+          View weaver
+        </button>
+      );
+    }
+    return null;
+  };
 
   const stats: [string, number][] = [
     ["Active projects", active.length],
@@ -72,6 +117,25 @@ export function AdminDashboard() {
           <Plus size={15} /> New project
         </Link>
       </div>
+
+      {alerts.length > 0 && (
+        <div className="portal-alerts">
+          {alerts.map((a, i) => (
+            <div
+              key={`${a.type}-${i}`}
+              className={`portal-alert is-${a.severity}`}
+            >
+              {alertIcon(a.type)}
+              <div className="portal-alert-body">
+                <span className="portal-alert-title">{a.title}</span>
+                {" — "}
+                {a.body}
+              </div>
+              {alertAction(a)}
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="portal-stat-grid">
         {stats.map(([label, value]) => (

@@ -1210,35 +1210,6 @@ button {
   text-wrap: balance;
 }
 
-.trends-news-cta {
-  display: flex;
-  width: fit-content;
-  margin: clamp(64px, 7vw, 92px) auto 0;
-  padding: 12px 28px;
-  color: white;
-  border-radius: 5px;
-  background: var(--gold-bright);
-  box-shadow:
-    inset 0 -3px 0 rgba(0, 0, 0, 0.1),
-    0 24px 54px rgba(240, 160, 31, 0.12);
-  font-family: Overpass, system-ui, sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  text-align: center;
-  transition:
-    background 220ms ease,
-    box-shadow 220ms ease,
-    transform 220ms ease;
-}
-
-.trends-news-cta:hover {
-  background: #ffae24;
-  box-shadow:
-    inset 0 -3px 0 rgba(0, 0, 0, 0.12),
-    0 30px 70px rgba(240, 160, 31, 0.22);
-  transform: translateY(-3px);
-}
-
 .trends-carousel {
   display: flex;
   overflow: hidden;
@@ -4481,11 +4452,7 @@ button {
     line-height: 1.04;
   }
 
-  .trends-news-cta {
-    min-width: min(100%, 360px);
-    min-height: 66px;
-    font-size: 20px;
-  }
+
 
   .trends-carousel {
     gap: 16px;
@@ -5328,13 +5295,7 @@ button {
     line-height: 1.1;
   }
 
-  .trends-news-cta {
-    min-width: min(100%, 320px);
-    min-height: 58px;
-    margin-top: 42px;
-    padding: 0 28px;
-    font-size: 17px;
-  }
+
 
   .trend-card {
     flex: 0 0 78vw;
@@ -5850,7 +5811,7 @@ button {
 }
 
    /* ============================================================
-   Unified frontend buttons — medium size
+   Unified frontend buttons — Book Appointment CTA size
    ============================================================ */
 .nav-cta,
 .mobile-panel-cta,
@@ -5861,7 +5822,6 @@ button {
 .bespoke-dreams-cta,
 .bespoke-service-cta,
 .graduation-final-cta,
-.trends-news-cta,
 .product-whatsapp-cta,
 .store-whatsapp-link,
 .accessory-actions a,
@@ -5870,19 +5830,52 @@ button {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  width: auto;
-  min-width: 0;
-  min-height: 0;
-  padding: 12px 28px;
+  min-height: 54px;
+  padding: 0 32px;
   border-radius: 6px;
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 800;
   font-style: normal;
   text-transform: none;
   letter-spacing: 0.01em;
   line-height: 1.15;
   box-shadow: none;
+}
+
+.trends-news-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  margin: clamp(64px, 7vw, 92px) auto 0;
+  min-height: 54px;
+  padding: 0 32px;
+  border-radius: 6px;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  font-style: normal;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  color: white;
+  background: var(--gold-bright);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.1),
+    0 24px 54px rgba(240, 160, 31, 0.12);
+  transition:
+    background 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+
+.trends-news-cta:hover {
+  background: #ffae24;
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+    0 30px 70px rgba(240, 160, 31, 0.22);
+  transform: translateY(-3px);
 }
 
 /* keep the two-line ombre/text CTAs readable but still compact on mobile */
@@ -5896,15 +5889,208 @@ button {
   .bespoke-dreams-cta,
   .bespoke-service-cta,
   .graduation-final-cta,
-  .trends-news-cta,
   .product-whatsapp-cta,
   .store-whatsapp-link,
   .accessory-actions a,
   .graduation-hero-actions a {
-    padding: 11px 22px;
-    font-size: 14px;
-    min-height: 0;
+    padding: 0 24px;
+    min-height: 48px;
+    font-size: 15px;
   }
+  .trends-news-cta {
+    padding: 0 24px;
+    min-height: 48px;
+    font-size: 15px;
+  }
+}
+
+/* ============================================================
+   Smart Assignment Suggestions
+   ============================================================ */
+.portal-smart-assignment {
+  margin: 12px 0 20px;
+  border: 1px solid rgba(205, 140, 35, 0.3);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(205, 140, 35, 0.06), rgba(205, 140, 35, 0.02));
+  overflow: hidden;
+}
+
+.portal-smart-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(205, 140, 35, 0.08);
+  font-size: 13px;
+  font-weight: 700;
+  color: #cd8c23;
+}
+
+.portal-smart-card {
+  padding: 14px 16px;
+}
+
+.portal-smart-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.portal-smart-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.portal-smart-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.portal-smart-name {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.portal-smart-score {
+  font-size: 12px;
+  color: #666;
+}
+
+.portal-smart-assign {
+  padding: 8px 20px !important;
+  font-size: 13px !important;
+  white-space: nowrap;
+}
+
+.portal-smart-reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.portal-smart-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.portal-smart-tag.is-good {
+  background: rgba(34, 153, 68, 0.12);
+  color: #1a7a35;
+}
+
+.portal-smart-tag.is-neutral {
+  background: rgba(0, 0, 0, 0.06);
+  color: #555;
+}
+
+.portal-smart-others {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-top: 1px solid rgba(205, 140, 35, 0.15);
+  flex-wrap: wrap;
+}
+
+.portal-smart-others-label {
+  font-size: 12px;
+  color: #888;
+}
+
+.portal-smart-alt {
+  padding: 5px 12px !important;
+  font-size: 12px !important;
+}
+
+.portal-smart-alt-score {
+  margin-left: 6px;
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   Notification Alert Styles (admin banner)
+   ============================================================ */
+.portal-alerts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.portal-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.4;
+  border-left: 3px solid;
+}
+
+.portal-alert.is-warning {
+  background: #fff8e1;
+  border-color: #f9a825;
+  color: #7a5e00;
+}
+
+.portal-alert.is-info {
+  background: #e3f2fd;
+  border-color: #1976d2;
+  color: #0d47a1;
+}
+
+.portal-alert.is-success {
+  background: #e8f5e9;
+  border-color: #388e3c;
+  color: #1b5e20;
+}
+
+.portal-alert-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.portal-alert-body {
+  flex: 1;
+}
+
+.portal-alert-title {
+  font-weight: 700;
+}
+
+.portal-alert-action {
+  padding: 4px 12px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.portal-alert-action:hover {
+  opacity: 0.8;
 }
 
 /* ---- header portal access ---- */

@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Plus, X } from "lucide-react";
+import { Camera, Plus, X, Sparkles, Star, Clock, Zap } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
 import {
   createClient,
   createProject,
   useClients,
+  useProjects,
   useTeam,
+  useWeaverProfiles,
 } from "../../lib/data";
 import { Field } from "../../components/ui";
 import {
@@ -16,6 +18,7 @@ import {
   yardsGuidance,
   yardsToPieces,
 } from "../../lib/projectSpec";
+import { rankWeavers } from "../../lib/weaverAssignment";
 import type {
   GarmentType,
   Gender,
@@ -31,7 +34,17 @@ export function ProjectCreatePage() {
   const { profile } = useAuth();
   const { clients } = useClients();
   const { team } = useTeam();
+  const { weavers: weaverProfiles } = useWeaverProfiles();
+  const { projects } = useProjects({});
   const weavers = team.filter((t) => t.role === "weaver");
+
+  // Smart assignment: rank weavers based on quality, availability, workload
+  const recommendations = useMemo(() => {
+    return rankWeavers(weaverProfiles, projects, form.pattern || null);
+  }, [weaverProfiles, projects, form.pattern]);
+
+  const topPick = recommendations[0];
+  const showSuggestions = recommendations.length > 0 && !form.weaver_id;
 
   const [clientMode, setClientMode] = useState<"existing" | "new">("existing");
   const [newClient, setNewClient] = useState({ name: "", email: "" });
@@ -263,6 +276,70 @@ export function ProjectCreatePage() {
             </select>
           </Field>
         </div>
+
+        {showSuggestions && topPick && (
+          <div className="portal-smart-assignment">
+            <div className="portal-smart-header">
+              <Sparkles size={16} />
+              <span>Smart Assignment Suggestion</span>
+            </div>
+            <div className="portal-smart-card">
+              <div className="portal-smart-top">
+                <div className="portal-smart-avatar">
+                  {topPick.weaver.profile?.full_name?.charAt(0) ?? "?"}
+                </div>
+                <div className="portal-smart-info">
+                  <span className="portal-smart-name">
+                    {topPick.weaver.profile?.full_name}
+                  </span>
+                  <span className="portal-smart-score">
+                    Score: {topPick.score}/100
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="portal-btn-primary portal-smart-assign"
+                  onClick={() =>
+                    setForm({ ...form, weaver_id: topPick.weaver.profile_id })
+                  }
+                >
+                  Assign
+                </button>
+              </div>
+              <div className="portal-smart-reasons">
+                {topPick.reasons.map((r, i) => {
+                  const isPositive = r.includes("free") || r.includes("top") ||
+                    r.includes("Available") || r.includes("No pending") ||
+                    r.includes("idle") || r.includes("Specialist") ||
+                    r.includes("%") && !r.includes("needs");
+                  return (
+                    <span key={i} className={`portal-smart-tag ${isPositive ? "is-good" : "is-neutral"}`}>
+                      {r}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            {recommendations.length > 1 && (
+              <div className="portal-smart-others">
+                <span className="portal-smart-others-label">Other options:</span>
+                {recommendations.slice(1, 4).map((rec) => (
+                  <button
+                    key={rec.weaver.profile_id}
+                    type="button"
+                    className="portal-btn-secondary portal-smart-alt"
+                    onClick={() =>
+                      setForm({ ...form, weaver_id: rec.weaver.profile_id })
+                    }
+                  >
+                    {rec.weaver.profile?.full_name}
+                    <span className="portal-smart-alt-score">{rec.score}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
         <Field label="Pattern">
           <input
             placeholder="e.g. Adweneasa"
