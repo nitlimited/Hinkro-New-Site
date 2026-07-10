@@ -2068,24 +2068,6 @@ function SiteFooter() {
 
       <footer className="site-footer" aria-label="Website footer">
         <div className="footer-main">
-          <section className="footer-sitemap" aria-labelledby="footer-sitemap-title">
-            <p className="footer-eyebrow">Hinkro Kente</p>
-            <h3 id="footer-sitemap-title">Sitemap</h3>
-            <nav className="footer-sitemap-links" aria-label="Site pages">
-              {footerSitemapLinks.map(([label, href]) => (
-                <a href={href} key={href}>
-                  {label}
-                </a>
-              ))}
-            </nav>
-            <a className="footer-portal-link" href="/portal">
-              <PortalIcon />
-              <span>Client &amp; team portal</span>
-            </a>
-          </section>
-
-          <div className="footer-divider" aria-hidden="true" />
-
           <section className="footer-client-note" aria-labelledby="footer-client-care-title">
             <h3 id="footer-client-care-title">Client care notice</h3>
             <p>
@@ -2095,6 +2077,8 @@ function SiteFooter() {
               {"\n"}These terms explain timelines, refund conditions, privacy practices, pattern development expectations, and the responsibilities that help every Hinkro Kente order move smoothly.
             </p>
           </section>
+
+          <div className="footer-divider" aria-hidden="true" />
 
           <nav className="footer-policy-links" aria-label="Important Hinkro Kente policies">
             {footerPolicyLinks.map(([label, href]) => (
@@ -2118,6 +2102,19 @@ function SiteFooter() {
               <FooterSocialIcon type="pinterest" />
             </a>
           </nav>
+
+          <nav className="footer-sitemap-links" aria-label="Site pages">
+            {footerSitemapLinks.map(([label, href]) => (
+              <a href={href} key={href}>
+                {label}
+              </a>
+            ))}
+          </nav>
+
+          <a className="footer-portal-link" href="/portal">
+            <PortalIcon />
+            <span>Client &amp; team portal</span>
+          </a>
         </div>
 
         <div className="footer-bottom">

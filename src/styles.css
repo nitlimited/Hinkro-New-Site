@@ -2912,6 +2912,7 @@ button {
 
 .graduation-page {
   min-height: 100vh;
+  padding-top: 106px;
   color: white;
   background: var(--deep-navy);
 }
@@ -4308,13 +4309,14 @@ button {
   }
 
   .tradition-page {
-    padding-top: 96px;
+    padding-top: 120px;
+    text-align: center;
   }
 
   .tradition-intro {
     grid-template-columns: 1fr;
     min-height: auto;
-    padding: 92px 28px 80px;
+    padding: 120px 28px 80px;
     row-gap: 34px;
   }
 
@@ -4334,7 +4336,9 @@ button {
   .tradition-copy {
     order: 2;
     max-width: 720px;
-    text-align: left;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .right-art {
@@ -4437,6 +4441,8 @@ button {
   .history-item p {
     font-size: 15px;
     font-weight: 400;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .reviews-faq-section {
@@ -4520,7 +4526,8 @@ button {
   
 .bespoke-page {
   min-height: 100vh;
-  padding-top: 106px;
+  padding-top: 120px;
+  text-align: center;
   color: white;
   background: var(--deep-navy);
 }
@@ -4819,7 +4826,8 @@ button {
 }
 
 .design-page {
-    padding-top: 96px;
+    padding-top: 120px;
+    text-align: center;
   }
 
   .design-process-section {
@@ -4970,6 +4978,21 @@ button {
     background-position: center;
   }
 
+  .tradition-page {
+    padding-top: 100px;
+    text-align: center;
+  }
+
+  .design-page {
+    padding-top: 100px;
+    text-align: center;
+  }
+
+  .graduation-page {
+    padding-top: 100px;
+    text-align: center;
+  }
+
   .hero-shade {
     background:
       linear-gradient(180deg, rgba(9, 15, 28, 0.46), rgba(38, 22, 36, 0.52) 48%, rgba(8, 13, 25, 0.76)),
@@ -5036,7 +5059,7 @@ button {
   }
 
   .tradition-intro {
-    padding: 62px 24px 70px;
+    padding: 100px 24px 70px;
   }
 
   .section-kicker {
@@ -5047,10 +5070,14 @@ button {
   .tradition-lead {
     margin-top: 40px;
     line-height: 1.55;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .tradition-body {
     margin-top: 46px;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .tradition-exclusivity {
@@ -5172,14 +5199,14 @@ button {
 
   .history-section {
     min-height: auto;
-    padding: 0 24px 78px;
+    padding: 0 24px 60px;
   }
 
   .history-sticky {
     position: relative;
     top: auto;
     min-height: auto;
-    padding: 40px 0 0;
+    padding: 32px 0 0;
     overflow: visible;
   }
 
@@ -5212,7 +5239,7 @@ button {
     display: grid;
     grid-template-columns: 36px 1fr;
     gap: 0 14px;
-    padding: 0 0 32px;
+    padding: 0 0 24px;
     min-height: auto;
   }
 
@@ -5247,6 +5274,8 @@ button {
     font-size: 15px;
     line-height: 1.7;
     color: rgba(255, 255, 255, 0.65);
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .reviews-faq-section {
@@ -5475,7 +5504,8 @@ button {
   }
 
   .bespoke-page {
-    padding-top: 96px;
+    padding-top: 100px;
+    text-align: center;
   }
 
   .bespoke-hero-copy p {
@@ -5591,7 +5621,13 @@ button {
 @media (max-width: 720px) {
   .store-page,
   .product-detail-page {
-    padding-top: 96px;
+    padding-top: 120px;
+    text-align: center;
+  }
+
+  .graduation-page {
+    padding-top: 120px;
+    text-align: center;
   }
 
   .store-hero {
@@ -5770,7 +5806,8 @@ button {
   }
 
   .accessories-page {
-    padding-top: 96px;
+    padding-top: 120px;
+    text-align: center;
   }
 
   .accessories-intro {
@@ -6174,7 +6211,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 20px;
 }
 
 .footer-sitemap-links a {
