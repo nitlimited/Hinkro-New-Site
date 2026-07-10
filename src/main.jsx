@@ -2624,6 +2624,30 @@ function App() {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [currentPage, productSlug]);
 
+  // CollectChat — only load on frontend pages (not homepage, not portal)
+  useEffect(() => {
+    if (currentPage === "home") {
+      // Hide CollectChat launcher if already loaded
+      const launcher = document.getElementById("collectchat-container");
+      if (launcher) launcher.style.display = "none";
+      return;
+    }
+
+    // Show launcher if it was hidden
+    const launcher = document.getElementById("collectchat-container");
+    if (launcher) launcher.style.display = "";
+
+    if (window.CollectId) return; // already loaded
+
+    window.CollectId = "647b6a45cc21ec7a2e93624c";
+    const h = document.head || document.getElementsByTagName("head")[0];
+    const s = document.createElement("script");
+    s.setAttribute("type", "text/javascript");
+    s.async = true;
+    s.setAttribute("src", "https://collectcdn.com/launcher.js");
+    h.appendChild(s);
+  }, [currentPage]);
+
   return (
     <>
       <Header currentPage={currentPage} />

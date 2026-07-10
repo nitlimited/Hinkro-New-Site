@@ -1187,6 +1187,7 @@ button {
   margin: 0 auto;
   padding: clamp(76px, 7vw, 116px) 0 clamp(68px, 7vw, 102px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  text-align: center;
 }
 
 .trends-news-divider {
