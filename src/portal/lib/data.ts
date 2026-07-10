@@ -1238,6 +1238,15 @@ export async function saveWeaverProfile(input: WeaverProfileInput): Promise<void
         portrait_url: input.portrait_url ?? null,
         hometown: input.hometown ?? null,
         languages: input.languages ?? [],
+        loom_count: input.loom_count ?? 1,
+        occupied_looms: input.occupied_looms ?? 0,
+        avg_weaving_hours_per_day: input.avg_weaving_hours_per_day ?? null,
+        avg_days_per_cloth: input.avg_days_per_cloth ?? null,
+        queue_length: input.queue_length ?? 0,
+        unavailable_until: input.unavailable_until ?? null,
+        availability_note: input.availability_note ?? null,
+        reliability_score: input.reliability_score ?? 70,
+        quality_score: input.quality_score ?? 70,
         address: input.address ?? null,
         id_number: input.id_number ?? null,
         emergency_contact: input.emergency_contact ?? null,
@@ -1268,6 +1277,15 @@ export interface AddWeaverInput {
   address?: string;
   id_number?: string;
   emergency_contact?: string;
+  loom_count?: number;
+  occupied_looms?: number;
+  avg_weaving_hours_per_day?: number | null;
+  avg_days_per_cloth?: number | null;
+  queue_length?: number;
+  unavailable_until?: string | null;
+  availability_note?: string | null;
+  reliability_score?: number;
+  quality_score?: number;
 }
 
 export async function addWeaver(input: AddWeaverInput): Promise<void> {
@@ -1290,6 +1308,15 @@ export async function addWeaver(input: AddWeaverInput): Promise<void> {
       portrait_url: input.portrait_url ?? null,
       hometown: input.hometown ?? null,
       languages: input.languages ?? [],
+      loom_count: input.loom_count ?? 1,
+      occupied_looms: input.occupied_looms ?? 0,
+      avg_weaving_hours_per_day: input.avg_weaving_hours_per_day ?? null,
+      avg_days_per_cloth: input.avg_days_per_cloth ?? null,
+      queue_length: input.queue_length ?? 0,
+      unavailable_until: input.unavailable_until ?? null,
+      availability_note: input.availability_note ?? null,
+      reliability_score: input.reliability_score ?? 70,
+      quality_score: input.quality_score ?? 70,
       address: input.address ?? null,
       id_number: input.id_number ?? null,
       emergency_contact: input.emergency_contact ?? null,
@@ -1319,6 +1346,15 @@ export async function addWeaver(input: AddWeaverInput): Promise<void> {
       portrait_url: input.portrait_url ?? null,
       hometown: input.hometown ?? null,
       languages: input.languages ?? [],
+      loom_count: input.loom_count ?? 1,
+      occupied_looms: input.occupied_looms ?? 0,
+      avg_weaving_hours_per_day: input.avg_weaving_hours_per_day ?? null,
+      avg_days_per_cloth: input.avg_days_per_cloth ?? null,
+      queue_length: input.queue_length ?? 0,
+      unavailable_until: input.unavailable_until ?? null,
+      availability_note: input.availability_note ?? null,
+      reliability_score: input.reliability_score ?? 70,
+      quality_score: input.quality_score ?? 70,
       address: input.address ?? null,
       id_number: input.id_number ?? null,
       emergency_contact: input.emergency_contact ?? null,

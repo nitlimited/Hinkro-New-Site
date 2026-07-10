@@ -186,6 +186,15 @@
   border: 1px solid #cbe3d5;
 }
 
+.portal-success {
+  background: #edf5f0;
+  color: var(--portal-success);
+  border: 1px solid #cbe3d5;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+}
+
 /* ---------- Shell ---------- */
 
 .portal-shell {
@@ -2316,6 +2325,104 @@
   color: #8a5a0d;
 }
 
+.portal-capacity-strip {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  border-radius: 10px;
+  padding: 9px 11px;
+  font-size: 0.78rem;
+  border: 1px solid var(--portal-line);
+}
+
+.portal-capacity-strip.is-available {
+  background: #edf5f0;
+  border-color: #cbe3d5;
+  color: var(--portal-success);
+}
+
+.portal-capacity-strip.is-busy {
+  background: #fdf3e3;
+  border-color: #f0d9ab;
+  color: #8a5a0d;
+}
+
+.portal-capacity-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.portal-capacity-pill.is-available {
+  background: #edf5f0;
+  color: var(--portal-success);
+}
+
+.portal-capacity-pill.is-busy {
+  background: #fdf3e3;
+  color: #8a5a0d;
+}
+
+.portal-availability-card {
+  margin-bottom: 24px;
+}
+
+.portal-split-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.portal-split-head .portal-side-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 4px;
+}
+
+.portal-capacity-projects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--portal-line);
+  font-size: 0.82rem;
+  color: var(--portal-muted);
+}
+
+.portal-capacity-projects strong {
+  color: var(--portal-navy);
+}
+
+.portal-capacity-projects span {
+  background: var(--portal-bone);
+  border-radius: 999px;
+  padding: 4px 9px;
+}
+
+.portal-capacity-form {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--portal-line);
+}
+
+.portal-capacity-form h3 {
+  margin: 0 0 4px;
+  font-family: Cinzel, serif;
+  color: var(--portal-navy);
+  font-size: 1rem;
+}
+
 .portal-weaver-profile-hero {
   display: flex;
   align-items: center;
@@ -2393,5 +2500,12 @@
 
   .portal-content {
     padding: 20px 16px 48px;
+  }
+
+  .portal-capacity-strip,
+  .portal-split-head {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: stretch;
   }
 }

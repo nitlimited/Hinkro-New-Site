@@ -283,6 +283,15 @@ export interface WeaverProfileRow {
   portrait_url: string | null;
   hometown: string | null;
   languages: string[];
+  loom_count: number;
+  occupied_looms: number;
+  avg_weaving_hours_per_day: number | null;
+  avg_days_per_cloth: number | null;
+  queue_length: number;
+  unavailable_until: string | null;
+  availability_note: string | null;
+  reliability_score: number;
+  quality_score: number;
   // admin-only:
   address: string | null;
   id_number: string | null;

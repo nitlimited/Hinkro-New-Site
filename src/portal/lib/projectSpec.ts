@@ -12,6 +12,7 @@ import type {
   ProjectSpec,
   ThreadType,
   WeaverPerformance,
+  WeaverProfileRow,
 } from "./rows";
 
 /* ---------- normalisers (spec/approvals are optional jsonb) ---------- */
@@ -178,4 +179,79 @@ export function computePerformance(projects: ProjectRow[]): WeaverPerformance {
 
 export function performanceBand(score: number): "excellent" | "good" | "building" {
   return score >= 80 ? "excellent" : score >= 55 ? "good" : "building";
+}
+
+export interface WeaverCapacity {
+  loomCount: number;
+  occupiedLooms: number;
+  availableLooms: number;
+  activeProjects: number;
+  queueLength: number;
+  avgHoursPerDay: number;
+  avgDaysPerCloth: number | null;
+  currentWorkload: number;
+  availableCapacity: number;
+  nextAvailableDate: string | null;
+  unavailableUntil: string | null;
+  availabilityLabel: string;
+  canTakeNewProject: boolean;
+  onTimeDeliveryRate: number;
+  reliabilityScore: number;
+  qualityScore: number;
+}
+
+export function computeWeaverCapacity(
+  weaver: WeaverProfileRow,
+  projects: ProjectRow[],
+): WeaverCapacity {
+  const perf = computePerformance(projects);
+  const today = new Date().toISOString().slice(0, 10);
+  const activeProjects = projects.filter((p) => !p.actual_completion);
+  const latestActiveCompletion = activeProjects
+    .map((p) => p.est_completion)
+    .filter((date): date is string => Boolean(date))
+    .sort()
+    .at(-1) ?? null;
+  const unavailableUntil = weaver.unavailable_until;
+  const nextAvailableDate = [latestActiveCompletion, unavailableUntil]
+    .filter((date): date is string => Boolean(date))
+    .sort()
+    .at(-1) ?? null;
+  const loomCount = Math.max(weaver.loom_count ?? 0, 0);
+  const occupiedLooms = Math.min(Math.max(weaver.occupied_looms ?? 0, 0), loomCount);
+  const availableLooms = Math.max(loomCount - occupiedLooms, 0);
+  const queueLength = Math.max(weaver.queue_length ?? 0, 0);
+  const avgHoursPerDay = Number(weaver.avg_weaving_hours_per_day ?? 0);
+  const activeCount = activeProjects.length;
+  const currentWorkload = activeCount + queueLength;
+  const unavailableNow = Boolean(unavailableUntil && unavailableUntil >= today);
+  const canTakeNewProject =
+    !unavailableNow && avgHoursPerDay > 0 && availableLooms > 0 && queueLength === 0;
+  const availableCapacity = canTakeNewProject
+    ? Math.max(availableLooms * avgHoursPerDay - activeCount * 2, 0)
+    : 0;
+  const availabilityLabel = canTakeNewProject
+    ? "Available now"
+    : nextAvailableDate
+      ? `Available from ${nextAvailableDate}`
+      : "Not available for new work";
+
+  return {
+    loomCount,
+    occupiedLooms,
+    availableLooms,
+    activeProjects: activeCount,
+    queueLength,
+    avgHoursPerDay,
+    avgDaysPerCloth: weaver.avg_days_per_cloth,
+    currentWorkload,
+    availableCapacity,
+    nextAvailableDate,
+    unavailableUntil,
+    availabilityLabel,
+    canTakeNewProject,
+    onTimeDeliveryRate: perf.onTimeRate,
+    reliabilityScore: weaver.reliability_score,
+    qualityScore: weaver.quality_score,
+  };
 }
