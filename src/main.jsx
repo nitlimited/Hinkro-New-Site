@@ -738,6 +738,82 @@ function Header({ currentPage }) {
         </a>
       </div>
 
+      <a
+        className="nav-mobile-portal"
+        href="/portal"
+        aria-label="Client and team portal"
+        title="Client & team portal"
+      >
+        <PortalIcon />
+      </a>
+
+      <button
+        className="menu-toggle"
+        type="button"
+        aria-label="Toggle menu"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+      >
+        {open ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {open && (
+        <div className="mobile-panel">
+          <div className="mobile-panel-inner">
+            <img
+              className="mobile-panel-logo"
+              src={logoUrl}
+              alt="Hinkro Kente bespoke Kente weaving services"
+            />
+
+            <nav className="mobile-panel-nav" aria-label="Mobile navigation">
+              {navItems.map(([label, id]) => (
+                <a
+                  key={id}
+                  href={`#${id}`}
+                  className={currentPage === id ? "is-active" : ""}
+                  onClick={() => setOpen(false)}
+                >
+                  {label}
+                </a>
+              ))}
+            </nav>
+
+            <a className="mobile-panel-cta" href="https://hinkrokente.com/appointment/">
+              Start Your Kente Now
+            </a>
+
+            <a
+              className="mobile-panel-portal"
+              href="/portal"
+              onClick={() => setOpen(false)}
+            >
+              <PortalIcon />
+              <span>Client &amp; team portal</span>
+            </a>
+
+            <div className="mobile-socials" aria-label="Social links">
+              <a href="https://www.facebook.com/hinkro/" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </a>
+              <a href="https://www.instagram.com/hinkrokente/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/company/hinkro-kente" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+              </a>
+              <a href="https://www.pinterest.com/hinkrokente/" aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24 18.635 24 24.006 18.633 24.006 12.013 24.006 5.393 18.635.026 12.017.026V0z"/></svg>
+              </a>
+            </div>
+
+            <p className="mobile-copyright">
+              © Hinkro Kente 2026. All rights reserved.<br />
+              Terms and Privacy. Built and managed by Nusite IT Consulting Limited
+            </p>
+          </div>
+        </div>
+
       <button
         className="menu-toggle"
         type="button"
@@ -1965,14 +2041,22 @@ function FooterSocialIcon({ type }) {
   if (type === "facebook") {
     return (
       <svg className="footer-brand-icon footer-brand-icon-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M14.2 8.3h2.2V4.6c-.38-.05-1.68-.16-3.2-.16-3.16 0-5.32 1.93-5.32 5.47v3.08H4.4v4.12h3.48V24h4.28v-6.89h3.35l.53-4.12h-3.88v-2.67c0-1.19.33-2.02 2.04-2.02Z" />
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    );
+  }
+
+  if (type === "linkedin") {
+    return (
+      <svg className="footer-brand-icon footer-brand-icon-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
       </svg>
     );
   }
 
   return (
     <svg className="footer-brand-icon footer-brand-icon-fill" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M12.2 0C5.46 0 2 4.84 2 8.88c0 2.43.92 4.6 2.9 5.4.32.13.61 0 .7-.35.07-.24.22-.87.29-1.13.09-.35.05-.47-.2-.77-.57-.67-.94-1.54-.94-2.78 0-3.57 2.67-6.76 6.95-6.76 3.79 0 5.88 2.32 5.88 5.41 0 4.07-1.8 7.5-4.48 7.5-1.48 0-2.58-1.22-2.23-2.72.42-1.79 1.24-3.72 1.24-5.01 0-1.16-.62-2.12-1.9-2.12-1.51 0-2.72 1.56-2.72 3.65 0 1.33.45 2.23.45 2.23l-1.82 7.72c-.54 2.29-.08 5.1-.04 5.38.02.17.24.21.34.08.14-.18 1.98-2.46 2.6-4.73.18-.64 1.02-3.98 1.02-3.98.5.96 1.98 1.8 3.54 1.8 4.66 0 7.82-4.25 7.82-9.94C21.4 3.47 17.76 0 12.2 0Z" />
+      <path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 01.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.631-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12.017 24 18.635 24 24.006 18.633 24.006 12.013 24.006 5.393 18.635.026 12.017.026V0z" />
     </svg>
   );
 }
@@ -2065,17 +2149,10 @@ function SiteFooter() {
           <section className="footer-client-note" aria-labelledby="footer-client-care-title">
             <h3 id="footer-client-care-title">Client care notice</h3>
             <p>
-              Hinkro Kente creates bespoke Kente fabrics, ready-to-wear designs,
-              ceremonial pieces, graduation stoles, bridal accessories, and curated
-              services for clients who value cultural meaning, careful finishing,
-              and a clear consultation process. As a trusted kente weaver in Ghana,
-              we serve clients worldwide with custom kente weaving services and
-              personalized kente weaving services. Before confirming a bespoke order,
-              sample strip, rush request, ready-to-wear purchase, or delivery
-              arrangement, clients are encouraged to review the policies below.
-              These terms explain timelines, refund conditions, privacy practices,
-              pattern development expectations, and the responsibilities that help
-              every Hinkro Kente order move smoothly.
+              Hinkro Kente creates bespoke Kente fabrics, ready-to-wear designs, ceremonial pieces, graduation stoles, bridal accessories, and curated services for clients who value cultural meaning, careful finishing, and a clear consultation process.
+              {"\n"}As a trusted kente weaver in Ghana, we serve clients worldwide with custom kente weaving services and personalized kente weaving services.
+              {"\n"}Before confirming a bespoke order, sample strip, rush request, ready-to-wear purchase, or delivery arrangement, clients are encouraged to review the policies below.
+              {"\n"}These terms explain timelines, refund conditions, privacy practices, pattern development expectations, and the responsibilities that help every Hinkro Kente order move smoothly.
             </p>
           </section>
 
@@ -2088,13 +2165,16 @@ function SiteFooter() {
           </nav>
 
           <nav className="footer-socials" aria-label="Hinkro Kente social media">
-            <a href="https://www.instagram.com/hinkrokente/" aria-label="Instagram">
-              <FooterSocialIcon type="instagram" />
-            </a>
-            <a href="https://web.facebook.com/hinkro" aria-label="Facebook">
+            <a href="https://www.facebook.com/hinkro/" aria-label="Facebook" target="_blank" rel="noopener noreferrer">
               <FooterSocialIcon type="facebook" />
             </a>
-            <a href="https://www.pinterest.com/hinkrokente/" aria-label="Pinterest">
+            <a href="https://www.instagram.com/hinkrokente/" aria-label="Instagram" target="_blank" rel="noopener noreferrer">
+              <FooterSocialIcon type="instagram" />
+            </a>
+            <a href="https://www.linkedin.com/company/hinkro-kente" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer">
+              <FooterSocialIcon type="linkedin" />
+            </a>
+            <a href="https://www.pinterest.com/hinkrokente/" aria-label="Pinterest" target="_blank" rel="noopener noreferrer">
               <FooterSocialIcon type="pinterest" />
             </a>
           </nav>
