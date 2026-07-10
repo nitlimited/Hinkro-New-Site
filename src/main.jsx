@@ -725,6 +725,9 @@ function Header({ currentPage }) {
       </nav>
 
       <div className="nav-actions">
+        <a className="nav-cta" href="https://hinkrokente.com/appointment/">
+          Your Kente Awaits
+        </a>
         <a
           className="nav-portal"
           href="/portal"
@@ -732,9 +735,6 @@ function Header({ currentPage }) {
           title="Client & team portal"
         >
           <PortalIcon />
-        </a>
-        <a className="nav-cta" href="https://hinkrokente.com/appointment/">
-          Your Kente Awaits
         </a>
       </div>
 
@@ -1978,6 +1978,8 @@ function FooterSocialIcon({ type }) {
 }
 
 function TrendsNewsSection() {
+  const allImages = [...trendsNewsImages, ...trendsNewsImages];
+
   return (
     <section className="trends-news-section" aria-labelledby="trends-news-title">
       <div className="trends-news-inner">
@@ -1993,16 +1995,17 @@ function TrendsNewsSection() {
       </div>
 
       <div className="trends-carousel" aria-label="Kente trends and news gallery">
-        {trendsNewsImages.map((image, index) => (
-          <figure
-            className="trend-card"
-            key={image.src}
-            style={{ "--trend-delay": `${index * 90}ms` }}
-          >
-            <img src={image.src} alt={image.alt} />
-            <div className="trend-card-overlay" aria-hidden="true" />
-          </figure>
-        ))}
+        <div className="trends-carousel-track">
+          {allImages.map((image, index) => (
+            <figure
+              className="trend-card"
+              key={`${image.src}-${index}`}
+            >
+              <img src={image.src} alt={image.alt} loading="lazy" />
+              <div className="trend-card-overlay" aria-hidden="true" />
+            </figure>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -2013,14 +2016,7 @@ function PortalIcon() {
 }
 
 const footerSitemapLinks = [
-  ["Home", "#home"],
-  ["Inspiring Tradition", "#tradition"],
-  ["Design Process", "#design"],
-  ["Bespoke Kente", "#bespoke"],
-  ["Accessories", "#accessories"],
-  ["Kente Store", "#store"],
-  ["Graduation Stoles", "#graduation"],
-  ["Trends & News", "#blog"],
+  ["Sitemap", "/sitemap.xml"],
 ];
 
 const footerPolicyLinks = [
@@ -2074,14 +2070,12 @@ function SiteFooter() {
               services for clients who value cultural meaning, careful finishing,
               and a clear consultation process. As a trusted kente weaver in Ghana,
               we serve clients worldwide with custom kente weaving services and
-              personalized kente weaving services.
-            </p>
-            <p>
-              Before confirming a bespoke order, sample strip, rush request,
-              ready-to-wear purchase, or delivery arrangement, clients are encouraged
-              to review the policies below. These terms explain timelines, refund
-              conditions, privacy practices, pattern development expectations, and
-              the responsibilities that help every Hinkro Kente order move smoothly.
+              personalized kente weaving services. Before confirming a bespoke order,
+              sample strip, rush request, ready-to-wear purchase, or delivery
+              arrangement, clients are encouraged to review the policies below.
+              These terms explain timelines, refund conditions, privacy practices,
+              pattern development expectations, and the responsibilities that help
+              every Hinkro Kente order move smoothly.
             </p>
           </section>
 

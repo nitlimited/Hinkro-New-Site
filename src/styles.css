@@ -1213,12 +1213,8 @@ button {
 .trends-news-cta {
   display: flex;
   width: fit-content;
-  min-width: min(100%, 320px);
-  min-height: 54px;
-  align-items: center;
-  justify-content: center;
   margin: clamp(64px, 7vw, 92px) auto 0;
-  padding: 0 32px;
+  padding: 12px 28px;
   color: white;
   border-radius: 5px;
   background: var(--gold-bright);
@@ -1226,8 +1222,8 @@ button {
     inset 0 -3px 0 rgba(0, 0, 0, 0.1),
     0 24px 54px rgba(240, 160, 31, 0.12);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 16px;
+  font-weight: 700;
   text-align: center;
   transition:
     background 220ms ease,
@@ -1245,15 +1241,26 @@ button {
 
 .trends-carousel {
   display: flex;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x mandatory;
+  overflow: hidden;
   gap: 24px;
-  padding: 0 48px 48px;
+  padding: 0 0 48px;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
 }
 
-.trends-carousel::-webkit-scrollbar {
-  display: none;
+.trends-carousel-track {
+  display: flex;
+  gap: 24px;
+  animation: trendsScroll 30s linear infinite;
+}
+
+.trends-carousel:hover .trends-carousel-track {
+  animation-play-state: paused;
+}
+
+@keyframes trendsScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .trend-card {
@@ -1265,9 +1272,6 @@ button {
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.04);
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  scroll-snap-align: center;
-  opacity: 0;
-  animation: trendPhotoIn 720ms cubic-bezier(0.22, 1, 0.36, 1) var(--trend-delay) both;
   transition:
     box-shadow 320ms ease,
     transform 320ms ease;
@@ -1421,9 +1425,9 @@ button {
   margin: 0;
   color: rgba(255, 255, 255, 0.68);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: clamp(14px, 1vw, 16px);
+  font-size: clamp(11px, 0.8vw, 13px);
   font-weight: 400;
-  line-height: 1.82;
+  line-height: 1.72;
 }
 
 .footer-divider {
@@ -1539,7 +1543,7 @@ button {
   margin: 0;
   color: rgba(255, 255, 255, 0.62);
   font-family: Overpass, system-ui, sans-serif;
-  font-size: clamp(12px, 0.9vw, 15px);
+  font-size: clamp(10px, 0.7vw, 12px);
   font-weight: 400;
   line-height: 1.35;
 }
@@ -5845,8 +5849,8 @@ button {
   }
 }
 
-/* ============================================================
-   Unified frontend buttons — same size, compact, cute, not bold
+   /* ============================================================
+   Unified frontend buttons — medium size
    ============================================================ */
 .nav-cta,
 .mobile-panel-cta,
@@ -5869,11 +5873,11 @@ button {
   width: auto;
   min-width: 0;
   min-height: 0;
-  padding: 9px 18px;
+  padding: 12px 28px;
   border-radius: 6px;
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   font-style: normal;
   text-transform: none;
   letter-spacing: 0.01em;
@@ -5897,8 +5901,8 @@ button {
   .store-whatsapp-link,
   .accessory-actions a,
   .graduation-hero-actions a {
-    padding: 9px 16px;
-    font-size: 13px;
+    padding: 11px 22px;
+    font-size: 14px;
     min-height: 0;
   }
 }
