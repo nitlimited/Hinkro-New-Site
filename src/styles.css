@@ -4196,7 +4196,7 @@ button {
     z-index: 40;
     display: grid;
     width: auto;
-    padding: 70px 28px 40px;
+    padding: 22px 26px calc(14px + env(safe-area-inset-bottom, 0px));
     background: var(--navy);
     color: white;
     overflow-y: auto;
@@ -4204,29 +4204,29 @@ button {
 
   .mobile-panel-inner {
     display: grid;
-    min-height: calc(100vh - 144px);
     align-content: start;
     justify-items: center;
-    gap: 26px;
+    gap: 9px;
   }
 
   .mobile-panel-logo {
-    width: 210px;
+    width: 118px;
     height: auto;
     object-fit: contain;
+    margin-bottom: 2px;
   }
 
   .mobile-panel-nav {
     display: grid;
     width: min(100%, 640px);
-    margin-top: 22px;
+    margin-top: 2px;
   }
 
   .mobile-panel-nav a {
-    padding: 16px 12px;
+    padding: 10px 12px;
     border-top: 1px dotted rgba(255, 255, 255, 0.32);
     color: white;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 400;
     text-align: center;
     text-transform: none;
@@ -4241,31 +4241,31 @@ button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 56px;
-    padding: 0 36px;
+    min-height: 46px;
+    padding: 0 32px;
     border-radius: 6px;
     background: var(--gold-bright);
     color: white;
-    font-size: 17px;
-    font-weight: 800;
+    font-size: 15px;
+    font-weight: 700;
   }
 
   .mobile-panel-cta {
-    margin-top: 12px;
+    margin-top: 4px;
     font-style: italic;
     width: min(100%, 320px);
   }
 
   .mobile-socials {
     display: flex;
-    gap: 16px;
-    margin-top: 20px;
+    gap: 14px;
+    margin-top: 6px;
   }
 
   .mobile-socials a {
     display: grid;
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     place-items: center;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.12);
@@ -4279,9 +4279,10 @@ button {
 
   .mobile-copyright {
     max-width: 660px;
-    margin: 44px 0 20px;
+    margin: 6px 0 0;
+    padding-bottom: 6px;
     color: rgba(255, 255, 255, 0.9);
-    font-size: 13px;
+    font-size: 12px;
     line-height: 1.4;
     text-align: center;
   }
@@ -5011,28 +5012,28 @@ button {
   }
 
   .mobile-panel {
-    padding: 60px 28px 38px;
+    padding: 20px 24px calc(12px + env(safe-area-inset-bottom, 0px));
   }
 
   .mobile-panel-inner {
-    min-height: calc(100vh - 128px);
-    gap: 22px;
+    min-height: auto;
+    gap: 8px;
   }
 
   .mobile-panel-logo {
-    width: 184px;
+    width: 104px;
   }
 
   .mobile-panel-nav a {
-    padding: 14px 10px;
-    font-size: 16px;
+    padding: 9px 10px;
+    font-size: 15px;
   }
 
   .mobile-panel-cta,
   .mobile-hero-cta {
-    min-height: 50px;
-    padding: 0 28px;
-    font-size: 15px;
+    min-height: 44px;
+    padding: 0 26px;
+    font-size: 14px;
   }
 
   .hero-content {
@@ -5235,45 +5236,64 @@ button {
     display: none;
   }
 
-  .history-item {
+  /* Stacked single-column cards. Selectors are scoped to .history-timeline
+     and include :nth-child so they out-specify the desktop odd/even and
+     is-active placement rules — otherwise the paragraph gets forced into a
+     third column and its text is cut off. */
+  .history-timeline .history-item,
+  .history-timeline .history-item:nth-child(odd),
+  .history-timeline .history-item:nth-child(even) {
     display: grid;
-    grid-template-columns: 36px 1fr;
-    gap: 0 14px;
-    padding: 0 0 24px;
+    grid-template-columns: 30px 1fr;
+    gap: 4px 12px;
+    padding: 18px 0;
     min-height: auto;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  .history-item:last-child {
-    padding-bottom: 0;
+  .history-timeline .history-item:first-child {
+    border-top: 0;
+    padding-top: 0;
   }
 
-  .history-star {
-    display: grid;
+  .history-timeline .history-item:nth-child(odd) .history-star,
+  .history-timeline .history-item:nth-child(even) .history-star {
     grid-column: 1;
     grid-row: 1;
-    width: 36px;
-    font-size: 20px;
+    width: 30px;
+    font-size: 19px;
     color: var(--gold-bright);
     place-items: center start;
+    transform: none;
+    text-shadow: none;
   }
 
-  .history-year {
+  .history-timeline .history-item:nth-child(odd) .history-year,
+  .history-timeline .history-item:nth-child(even) .history-year {
     grid-column: 2;
     grid-row: 1;
+    justify-self: start;
+    padding: 0;
     font-size: 17px;
     font-weight: 700;
     color: var(--gold-bright);
+    transform: none;
   }
 
-  .history-item p {
+  .history-timeline .history-item:nth-child(odd) p,
+  .history-timeline .history-item:nth-child(even) p,
+  .history-timeline .history-item.is-active p,
+  .history-timeline .history-item.is-past p {
     grid-column: 1 / -1;
     grid-row: 2;
     max-width: none;
-    margin: 10px 0 0;
-    padding: 0 24px 0 50px;
+    margin: 8px 0 0;
+    padding: 0 0 0 42px;
     font-size: 15px;
     line-height: 1.7;
-    color: rgba(255, 255, 255, 0.65);
+    color: rgba(255, 255, 255, 0.9);
+    transform: none;
+    opacity: 1;
     overflow-wrap: break-word;
     word-break: break-word;
   }
