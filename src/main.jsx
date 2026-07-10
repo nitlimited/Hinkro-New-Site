@@ -646,24 +646,49 @@ function cleanStoreCopy(text = "") {
     .trim();
 }
 
-function usePageSeo(title, description, keywords = []) {
+function usePageSeo(title, description, keywords = [], jsonLd = null) {
   useEffect(() => {
     const previousTitle = document.title;
     const metaDescription = document.querySelector('meta[name="description"]');
     const previousDescription = metaDescription?.getAttribute("content") || "";
     const metaKeywords = document.querySelector('meta[name="keywords"]');
     const previousKeywords = metaKeywords?.getAttribute("content") || "";
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const twTitle = document.querySelector('meta[name="twitter:title"]');
+    const twDesc = document.querySelector('meta[name="twitter:description"]');
+    const prevOgTitle = ogTitle?.getAttribute("content") || "";
+    const prevOgDesc = ogDesc?.getAttribute("content") || "";
+    const prevTwTitle = twTitle?.getAttribute("content") || "";
+    const prevTwDesc = twDesc?.getAttribute("content") || "";
 
     document.title = title;
     if (metaDescription) metaDescription.setAttribute("content", description);
     if (metaKeywords) metaKeywords.setAttribute("content", keywords.join(", "));
+    if (ogTitle) ogTitle.setAttribute("content", title);
+    if (ogDesc) ogDesc.setAttribute("content", description);
+    if (twTitle) twTitle.setAttribute("content", title);
+    if (twDesc) twDesc.setAttribute("content", description);
+
+    let scriptEl = null;
+    if (jsonLd) {
+      scriptEl = document.createElement("script");
+      scriptEl.type = "application/ld+json";
+      scriptEl.text = JSON.stringify(jsonLd);
+      document.head.appendChild(scriptEl);
+    }
 
     return () => {
       document.title = previousTitle;
       if (metaDescription) metaDescription.setAttribute("content", previousDescription);
       if (metaKeywords) metaKeywords.setAttribute("content", previousKeywords);
+      if (ogTitle) ogTitle.setAttribute("content", prevOgTitle);
+      if (ogDesc) ogDesc.setAttribute("content", prevOgDesc);
+      if (twTitle) twTitle.setAttribute("content", prevTwTitle);
+      if (twDesc) twDesc.setAttribute("content", prevTwDesc);
+      if (scriptEl?.parentNode) scriptEl.parentNode.removeChild(scriptEl);
     };
-  }, [description, keywords, title]);
+  }, [description, jsonLd, keywords, title]);
 }
 
 function getCurrentPage() {
@@ -783,6 +808,20 @@ function Header({ currentPage }) {
 }
 
 function AccessoriesPage() {
+  usePageSeo(
+    "Kente Accessories | Graduation Stoles, Duffel Bags, Bridal Fans | Hinkro Kente",
+    "Explore Hinkro Kente accessories — custom Kente graduation stoles, men's duffel bags, bridal hand fans, garment bags, flip boxes, and Moonlight perfume. Bespoke accessories for every occasion.",
+    [
+      "kente accessories",
+      "kente graduation stole",
+      "kente duffel bag",
+      "bridal kente fan",
+      "kente garment bag",
+      "Hinkro accessories",
+      "kente gift box",
+    ],
+  );
+
   return (
     <main className="accessories-page" id="accessories">
       <section className="accessories-intro" aria-labelledby="accessories-title">
@@ -851,7 +890,7 @@ function AccessoriesPage() {
 function GraduationStolePage() {
   usePageSeo(
     "Kente Graduation Stole and Sash | Authentic African Graduation Stoles | Hinkro Kente",
-    "Order an authentic Kente Graduation Stole or sash from Hinkro Kente. Custom African graduation stoles with names, school colors, crests, class year, symbols, and rush-order guidance.",
+    "Order an authentic Kente Graduation Stole or sash from Hinkro Kente. Custom African graduation stoles with names, school colors, crests, class year, symbols, and rush-order guidance. Handwoven in Ghana, shipped worldwide.",
     [
       "Kente Graduation Stole",
       "Kente Graduation Sash",
@@ -859,7 +898,31 @@ function GraduationStolePage() {
       "custom graduation stole Ghana",
       "personalized Kente graduation sash",
       "Hinkro Kente graduation stole",
+      "bespoke graduation stole",
+      "authentic handwoven graduation stole",
+      "Ghanaian graduation stole",
+      "university graduation kente",
     ],
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "Kente Graduation Stole and Sash",
+      "description": "Authentic handwoven Kente Graduation Stole and sash by Hinkro Kente. Custom African graduation stoles with names, school colors, crests, class year, symbols, and personalized details.",
+      "brand": {"@type": "Brand", "name": "Hinkro Kente"},
+      "category": "Graduation Accessories",
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "seller": {"@type": "Organization", "@id": "https://www.hinkrokente.com/#organization"}
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "reviewCount": "3"
+      }
+    }
   );
 
   return (
@@ -1016,10 +1079,10 @@ function StorePage({ productSlug }) {
   usePageSeo(
     selectedProduct
       ? selectedProduct.seo.title
-      : "Authentic Kente Fabric Store | Buy Ghana Kente by Color | Hinkro Kente",
+      : "Authentic Kente Fabric Store | Buy Handwoven Ghana Kente by Color | Hinkro Kente",
     selectedProduct
       ? selectedProduct.seo.description
-      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse authentic Kente by color and occasion, then chat on WhatsApp to order your preferred Kente cloth.",
+      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse handwoven Ghanaian Kente by color and occasion — gold, blue, green, red, ombre, and more. Chat on WhatsApp to order your preferred Kente cloth.",
     selectedProduct
       ? selectedProduct.seo.keywords
       : [
@@ -1028,6 +1091,11 @@ function StorePage({ productSlug }) {
           "Ghana Kente cloth",
           "handwoven Kente",
           "Hinkro Kente store",
+          "buy African fabric online",
+          "Kente by color",
+          "gold Kente",
+          "blue Kente",
+          "ombre Kente",
         ],
   );
 
@@ -1145,7 +1213,14 @@ function StorePage({ productSlug }) {
           blue Kente, gold Kente, green Kente, red Kente, pink Kente, ombre Kente,
           shimmering Kente, and ceremonial Kente cloth. Each product page keeps its
           original product URL, adds descriptive color keywords, and gives buyers a
-          clear WhatsApp path to confirm the right weave before ordering.
+          clear WhatsApp path to confirm the right weave before ordering. Every piece
+          is authentic handwoven Kente from our trusted weaving studio in Ghana.
+        </p>
+        <p>
+          Looking for bespoke Kente weaving services? Hinkro Kente is a trusted kente
+          weaver in Ghana offering custom kente weaving services and personalized kente
+          weaving services for weddings, engagements, graduations, and cultural celebrations.
+          We ship worldwide to the USA, UK, Canada, Europe, and beyond.
         </p>
       </section>
     </main>
@@ -1158,9 +1233,9 @@ function BlogPage() {
   const [blogPage, setBlogPage] = useState(1);
 
   usePageSeo(
-    "Kente Trends & News | Hinkro Kente",
-    "Read Hinkro Kente trends, style inspiration, ceremony guidance, and bespoke Kente news.",
-    ["Kente trends", "Kente news", "Hinkro Kente blog", "Ghana Kente inspiration"],
+    "Kente Trends & News | Bespoke Kente Inspiration & Styling | Hinkro Kente",
+    "Read Hinkro Kente trends, bespoke Kente styling inspiration, wedding guidance, graduation ideas, ceremony advice, and custom Kente news from Ghana's trusted kente weaver.",
+    ["Kente trends", "Kente news", "Hinkro Kente blog", "Ghana Kente inspiration", "bespoke Kente styling", "wedding Kente ideas"],
   );
 
   const fallbackPosts = trendsNewsImages.map((image, index) => ({
@@ -1479,6 +1554,34 @@ function ProductDetailPage({ product, currency, products }) {
 }
 
 function BespokePage() {
+  usePageSeo(
+    "Bespoke Kente Weaving Services | Custom Kente Designer in Ghana | Hinkro Kente",
+    "Hinkro Kente offers bespoke Kente weaving services — custom-designed, handwoven Kente for weddings, engagements, graduations, and cultural celebrations. Trusted kente weaver in Ghana with worldwide delivery.",
+    [
+      "bespoke kente weaving services",
+      "custom kente weaving services",
+      "personalized kente weaving services",
+      "kente weaver in Ghana",
+      "trusted kente weaver",
+      "custom kente cloth",
+      "bespoke kente designer",
+      "Hinkro Kente bespoke",
+    ],
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "serviceType": "Bespoke Kente Weaving",
+      "provider": {"@type": "Organization", "@id": "https://www.hinkrokente.com/#organization"},
+      "description": "Hinkro Kente provides bespoke Kente weaving services including custom color-way selection, storytelling patterns, and personalized design. Every cloth is handwoven in Ghana.",
+      "areaServed": [
+        {"@type": "Country", "name": "Ghana"},
+        {"@type": "Country", "name": "United States"},
+        {"@type": "Country", "name": "United Kingdom"},
+        {"@type": "Country", "name": "Canada"}
+      ]
+    }
+  );
+
   return (
     <main className="bespoke-page">
       <section className="bespoke-hero" aria-labelledby="bespoke-hero-title">
@@ -1571,6 +1674,19 @@ function BespokeFaqSection() {
 }
 
 function DesignPage() {
+  usePageSeo(
+    "Kente Design Process | Custom Kente Design & Weaving Stages | Hinkro Kente",
+    "See how Hinkro Kente designs and weaves custom Kente — from consultation and concept to sample weaving and finishing. Our 6-stage design process ensures your bespoke Kente is perfect.",
+    [
+      "kente design process",
+      "custom kente design",
+      "how kente is made",
+      "kente weaving stages",
+      "Hinkro Kente design",
+      "bespoke kente process",
+    ],
+  );
+
   return (
     <main className="design-page">
       <section className="design-process-section" aria-labelledby="design-process-title">
@@ -1735,6 +1851,19 @@ function DesignTeamSection() {
 }
 
 function InspiringTradition() {
+  usePageSeo(
+    "About Hinkro Kente | Ghanaian Bespoke Kente Weaving Company | Our Story",
+    "Hinkro Kente is a Ghanaian bespoke Kente weaving company specialising in designing and hand-weaving custom-made Kente for weddings, graduations, and cultural celebrations. Learn about our story, mission, and craftsmanship.",
+    [
+      "about Hinkro Kente",
+      "Ghanaian kente weaving company",
+      "bespoke kente Ghana",
+      "kente weaving history",
+      "Hinkro Kente story",
+      "traditional kente weaver",
+    ],
+  );
+
   return (
     <main className="tradition-page">
       <section
@@ -1886,11 +2015,12 @@ function PortalIcon() {
 const footerSitemapLinks = [
   ["Home", "#home"],
   ["Inspiring Tradition", "#tradition"],
-  ["Design", "#design"],
-  ["Bespoke", "#bespoke"],
+  ["Design Process", "#design"],
+  ["Bespoke Kente", "#bespoke"],
   ["Accessories", "#accessories"],
-  ["Store", "#store"],
+  ["Kente Store", "#store"],
   ["Graduation Stoles", "#graduation"],
+  ["Trends & News", "#blog"],
 ];
 
 const footerPolicyLinks = [
@@ -1942,7 +2072,9 @@ function SiteFooter() {
               Hinkro Kente creates bespoke Kente fabrics, ready-to-wear designs,
               ceremonial pieces, graduation stoles, bridal accessories, and curated
               services for clients who value cultural meaning, careful finishing,
-              and a clear consultation process.
+              and a clear consultation process. As a trusted kente weaver in Ghana,
+              we serve clients worldwide with custom kente weaving services and
+              personalized kente weaving services.
             </p>
             <p>
               Before confirming a bespoke order, sample strip, rush request,
@@ -2414,7 +2546,7 @@ function Hero() {
       aria-label="Bespoke Kente Weaving Services by Hinkro Kente"
     >
       <h1 className="seo-title">
-        Bespoke Kente Weaving Services | Hinkro Kente
+        Bespoke Kente Weaving Services | Custom Kente Weaver in Ghana | Hinkro Kente
       </h1>
       {slides.map((slide, index) => (
         <div
@@ -2445,7 +2577,9 @@ function Hero() {
 
       <div className="hero-marquee" aria-hidden="true">
         <span>Bespoke Kente Weaving Services</span>
-        <span>Bespoke Kente Weaving Services</span>
+        <span>Custom Kente Weaving Services</span>
+        <span>Personalized Kente Weaving Services</span>
+        <span>Trusted Kente Weaver in Ghana</span>
       </div>
 
       <button
