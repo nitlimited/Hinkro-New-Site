@@ -4194,7 +4194,7 @@ button {
     z-index: 40;
     display: grid;
     width: auto;
-    padding: 104px 28px 40px;
+    padding: 70px 28px 40px;
     background: var(--navy);
     color: white;
     overflow-y: auto;
@@ -4277,7 +4277,7 @@ button {
 
   .mobile-copyright {
     max-width: 660px;
-    margin: 44px 0 0;
+    margin: 44px 0 20px;
     color: rgba(255, 255, 255, 0.9);
     font-size: 13px;
     line-height: 1.4;
@@ -4987,7 +4987,7 @@ button {
   }
 
   .mobile-panel {
-    padding: 90px 28px 38px;
+    padding: 60px 28px 38px;
   }
 
   .mobile-panel-inner {

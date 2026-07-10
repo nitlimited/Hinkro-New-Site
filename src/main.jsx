@@ -738,14 +738,16 @@ function Header({ currentPage }) {
         </a>
       </div>
 
-      <a
-        className="nav-mobile-portal"
-        href="/portal"
-        aria-label="Client and team portal"
-        title="Client & team portal"
-      >
-        <PortalIcon />
-      </a>
+      {!open && (
+        <a
+          className="nav-mobile-portal"
+          href="/portal"
+          aria-label="Client and team portal"
+          title="Client & team portal"
+        >
+          <PortalIcon />
+        </a>
+      )}
 
       <button
         className="menu-toggle"
