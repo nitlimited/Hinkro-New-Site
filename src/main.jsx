@@ -490,6 +490,45 @@ const bespokeFaqItems = [
 
 const accessoryItems = [
   {
+    category: "Protection and Storage",
+    title: "Bridal Garment Bag",
+    image: "/images/hinkro-accessory-bridal-garment-bag.jpg",
+    hoverImage: "/images/hinkro-accessory-gown-bag-product.jpg",
+    imageAlt: "Hinkro bridal garment bag for Kente gown protection",
+    text: "Your dream Kente gown deserves first class care. Designed to keep your gown safe, spotless, and ready for your big moment, it's the elegant companion every bride deserves.",
+    availability: "Bridal Package Only",
+    actions: [
+      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
+      ["Get Garment Bag", "https://www.hinkrokente.com/product/bridal-gown-bag/"],
+    ],
+  },
+  {
+    category: "Protection and Storage",
+    title: "Men Duffel Bag",
+    image: "/images/hinkro-accessory-men-duffel-bag.jpg",
+    hoverImage: "/images/hinkro-accessory-men-duffel-bag-product.jpg",
+    imageAlt: "Hinkro men's duffel bag for Kente cloth protection and storage",
+    text: "Effortlessly stylish and designed for the modern man, the Hinkro Men's Duffle Bag combines easy-carry convenience with spacious storage and premium protection for your Kente cloth. Crafted for those who demand both comfort and style, it's the perfect companion for travel or everyday elegance.",
+    availability: "All Male Kente",
+    actions: [
+      ["Start Men Bespoke", "https://wa.link/5sqlyv"],
+      ["Get Duffel Bag", "https://www.hinkrokente.com/product/hinkro-men-duffel-bag/"],
+    ],
+  },
+  {
+    category: "Personal Lifestyle",
+    title: "Bridal Electronic Hand Fan",
+    image: "/images/hinkro-accessory-bridal-hand-fan.jpg",
+    hoverImage: "/images/hinkro-accessory-bridal-hand-fan-product.jpg",
+    imageAlt: "Bride holding Hinkro bridal electronic hand fan",
+    text: "The ultimate blend of style and comfort for your big day. Designed to keep brides cool under the sun, it ensures you stay fresh, radiant, and sweat-free. A luxurious must-have accessory for every bride.",
+    availability: "Coming Soon (Bridal Package Only)",
+    actions: [
+      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
+      ["Get Fan", "https://www.hinkrokente.com/product/hinkro-hand-held-bridal-fan/"],
+    ],
+  },
+  {
     category: "Ceremonial",
     title: "Kente Graduation Stole & Sash",
     image: "/images/graduation-stole/kente-graduation-stole-custom-name-closeup.jpg",
@@ -580,6 +619,18 @@ function getProductSlugFromLocation() {
 
   const hash = window.location.hash.replace("#", "");
   const hashMatch = hash.match(/^store\/product\/([^/]+)$/);
+  if (hashMatch) return hashMatch[1];
+
+  return "";
+}
+
+function getBlogSlugFromLocation() {
+  const path = window.location.pathname;
+  const blogMatch = path.match(/^\/blog\/([^/]+)\/?$/);
+  if (blogMatch) return blogMatch[1];
+
+  const hash = window.location.hash.replace("#", "");
+  const hashMatch = hash.match(/^blog\/([^/]+)$/);
   if (hashMatch) return hashMatch[1];
 
   return "";
@@ -692,8 +743,34 @@ function usePageSeo(title, description, keywords = [], jsonLd = null) {
 
 function getCurrentPage() {
   const path = window.location.pathname;
+
   if (path === "/authentic-african-kente-graduation-stole-sashe/") return "graduation";
   if (path === "/authentic-kente-fabric/" || path.startsWith("/product/")) return "store";
+
+  if (path.startsWith("/blog/")) return "blog";
+
+  const wpPageRoutes = {
+    "/weaving-authentic-ghanaian-kente-fabric/": "tradition",
+    "/authentic-kente-cloth/": "tradition",
+    "/kente-trends/": "tradition",
+    "/design-kente/": "design",
+    "/hinkro-kente-accessories/": "accessories",
+    "/customized-kente-weaving-services/": "bespoke",
+    "/customized-kente-services/": "coming-soon-customized",
+    "/kente-bridal-package/": "coming-soon-bridal",
+    "/weave-on-demand-kente/": "coming-soon-weave",
+    "/boutique-kente-shop-online-buy/": "store",
+    "/lead-time-and-rush-orders/": "lead-time",
+    "/privacy-policy/": "privacy",
+    "/terms-and-condition/": "terms",
+    "/terms-and-conditions-bespoke-service/": "bespoke-terms",
+    "/terms-and-conditions-sample-strip-policy-and-pattern-development/": "sample-strip",
+    "/terms-and-conditions-refund-policy/": "refund",
+    "/contact-hinkro-kente/": "contact",
+    "/appointment/": "contact",
+    "/thank-you/": "home",
+  };
+  if (wpPageRoutes[path]) return wpPageRoutes[path];
 
   const hash = window.location.hash.replace("#", "");
   if (["tradition", "design", "bespoke", "accessories", "store", "graduation", "blog"].includes(hash)) return hash;
@@ -1016,9 +1093,20 @@ function GraduationStolePage() {
           Order your African Kente Graduation Stole and sash, make a statement on your big day,
           and create memories that last a lifetime.
         </h2>
-        <a href={getGraduationOrderUrl()}>
-          <WhatsAppIcon />
-          Order Now
+        <div className="graduation-final-cta-actions">
+          <a href={getGraduationOrderUrl()}>
+            <WhatsAppIcon />
+            Order Now
+          </a>
+        </div>
+      </section>
+
+      <section className="shop-footer-cta graduation-shop-cta" aria-labelledby="graduation-shop-title">
+        <h2 id="graduation-shop-title">
+          Visit our Kente Shop for our curated kente fabric just for your graduation
+        </h2>
+        <a className="shop-footer-button" href="#store">
+          Shop Now <span aria-hidden="true">→</span>
         </a>
       </section>
     </main>
@@ -1242,10 +1330,79 @@ function StorePage({ productSlug }) {
   );
 }
 
-function BlogPage() {
+function BlogPostDetail({ blogSlug }) {
+  const posts = usePublicBlogPosts();
+  const post = posts.find((p) => p.slug === blogSlug);
+
+  usePageSeo(
+    post ? `${post.title} | Hinkro Kente` : "Blog Post | Hinkro Kente",
+    post?.excerpt || "Read this Hinkro Kente blog post about Kente trends, bespoke Kente styling, and Ghanaian cultural heritage.",
+    post ? [post.title, "Hinkro Kente blog", "Kente trends"] : ["Hinkro Kente blog", "Kente trends"],
+  );
+
+  if (!post) {
+    return (
+      <main className="store-page blog-page" id="blog">
+        <section className="store-hero" aria-labelledby="blog-title">
+          <p className="store-kicker">Blog</p>
+          <h1 id="blog-title">Post not found</h1>
+          <p>This blog post may have been moved or is no longer available.</p>
+          <a href="/blog/" className="cta-button" style={{ display: "inline-block", marginTop: "1.5rem" }}>Back to all stories</a>
+        </section>
+      </main>
+    );
+  }
+
+  const publishDate = post.publish_at ? new Date(post.publish_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : null;
+
+  return (
+    <main className="store-page blog-page" id="blog">
+      <section className="store-hero" aria-labelledby="post-title">
+        <p className="store-kicker">Trends & News</p>
+        <a href="/blog/" style={{ fontSize: "0.875rem", color: "var(--gold)", marginBottom: "1rem", display: "inline-block" }}>← Back to all stories</a>
+        <h1 id="post-title">{post.title}</h1>
+        {publishDate && (
+          <p style={{ opacity: 0.7, fontSize: "0.9rem", marginTop: "0.5rem" }}>Published {publishDate}</p>
+        )}
+      </section>
+
+      {post.featured_image && (
+        <section className="store-grid-section" style={{ maxWidth: "800px", margin: "0 auto", padding: "0 1.5rem" }}>
+          <img
+            src={post.featured_image}
+            alt={post.title}
+            style={{ width: "100%", height: "auto", borderRadius: "12px", marginBottom: "2rem" }}
+          />
+        </section>
+      )}
+
+      <section className="store-grid-section" style={{ maxWidth: "800px", margin: "0 auto", padding: "0 1.5rem 3rem" }}>
+        {post.excerpt && (
+          <p style={{ fontSize: "1.15rem", lineHeight: 1.7, color: "var(--text)", marginBottom: "1.5rem", fontStyle: "italic" }}>
+            {post.excerpt}
+          </p>
+        )}
+        {post.content ? (
+          <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+        ) : (
+          <p>Full content for this post is being prepared. Please check back soon for the complete article.</p>
+        )}
+        <div style={{ marginTop: "3rem", textAlign: "center" }}>
+          <a href="/blog/" className="cta-button">← Back to all stories</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function BlogPage({ blogSlug }) {
   const posts = usePublicBlogPosts();
   const [postsPerPage, setPostsPerPage] = useState(12);
   const [blogPage, setBlogPage] = useState(1);
+
+  if (blogSlug) {
+    return <BlogPostDetail blogSlug={blogSlug} />;
+  }
 
   usePageSeo(
     "Kente Trends & News | Bespoke Kente Inspiration & Styling | Hinkro Kente",
@@ -1303,7 +1460,7 @@ function BlogPage() {
         </div>
         <div className="store-grid">
           {pagedPosts.map((post) => (
-            <article className="store-product-card" key={post.id}>
+            <a href={post.slug ? `/blog/${post.slug}/` : undefined} className="store-product-card" key={post.id} style={{ textDecoration: "none", color: "inherit" }}>
               <div className="store-product-image">
                 {post.featured_image && (
                   <img src={post.featured_image} alt={post.title} loading="lazy" />
@@ -1314,7 +1471,7 @@ function BlogPage() {
                 <h2>{post.title}</h2>
                 <p className="store-product-seo">{post.excerpt}</p>
               </div>
-            </article>
+            </a>
           ))}
         </div>
         {totalBlogPages > 1 && (
@@ -2043,13 +2200,14 @@ const footerSitemapLinks = [
 ];
 
 const footerPolicyLinks = [
-  ["Privacy Policy", "https://www.hinkrokente.com/privacy-policy/"],
-  ["Bespoke Service Terms", "https://www.hinkrokente.com/terms-and-conditions-bespoke-service/"],
-  ["Lead Time & Rush Orders", "https://www.hinkrokente.com/lead-time-and-rush-orders/"],
-  ["Refund Policy", "https://www.hinkrokente.com/terms-and-conditions-refund-policy/"],
+  ["Privacy Policy", "/privacy-policy/"],
+  ["Terms & Conditions", "/terms-and-condition/"],
+  ["Bespoke Service Terms", "/terms-and-conditions-bespoke-service/"],
+  ["Lead Time & Rush Orders", "/lead-time-and-rush-orders/"],
+  ["Refund Policy", "/terms-and-conditions-refund-policy/"],
   [
     "Sample Strip & Pattern Development",
-    "https://www.hinkrokente.com/terms-and-conditions-sample-strip-policy-and-pattern-development/",
+    "/terms-and-conditions-sample-strip-policy-and-pattern-development/",
   ],
 ];
 
@@ -2616,14 +2774,380 @@ function Hero() {
   );
 }
 
+const policyPages = {
+  "terms-and-condition": {
+    title: "Terms and Conditions",
+    subtitle: "Last modified 7 July 2024",
+    seo: ["Hinkro Kente terms and conditions", "Hinkro Kente terms of service", "kente purchasing terms Ghana"],
+    content: `
+      <h2>Overview</h2>
+      <p>This website is operated by Hinkro Kente. Throughout the site, the terms "we", "us" and "our" refer to Hinkro Kente. Hinkro Kente offers this website, including all information, tools and services available from this site to you, the user, conditioned upon your acceptance of all terms, conditions, policies and notices stated here. By visiting our site and/or purchasing something from us, you engage in our "Service" and agree to be bound by the following terms and conditions ("Terms of Service", "Terms"), including those additional terms and conditions and policies referenced herein and/or available by hyperlink. These Terms of Service apply to all users of the site, including without limitation users who are browsers, vendors, customers, merchants, and/or contributors of content.</p>
+      <p>Please read these Terms of Service carefully before accessing or using our website. By accessing or using any part of the site, you agree to be bound by these Terms of Service. If you do not agree to all the terms and conditions of this agreement, then you may not access the website or use any services.</p>
+
+      <h2>Section 1 — Online Terms and Conditions</h2>
+      <p>By agreeing to these Terms of Service, you represent that you are at least the age of majority in your state or province of residence, and you have given us your consent to allow any of your minor dependents to use this site. You may not use our products for any illegal or unauthorized purpose nor may you, in the use of the Service, violate any laws in your jurisdiction (including but not limited to copyright laws). You must not transmit any worms or viruses or any code of a destructive nature. A breach or violation of any of the Terms will result in an immediate termination of your Services.</p>
+
+      <h2>Section 2 — General Conditions</h2>
+      <p>We reserve the right to refuse service to anyone for any reason at any time. You understand that your content (not including credit card information), may be transferred unencrypted and involve (a) transmissions over various networks; and (b) changes to conform and adapt to technical requirements of connecting networks or devices. Credit card information is always encrypted during transfer over networks.</p>
+      <p>You agree not to reproduce, duplicate, copy, sell, resell or exploit any portion of the Service, use of the Service, or access to the Service or any contact on the website through which the service is provided, without express written permission by us.</p>
+
+      <h2>Section 3 — Accuracy, Completeness and Timeliness of Information</h2>
+      <p>We are not responsible if information made available on this site is not accurate, complete or current. The material on this site is provided for general information only and should not be relied upon or used as the sole basis for making decisions without consulting primary, more accurate, more complete or more timely sources of information. Any reliance on the material on this site is at your own risk.</p>
+      <p>This site may contain certain historical information. Historical information, necessarily, is not current and is provided for your reference only. We reserve the right to modify the contents of this site at any time, but we have no obligation to update any information on our site.</p>
+
+      <h2>Section 4 — Modifications to the Service and Prices</h2>
+      <p>Prices for our products are subject to change without notice. We reserve the right at any time to modify or discontinue the Service (or any part or content thereof) without notice at any time. We shall not be liable to you or to any third-party for any modification, price change, suspension or discontinuance of the Service.</p>
+
+      <h2>Section 5 — Products or Services</h2>
+      <p>Certain products or services may be available exclusively online through the website. These products or services may have limited quantities and are subject to return or exchange only according to our <a href="/terms-and-conditions-refund-policy/">Refund Policy</a>. We have made every effort to display as accurately as possible the colors and images of our products that appear at the store. We cannot guarantee that your computer monitor's display of any color will be accurate.</p>
+      <p>We reserve the right, but are not obligated, to limit the sales of our products or Services to any person, geographic region or jurisdiction. We may exercise this right on a case-by-case basis. We reserve the right to limit the quantities of any products or services that we offer.</p>
+
+      <h2>Section 6 — Accuracy of Billing and Account Information</h2>
+      <p>We reserve the right to refuse any order you place with us. We may, in our sole discretion, limit or cancel quantities purchased per person, per household or per order. You agree to provide current, complete and accurate purchase and account information for all purchases made at our store. For more detail, please review our <a href="/terms-and-conditions-refund-policy/">Refund Policy</a>.</p>
+
+      <h2>Section 7 — Optional Tools</h2>
+      <p>We may provide you with access to third-party tools over which we neither monitor nor have any control nor input. You acknowledge and agree that we provide access to such tools "as is" and "as available" without any warranties, representations or conditions of any kind and without any endorsement. We shall have no liability whatsoever arising from or relating to your use of optional third-party tools.</p>
+
+      <h2>Section 8 — Third-Party Links</h2>
+      <p>Certain content, products and services available via our Service may include materials from third-parties. Third-party links on this site may direct you to third-party websites that are not affiliated with us. We are not responsible for examining or evaluating the content or accuracy and we do not warrant and will not have any liability or responsibility for any third-party materials or websites.</p>
+
+      <h2>Section 9 — User Comments, Feedback and Other Submissions</h2>
+      <p>If, at our request, you send certain specific submissions or without a request from us you send creative ideas, suggestions, proposals, plans, or other materials, whether online, by email, by postal mail, or otherwise (collectively, 'comments'), you agree that we may, at any time, without restriction, edit, copy, publish, distribute, translate and otherwise use in any medium any comments that you forward to us.</p>
+
+      <h2>Section 10 — Personal Information</h2>
+      <p>Your submission of personal information through the store is governed by our <a href="/privacy-policy/">Privacy Policy</a>.</p>
+
+      <h2>Section 11 — Errors, Inaccuracies and Omissions</h2>
+      <p>Occasionally there may be information on our site or in the Service that contains typographical errors, inaccuracies or omissions that may relate to product descriptions, pricing, promotions, offers, product shipping charges, transit times and availability. We reserve the right to correct any errors, inaccuracies or omissions, and to change or update information or cancel orders if any information in the Service or on any related website is inaccurate at any time without prior notice.</p>
+
+      <h2>Section 12 — Prohibited Uses</h2>
+      <p>In addition to other prohibitions as set forth in the Terms of Service, you are prohibited from using the site or its content: (a) for any unlawful purpose; (b) to solicit others to perform or participate in any unlawful acts; (c) to violate any international, federal, provincial or state regulations, rules, laws, or local ordinances; (d) to infringe upon or violate our intellectual property rights or the intellectual property rights of others; (e) to harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate; (f) to submit false or misleading information; (g) to upload or transmit viruses or any other type of malicious code; (h) to collect or track the personal information of others; (i) to spam, phish, pharm, pretext, spider, crawl, or scrape; (j) for any obscene or immoral purpose; or (k) to interfere with or circumvent the security features of the Service.</p>
+
+      <h2>Section 13 — Disclaimer of Warranties; Limitation of Liability</h2>
+      <p>We do not guarantee, represent or warrant that your use of our service will be uninterrupted, timely, secure or error-free. We do not warrant that the results that may be obtained from the use of the service will be accurate or reliable. You agree that from time to time we may remove the service for indefinite periods of time or cancel the service at any time, without notice to you.</p>
+      <p>You expressly agree that your use of, or inability to use, the service is at your sole risk. The service and all products and services delivered to you through the service are (except as expressly stated by us) provided 'as is' and 'as available' for your use, without any representation, warranties or conditions of any kind, either express or implied.</p>
+      <p>In no case shall Hinkro Kente, our directors, officers, employees, affiliates, agents, contractors, interns, suppliers, service providers or licensors be liable for any injury, loss, claim, or any direct, indirect, incidental, punitive, special, or consequential damages of any kind.</p>
+
+      <h2>Section 14 — Indemnification</h2>
+      <p>You agree to indemnify, defend and hold harmless Hinkro Kente and our parent, subsidiaries, affiliates, partners, officers, directors, agents, contractors, licensors, service providers, subcontractors, suppliers, interns and employees, harmless from any claim or demand, including reasonable attorneys' fees, made by any third-party due to or arising out of your breach of these Terms of Service or the documents they incorporate by reference, or your violation of any law or the rights of a third-party.</p>
+
+      <h2>Section 15 — Severability</h2>
+      <p>In the event that any provision of these Terms of Service is determined to be unlawful, void or unenforceable, such provision shall nonetheless be enforceable to the fullest extent permitted by applicable law, and the unenforceable portion shall be deemed to be severed from these Terms of Service.</p>
+
+      <h2>Section 16 — Termination</h2>
+      <p>The obligations and liabilities of the parties incurred prior to the termination date shall survive the termination of this agreement for all purposes. These Terms of Service are effective unless and until terminated by either you or us.</p>
+
+      <h2>Section 17 — Entire Agreement</h2>
+      <p>The failure of us to exercise or enforce any right or provision of these Terms of Service shall not constitute a waiver of such right or provision. These Terms of Service and any policies or operating rules posted by us on this site constitute the entire agreement and understanding between you and us.</p>
+
+      <h2>Section 18 — Governing Law</h2>
+      <p>These Terms of Service and any separate agreements whereby we provide you Services shall be governed by and construed in accordance with the laws of the Republic of Ghana.</p>
+
+      <h2>Section 19 — Return and Refund Policy</h2>
+      <p>Any fabric you buy or order at Hinkro Kente comes with no warranty. We do not offer full refund after purchase is completed. We offer hassle-free and easy returns for all domestic and international orders. Please contact our Customer Support Team at <a href="mailto:ask@hinkrokente.com">ask@hinkrokente.com</a> to schedule your return.</p>
+      <p>If there is a problem with your fabric or your fabric turned out to be different from what was discussed during initial conversations to the final approval, you can return it within a week of purchase. The shipping cost is on us if the return or exchange is caused by a production fault. After this period has elapsed the return postage has to be covered by the customer if it is not a production fault. See our full <a href="/terms-and-conditions-refund-policy/">Refund Policy</a>.</p>
+
+      <h2>Section 20 — Changes to Terms of Service</h2>
+      <p>You can review the most current version of the Terms of Service at any time at this page. We reserve the right to update, change or replace any part of these Terms of Service by posting updates and changes to our website. Your continued use of or access to our website following the posting of any changes constitutes acceptance of those changes.</p>
+
+      <h2>Section 21 — Contact Information</h2>
+      <p>Questions about the Terms of Service should be sent to us at <a href="mailto:ask@hinkrokente.com">ask@hinkrokente.com</a> or via our <a href="/contact-hinkro-kente/">contact form</a>.</p>
+    `,
+  },
+
+  "bespoke-service-terms": {
+    title: "Terms and Conditions",
+    subtitle: "Bespoke Service",
+    seo: ["Hinkro Kente bespoke service terms", "custom kente terms and conditions", "bespoke kente service agreement"],
+    content: `
+      <p>Hinkro Kente is a Ghanaian private company specializing in weaving custom-made kente cloth. Established and operating under the laws of the Republic of Ghana, our head office is located at Ablekuma L156 Ubor Ntiador LK GPS GC-124-4250 Accra-Ghana. We are represented internationally through offices in Riverdale, Georgia, USA (2837 Toapz RD) and Leicester, UK (4 Bedale Drive LE4 2LA).</p>
+
+      <h2>Pre-Weaving Consultation</h2>
+      <p>We begin each custom kente project with a <strong>Pre-Weaving Consultation</strong>, which is a separate service from the main weaving process. Clients are advised to consult our sales representatives for the accurate cost of the Pre-Weaving Consultation, as prices may vary depending on the specific services requested.</p>
+      <p>The Pre-Weaving Consultation may include any or all of the following:</p>
+      <ul>
+        <li>Initial consultations</li>
+        <li>Sketches</li>
+        <li>Pattern development</li>
+        <li>3D renders</li>
+        <li>One (1) sample production</li>
+      </ul>
+      <p><strong>Please note:</strong></p>
+      <ul>
+        <li>The cost of the Pre-Weaving Consultation is billed separately and is not included in the final weaving cost.</li>
+        <li>If the client requests additional samples beyond the first one provided (and the need for additional samples is not due to an error on Hinkro Kente's part), an additional fee shall apply. See our <a href="/terms-and-conditions-sample-strip-policy-and-pattern-development/">Sample Strip Policy</a>.</li>
+        <li>Once the final sample is approved, a final cost will be determined and communicated for the production of the full number of sets requested.</li>
+      </ul>
+
+      <h2>Definition of Bespoke Orders</h2>
+      <p>An order shall be classified as <strong>bespoke</strong> and must undergo the Pre-Weaving Consultation process under any of the following circumstances:</p>
+      <ul>
+        <li><strong>Custom Design Requests:</strong> The client requests a new or modified kente pattern that does not exist in our catalog. The design is inspired by unique themes, visuals, or concepts supplied by the client.</li>
+        <li><strong>Personalized Elements:</strong> The order involves inclusion of names, initials, logos, dates, or other personalized text or symbols.</li>
+        <li><strong>Color Customization:</strong> The client specifies custom colors that differ from our existing palette.</li>
+        <li><strong>3D Renders or Sample Requests:</strong> The client requests visual previews or physical samples before final production.</li>
+        <li><strong>Corporate or Institutional Branding:</strong> The project involves company logos, branded colors, slogans, or identity features for organizational or promotional use.</li>
+      </ul>
+
+      <h2>Lead Time</h2>
+      <p>To ensure a high-quality finished product, we recommend a minimum of 3 months lead time for kente weaving projects. Rush orders requiring a shorter turnaround may be accommodated for an additional fee. <a href="/lead-time-and-rush-orders/">Learn more about lead times and rush orders</a>.</p>
+
+      <h2>Project Timeline</h2>
+      <p>The weaving process typically takes 4–6 weeks, depending on several factors, including:</p>
+      <ul>
+        <li>Kente style (e.g., ombre, kente with embroidery, etc.)</li>
+        <li>Fabric yardage</li>
+        <li>Design complexity</li>
+      </ul>
+      <p>Hinkro Kente will provide a precise estimated completion date for each project.</p>
+
+      <h2>Environmental Considerations</h2>
+      <p>Kente weaving is traditionally an outdoor activity. Unforeseen weather events such as excessive rainfall, severe harmattan winds, or outbreaks of disease may occasionally impact project timelines. We will promptly communicate any such delays to our clients.</p>
+
+      <h2>Design Collaboration</h2>
+      <ul>
+        <li>During the consultation process, Hinkro Kente will collaborate with you to develop a digital rendering of your desired kente design, ensuring it meets your vision.</li>
+        <li>We will send you images of yarn options that align with your preferences. Upon approval, weaving commences immediately.</li>
+        <li>Throughout the weaving process, we will provide you with regular updates, including photos, for your confirmation before we proceed further.</li>
+        <li>To avoid any color discrepancies, we encourage prompt feedback on yarn selections.</li>
+      </ul>
+
+      <h2>Payment and Delivery</h2>
+      <ul>
+        <li><strong>Payment Methods:</strong> We accept cash, bank transfers, and mobile money payments for our services. A 1% electronic transaction levy (E-levy) may apply to electronic payments.</li>
+        <li><strong>Payment Schedule:</strong> A 70% down payment is required to initiate your project. The remaining 30% balance is due upon project completion before delivery.</li>
+      </ul>
+
+      <h2>Refund Policy</h2>
+      <p>Due to the personalized and handcrafted nature of Hinkro Kente's bespoke services, refunds are generally not available once work has commenced. However, we are committed to client satisfaction and will offer reasonable solutions for issues that arise, including revisions and credits, where applicable. See our full <a href="/terms-and-conditions-refund-policy/">Refund Policy</a>.</p>
+
+      <h2>Confidentiality</h2>
+      <p>Both parties agree to maintain the confidentiality of all information related to this agreement and each other's business practices.</p>
+
+      <h2>Contract Termination</h2>
+      <p>This agreement may be terminated by either party under the following conditions:</p>
+      <ul>
+        <li><strong>With Notice:</strong> Written or text message notification must be provided at least one day prior to the commencement of weaving.</li>
+        <li><strong>Breach of Contract:</strong> If either party breaches the terms of this agreement and fails to remedy the breach within one day of written notification, the other party may terminate the agreement.</li>
+        <li><strong>Termination by Client:</strong> Clients who wish to terminate the contract after 90% project completion (approximately 4 weeks of weaving) will forfeit their entire investment with no refund.</li>
+        <li><strong>Termination by Hinkro Kente:</strong> In the unlikely event that Hinkro Kente needs to terminate the contract after 90% project completion, a full refund will be issued to the client.</li>
+        <li><strong>Termination Rights:</strong> Termination of this agreement will not affect any outstanding legal rights related to payments or services rendered prior to termination.</li>
+      </ul>
+
+      <h2>Dispute Resolution</h2>
+      <p>Any disputes arising from this agreement will be settled amicably through negotiation. If an amicable resolution cannot be reached, the dispute will be settled by arbitration in accordance with the Alternative Dispute Resolution Act, 2010 (Act 798) or its statutory replacement.</p>
+
+      <h2>Governing Law</h2>
+      <p>This agreement is subject to the laws of the Republic of Ghana.</p>
+    `,
+  },
+
+  "lead-time-and-rush-orders": {
+    title: "Terms and Conditions",
+    subtitle: "Lead Time and Rush Orders",
+    seo: ["Hinkro Kente lead time", "kente rush order", "kente weaving timeline Ghana"],
+    content: `
+      <p>At Hinkro Kente, our weaving process is rooted in precision, craftsmanship, and attention to detail. To ensure the delivery of a high-quality and truly bespoke product, we recommend a <strong>minimum lead time of three (3) months</strong> for all kente weaving projects. This timeframe allows for proper consultation, design development, sample weaving, client feedback, revisions (if necessary), and full production.</p>
+
+      <h2>Why 3 Months?</h2>
+      <ul>
+        <li><strong>Consultation & Design</strong> – Time to understand the client's vision and translate it into a workable pattern.</li>
+        <li><strong>Sample Strip Creation</strong> – Allowing for creation and approval of initial samples. See our <a href="/terms-and-conditions-sample-strip-policy-and-pattern-development/">Sample Strip Policy</a>.</li>
+        <li><strong>Pattern Iteration (if needed)</strong> – Especially for new or complex designs, multiple sample attempts may be necessary.</li>
+        <li><strong>Weaving & Finishing</strong> – Meticulous weaving, finishing, and quality control require time to maintain our high standards.</li>
+      </ul>
+
+      <h2>Rush Orders</h2>
+      <p>We understand that some clients may have tighter deadlines due to events or unforeseen changes. In such cases, <strong>rush orders may be accommodated</strong> under the following conditions:</p>
+      <ul>
+        <li><strong>Rush Fee:</strong> A rush handling fee will apply to prioritize your order ahead of others and account for overtime or resource allocation.</li>
+        <li><strong>Design Restrictions:</strong> For extremely tight deadlines, complex new patterns may not be possible. Clients may be limited to choosing from existing or slightly modified designs to meet the time constraint.</li>
+        <li><strong>Availability Confirmation:</strong> Rush orders are subject to availability and capacity. We will assess whether we can take on the project without compromising quality.</li>
+        <li><strong>Written Agreement:</strong> All rush orders will require a written agreement detailing the revised timeline, design scope, associated costs, and delivery expectations.</li>
+      </ul>
+
+      <h2>Client Responsibility for Shorter Timelines</h2>
+      <p>Clients requesting turnaround times shorter than the recommended 3-month lead time are responsible for:</p>
+      <ul>
+        <li>Prompt communication and approval at each stage of the process.</li>
+        <li>Accepting potential limitations in design customization due to time constraints.</li>
+        <li>Covering any additional rush-related fees as outlined in the order agreement.</li>
+      </ul>
+      <p>By maintaining these lead time standards and offering structured options for rush orders, we ensure that every client receives a product that meets Hinkro Kente's hallmark of excellence—whether planned well in advance or needed on a shorter timeline.</p>
+    `,
+  },
+
+  "refund-policy": {
+    title: "Terms and Conditions",
+    subtitle: "Refund Policy",
+    seo: ["Hinkro Kente refund policy", "kente return policy", "bespoke kente refund"],
+    content: `
+      <p>At Hinkro Kente, each bespoke order is a custom, made-to-measure creation that involves significant design consultation, preparation, and hand-weaving. As such, we take the following approach to refunds:</p>
+
+      <h2>1. Non-Refundable Deposits</h2>
+      <ul>
+        <li>All bespoke orders require a <strong>non-refundable deposit</strong> to initiate work. This covers initial consultation, pattern development, and the cost of sample strip weaving.</li>
+        <li>The deposit amount and terms will be outlined in the service agreement or invoice.</li>
+      </ul>
+
+      <h2>2. Refund Eligibility</h2>
+      <p>Refunds are <strong>not guaranteed</strong> but may be considered under the following limited circumstances:</p>
+      <p><strong>Project Cancellation Before Weaving Begins:</strong></p>
+      <ul>
+        <li>If a client cancels before any weaving has started, and only consultation/design work has occurred, a partial refund may be issued excluding the deposit and any material costs incurred up to that point.</li>
+      </ul>
+      <p><strong>Defects in Final Product:</strong></p>
+      <ul>
+        <li>If the final product arrives with significant, demonstrable defects (e.g., damage during delivery, major deviation from approved design), we will review the claim and may offer a partial or full refund, reproduce the item at no cost, or provide a store credit.</li>
+        <li>All claims must be submitted within 7 days of receipt, with clear photo evidence.</li>
+      </ul>
+
+      <h2>3. No Refunds Under These Conditions</h2>
+      <p>Refunds will <strong>not</strong> be issued under the following circumstances:</p>
+      <ul>
+        <li>Change of mind after order confirmation</li>
+        <li>Delay caused by late client approvals, feedback, or payments</li>
+        <li>Dissatisfaction with a design that was previously approved</li>
+        <li>Minor variations due to the handmade nature of weaving</li>
+      </ul>
+
+      <h2>4. Rush Orders</h2>
+      <p>All <strong>rush orders are non-refundable</strong> due to the accelerated timeline, limited revision opportunities, and reallocation of resources.</p>
+
+      <h2>5. Client Collaboration Requirement</h2>
+      <p>To ensure quality outcomes, clients are expected to:</p>
+      <ul>
+        <li>Respond promptly to consultation communications and approvals</li>
+        <li>Clearly express their expectations and desired changes at each step</li>
+      </ul>
+      <p>Failure to participate in the collaborative process may limit eligibility for refunds or revisions.</p>
+
+      <h2>6. Dispute Resolution</h2>
+      <p>In the event of a disagreement, Hinkro Kente will work in good faith to resolve the issue, which may include offering a revision or partial store credit, or mediation through an independent third party if agreed upon.</p>
+    `,
+  },
+
+  "sample-strip-policy": {
+    title: "Terms and Conditions",
+    subtitle: "Sample Strip Policy and Pattern Development",
+    seo: ["Hinkro Kente sample strip policy", "kente pattern development", "kente sample strip cost"],
+    content: `
+      <h2>Sample Strip Provision</h2>
+      <p>As part of our bespoke service, Hinkro Kente provides one (1) complimentary sample strip during the Pre-Weaving Consultation phase. This initial sample aims to align the client's vision with our weaving capabilities.</p>
+
+      <h2>Additional Sample Strips</h2>
+      <p>Should the client request further sample strips beyond the initial complimentary one, additional charges will apply. The cost for each extra sample strip will be communicated and agreed upon before production.</p>
+
+      <h2>Modifications to Existing Patterns</h2>
+      <p>Clients may request modifications to existing patterns, such as adding or altering motifs. Such customizations will incur additional fees, which will be determined based on the complexity of the changes and communicated to the client beforehand.</p>
+
+      <h2>Development of New Patterns</h2>
+      <p>Creating entirely new kente patterns is an intricate process that may require multiple iterations to achieve the desired outcome. Clients should be aware that:</p>
+      <ul>
+        <li>The initial development fee covers the design and weaving of the first sample strip.</li>
+        <li>If subsequent iterations are necessary to refine the pattern, each additional sample strip will incur a separate fee.</li>
+        <li>The number of iterations required cannot always be predetermined, as achieving the perfect design is a collaborative and creative process.</li>
+      </ul>
+
+      <h2>Client Responsibility</h2>
+      <p>Clients are responsible for the costs associated with each additional sample strip requested beyond the initial complimentary one. Hinkro Kente commits to working closely with clients throughout the design process to ensure satisfaction with the final product.</p>
+      <p>Go to main <a href="/terms-and-conditions-bespoke-service/">T&C (Bespoke Service)</a></p>
+    `,
+  },
+
+  "privacy-policy": {
+    title: "Privacy Policy",
+    subtitle: "How we collect and use your data",
+    seo: ["Hinkro Kente privacy policy", "kente website privacy", "Hinkro Kente data policy"],
+    content: `
+      <h2>1. Introduction</h2>
+      <p>This Policy is designed to assist you in understanding how we collect, use and safeguard the personal information you provide to us and to assist you in making informed decisions when using our site and our products and services. This statement will be continuously assessed against new technologies, business practices and our customers' needs.</p>
+
+      <h2>2. What Information Do We Collect?</h2>
+      <p>When you visit our website you may provide us with two types of information: personal information you knowingly choose to disclose that is collected on an individual basis and website use information collected on an aggregate basis as you and others browse our website.</p>
+      <p><strong>Personal Information You Choose to Provide:</strong> Name, email address, phone number. In addition to providing the foregoing information, if you choose to correspond further with us through chatbot, we may retain the content of your chat messages together with your phone number and our responses.</p>
+      <p><strong>Website Use Information:</strong> Similar to other commercial websites, our website utilizes a standard technology called "cookies" and web server logs to collect information about how our website is used. Information gathered through cookies and web server logs may include the date and time of visits, the pages viewed, time spent at our website, and the websites visited just before and just after our website. This information is collected on an aggregate basis. None of this information is associated with you as an individual. We do not store credit card details nor do we share customer details with any third parties.</p>
+
+      <h2>3. How Do We Use the Information That You Provide to Us?</h2>
+      <p>Broadly speaking, we use personal information for purposes of administering our business activities, providing customer service and making available other products and services to our customers and prospective customers. Occasionally, we may also use the information we collect to notify you about new services and special offers we think you will find valuable.</p>
+
+      <h2>What Are Cookies?</h2>
+      <p>Cookies are a feature of web browser software that allows web servers to recognize the computer used to access a website. Cookies are small pieces of data that are stored by a user's web browser on the user's hard drive. Cookies can remember what information a user accesses on one web page to simplify subsequent interactions with that website by the same user or to use the information to streamline the user's transactions on related web pages.</p>
+
+      <h2>4. How Do We Use Information We Collect from Cookies?</h2>
+      <p>We use website browser software tools such as cookies and web server logs to gather information about our website users' browsing activities, in order to constantly improve our website and better serve our customers. This information assists us to design and arrange our web pages in the most user-friendly manner and to continually improve our website to better meet the needs of our customers and prospective customers.</p>
+
+      <h2>5. How Do We Protect Your Information?</h2>
+      <p>We utilize encryption/security best practices to safeguard the confidentiality of personal information we collect from unauthorized access or disclosure and accidental loss, alteration or destruction.</p>
+      <p><strong>Communication Opt Out:</strong> If you wish to opt out of receiving offers directly from Hinkro Kente, you can unsubscribe by following the opt-out instructions in the emails that they send you located at the footer of the communication. You can email us at <a href="mailto:ask@hinkrokente.com">ask@hinkrokente.com</a> with questions, comments, or suggestions.</p>
+
+      <h2>6. Do We Disclose Information to Outside Parties?</h2>
+      <p>When you leave comments on the website we collect the data shown in the comments form, and also the IP address and browser user agent string to help spam detection. We may provide aggregate information about our customers, sales, website traffic patterns and related website information to our affiliates or reputable third parties, but this information will not include personally identifying data, except as otherwise provided in this Privacy Policy.</p>
+
+      <h2>7. Legally Compelled Disclosure of Information</h2>
+      <p>We may disclose information when legally compelled to do so, in other words, when we, in good faith, believe that the law requires it or for the protection of our legal rights.</p>
+
+      <h2>What About Other Websites Linked to Our Website?</h2>
+      <p>We are not responsible for the practices employed by websites linked to or from our website nor the information or content contained therein.</p>
+    `,
+  },
+};
+
+function PolicyPage({ slug }) {
+  const page = policyPages[slug];
+  if (!page) return <Hero />;
+
+  usePageSeo(
+    `${page.title} — ${page.subtitle} | Hinkro Kente`,
+    page.content.replace(/<[^>]+>/g, "").slice(0, 160) + "...",
+    page.seo,
+  );
+
+  return (
+    <main className="store-page policy-page" id={slug}>
+      <section className="store-hero" aria-labelledby="policy-title">
+        <p className="store-kicker">{page.subtitle}</p>
+        <h1 id="policy-title">{page.title}</h1>
+      </section>
+      <section className="store-grid-section" style={{ maxWidth: "800px", margin: "0 auto", padding: "0 1.5rem 3rem" }}>
+        <div className="blog-post-content" dangerouslySetInnerHTML={{ __html: page.content }} />
+      </section>
+    </main>
+  );
+}
+
+function ComingSoonPage({ title, subtitle, description }) {
+  usePageSeo(
+    `${title} | Hinkro Kente`,
+    description,
+    [title, "Hinkro Kente", "kente weaving services Ghana"],
+  );
+
+  return (
+    <main className="store-page coming-soon-page" id="coming-soon">
+      <section className="store-hero" aria-labelledby="coming-title">
+        <p className="store-kicker">{subtitle}</p>
+        <h1 id="coming-title">{title}</h1>
+        <p>{description}</p>
+        <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="mailto:ask@hinkrokente.com" className="cta-button">Get in touch</a>
+          <a href="/contact-hinkro-kente/" className="cta-button" style={{ background: "transparent", border: "1px solid var(--gold-bright)" }}>Contact us</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState(getCurrentPage);
   const [productSlug, setProductSlug] = useState(getProductSlugFromLocation);
+  const [blogSlug, setBlogSlug] = useState(getBlogSlugFromLocation);
 
   useEffect(() => {
     const syncPage = () => {
       setCurrentPage(getCurrentPage());
       setProductSlug(getProductSlugFromLocation());
+      setBlogSlug(getBlogSlugFromLocation());
     };
 
     window.addEventListener("hashchange", syncPage);
@@ -2638,7 +3162,7 @@ function App() {
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [currentPage, productSlug]);
+  }, [currentPage, productSlug, blogSlug]);
 
   // CollectChat — only load on frontend pages (not homepage, not portal)
   useEffect(() => {
@@ -2664,6 +3188,15 @@ function App() {
     h.appendChild(s);
   }, [currentPage]);
 
+  const policyPageMap = {
+    "terms": "terms-and-condition",
+    "bespoke-terms": "bespoke-service-terms",
+    "lead-time": "lead-time-and-rush-orders",
+    "refund": "refund-policy",
+    "sample-strip": "sample-strip-policy",
+    "privacy": "privacy-policy",
+  };
+
   return (
     <>
       <Header currentPage={currentPage} />
@@ -2680,7 +3213,15 @@ function App() {
       ) : currentPage === "store" ? (
         <StorePage productSlug={productSlug} />
       ) : currentPage === "blog" ? (
-        <BlogPage />
+        <BlogPage blogSlug={blogSlug} />
+      ) : policyPageMap[currentPage] ? (
+        <PolicyPage slug={policyPageMap[currentPage]} />
+      ) : currentPage === "coming-soon-customized" ? (
+        <ComingSoonPage title="Customized Kente Services" subtitle="Coming Soon" description="Our Customized Kente Services page is being prepared. In the meantime, get in touch to discuss your custom kente project." />
+      ) : currentPage === "coming-soon-bridal" ? (
+        <ComingSoonPage title="Kente Bridal Package" subtitle="Coming Soon" description="Our Kente Bridal Package page is being prepared. Discover our bespoke bridal kente services by getting in touch." />
+      ) : currentPage === "coming-soon-weave" ? (
+        <ComingSoonPage title="Weave on Demand Kente" subtitle="Coming Soon" description="Our Weave on Demand page is being prepared. Contact us to learn about our on-demand kente weaving services." />
       ) : (
         <Hero />
       )}

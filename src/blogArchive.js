@@ -263,4 +263,28 @@ export const defaultBlogPosts = [
     featured_image: "https://www.hinkrokente.com/wp-content/uploads/2016/11/KENTE-9-768x542.jpg",
     publish_at: "2016-11-28T13:03:14.000Z",
   },
+  {
+    id: "wp-3918",
+    slug: "case-study-crafting-a-bespoke-kente-for-client-josephine-by-hinkro-kente",
+    title: "Case Study: Crafting a Bespoke Kente for Client Josephine by Hinkro Kente",
+    excerpt: "A bespoke ombre kente transitioning from olive green to gold and grey for a discerning client.",
+    featured_image: null,
+    publish_at: "2024-07-31T21:56:40.000Z",
+  },
+  {
+    id: "wp-2859",
+    slug: "ghana-month",
+    title: "Celebrate Ghana month with the Rich Tradition of Kente by Hinkro Kente",
+    excerpt: "March is the Ghana month! Join the festivities by adorning yourself in the magnificent Kente fabric.",
+    featured_image: null,
+    publish_at: "2024-03-20T17:38:11.000Z",
+  },
+  {
+    id: "wp-2702",
+    slug: "kente-cloth",
+    title: "What is Kente Cloth",
+    excerpt: "Kente cloth stands as an icon of African culture, a fabric that weaves together intricate artistry, vibrant symbolism, and a rich heritage.",
+    featured_image: null,
+    publish_at: "2023-08-12T19:09:55.000Z",
+  },
 ];

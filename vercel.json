@@ -2,8 +2,70 @@
   "rewrites": [
     { "source": "/portal/:path*", "destination": "/index.html" },
     { "source": "/product/:path*", "destination": "/index.html" },
+    { "source": "/blog/:path*", "destination": "/index.html" },
     { "source": "/authentic-kente-fabric/", "destination": "/index.html" },
-    { "source": "/authentic-african-kente-graduation-stole-sashe/", "destination": "/index.html" }
+    { "source": "/authentic-african-kente-graduation-stole-sashe/", "destination": "/index.html" },
+    { "source": "/weaving-authentic-ghanaian-kente-fabric/", "destination": "/index.html" },
+    { "source": "/authentic-kente-cloth/", "destination": "/index.html" },
+    { "source": "/design-kente/", "destination": "/index.html" },
+    { "source": "/hinkro-kente-accessories/", "destination": "/index.html" },
+    { "source": "/customized-kente-weaving-services/", "destination": "/index.html" },
+    { "source": "/customized-kente-services/", "destination": "/index.html" },
+    { "source": "/kente-bridal-package/", "destination": "/index.html" },
+    { "source": "/weave-on-demand-kente/", "destination": "/index.html" },
+    { "source": "/boutique-kente-shop-online-buy/", "destination": "/index.html" },
+    { "source": "/lead-time-and-rush-orders/", "destination": "/index.html" },
+    { "source": "/privacy-policy/", "destination": "/index.html" },
+    { "source": "/terms-and-conditions-bespoke-service/", "destination": "/index.html" },
+    { "source": "/terms-and-conditions-sample-strip-policy-and-pattern-development/", "destination": "/index.html" },
+    { "source": "/terms-and-conditions-refund-policy/", "destination": "/index.html" },
+    { "source": "/terms-and-condition/", "destination": "/index.html" },
+    { "source": "/contact-hinkro-kente/", "destination": "/index.html" },
+    { "source": "/appointment/", "destination": "/index.html" },
+    { "source": "/thank-you/", "destination": "/index.html" },
+    { "source": "/kente-trends/", "destination": "/index.html" }
+  ],
+  "redirects": [
+    {
+      "source": "/:slug([a-z0-9-]+)/:id(\\d+)/:month(\\d{2})/:day(\\d{2})",
+      "destination": "/blog/:slug/",
+      "permanent": true
+    },
+    {
+      "source": "/checkout/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cart/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/my-account/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/shop/",
+      "destination": "/authentic-kente-fabric/",
+      "permanent": true
+    },
+    {
+      "source": "/products/",
+      "destination": "/authentic-kente-fabric/",
+      "permanent": true
+    },
+    {
+      "source": "/categories/",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/blog",
+      "destination": "/blog/",
+      "permanent": false
+    }
   ],
   "headers": [
     {
