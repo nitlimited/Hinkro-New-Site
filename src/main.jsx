@@ -14,11 +14,11 @@ import { usePublicBlogPosts, usePublicCatalog } from "./publicCatalog";
 import "./styles.css";
 
 const navItems = [
-  ["Inspiring Tradition", "tradition"],
-  ["Design", "design"],
-  ["Bespoke", "bespoke"],
-  ["Accessories", "accessories"],
-  ["Store", "store"],
+  ["Inspiring Tradition", "/weaving-authentic-ghanaian-kente-fabric/", "tradition"],
+  ["Design", "/design-kente/", "design"],
+  ["Bespoke", "/customized-kente-weaving-services/", "bespoke"],
+  ["Accessories", "/hinkro-kente-accessories/", "accessories"],
+  ["Store", "/authentic-kente-fabric/", "store"],
 ];
 
 const logoUrl =
@@ -498,8 +498,8 @@ const accessoryItems = [
     text: "Your dream Kente gown deserves first class care. Designed to keep your gown safe, spotless, and ready for your big moment, it's the elegant companion every bride deserves.",
     availability: "Bridal Package Only",
     actions: [
-      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
-      ["Get Garment Bag", "https://www.hinkrokente.com/product/bridal-gown-bag/"],
+      ["Start Bridal Bespoke", "/kente-bridal-package/"],
+      ["Get Garment Bag", "/product/bridal-gown-bag/"],
     ],
   },
   {
@@ -512,7 +512,7 @@ const accessoryItems = [
     availability: "All Male Kente",
     actions: [
       ["Start Men Bespoke", "https://wa.link/5sqlyv"],
-      ["Get Duffel Bag", "https://www.hinkrokente.com/product/hinkro-men-duffel-bag/"],
+      ["Get Duffel Bag", "/product/hinkro-men-duffel-bag/"],
     ],
   },
   {
@@ -524,8 +524,8 @@ const accessoryItems = [
     text: "The ultimate blend of style and comfort for your big day. Designed to keep brides cool under the sun, it ensures you stay fresh, radiant, and sweat-free. A luxurious must-have accessory for every bride.",
     availability: "Coming Soon (Bridal Package Only)",
     actions: [
-      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
-      ["Get Fan", "https://www.hinkrokente.com/product/hinkro-hand-held-bridal-fan/"],
+      ["Start Bridal Bespoke", "/kente-bridal-package/"],
+      ["Get Fan", "/product/hinkro-hand-held-bridal-fan/"],
     ],
   },
   {
@@ -551,7 +551,7 @@ const accessoryItems = [
     availability: "All Male Kente",
     actions: [
       ["Start Men Bespoke", "https://wa.link/5sqlyv"],
-      ["Get Duffel Bag", "https://www.hinkrokente.com/product/hinkro-men-duffel-bag/"],
+      ["Get Duffel Bag", "/product/hinkro-men-duffel-bag/"],
     ],
   },
   {
@@ -563,8 +563,8 @@ const accessoryItems = [
     text: "The ultimate blend of style and comfort for your big day. Designed to keep brides cool under the sun, it ensures you stay fresh, radiant, and sweat-free. A luxurious must-have accessory for every bride.",
     availability: "Coming Soon (Bridal Package Only)",
     actions: [
-      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
-      ["Get Fan", "https://www.hinkrokente.com/product/hinkro-hand-held-bridal-fan/"],
+      ["Start Bridal Bespoke", "/kente-bridal-package/"],
+      ["Get Fan", "/product/hinkro-hand-held-bridal-fan/"],
     ],
   },
   {
@@ -576,8 +576,8 @@ const accessoryItems = [
     text: "Your dream Kente gown deserves first class care. Designed to keep your gown safe, spotless, and ready for your big moment, it’s the elegant companion every bride deserves.",
     availability: "Bridal Package Only",
     actions: [
-      ["Start Bridal Bespoke", "https://www.hinkrokente.com/kente-bridal-package/"],
-      ["Get Garment Bag", "https://www.hinkrokente.com/product/bridal-gown-bag/"],
+      ["Start Bridal Bespoke", "/kente-bridal-package/"],
+      ["Get Garment Bag", "/product/bridal-gown-bag/"],
     ],
   },
   {
@@ -616,11 +616,6 @@ function getProductSlugFromLocation() {
   const path = window.location.pathname;
   const productMatch = path.match(/^\/product\/([^/]+)\/?$/);
   if (productMatch) return productMatch[1];
-
-  const hash = window.location.hash.replace("#", "");
-  const hashMatch = hash.match(/^store\/product\/([^/]+)$/);
-  if (hashMatch) return hashMatch[1];
-
   return "";
 }
 
@@ -628,11 +623,6 @@ function getBlogSlugFromLocation() {
   const path = window.location.pathname;
   const blogMatch = path.match(/^\/blog\/([^/]+)\/?$/);
   if (blogMatch) return blogMatch[1];
-
-  const hash = window.location.hash.replace("#", "");
-  const hashMatch = hash.match(/^blog\/([^/]+)$/);
-  if (hashMatch) return hashMatch[1];
-
   return "";
 }
 
@@ -742,10 +732,6 @@ function usePageSeo(title, description, keywords = [], jsonLd = null) {
 }
 
 function getCurrentPage() {
-  const hash = window.location.hash.replace("#", "");
-  if (["tradition", "design", "bespoke", "accessories", "store", "graduation", "blog"].includes(hash)) return hash;
-  if (hash.startsWith("store/")) return "store";
-
   const path = window.location.pathname;
 
   if (path === "/authentic-african-kente-graduation-stole-sashe/") return "graduation";
@@ -790,11 +776,11 @@ function Header({ currentPage }) {
       </a>
 
       <nav className="desktop-nav" aria-label="Primary navigation">
-        {navItems.map(([label, id]) => (
+        {navItems.map(([label, url, page]) => (
           <a
-            key={id}
-            href={`#${id}`}
-            className={currentPage === id ? "is-active" : ""}
+            key={page}
+            href={url}
+            className={currentPage === page ? "is-active" : ""}
           >
             {label}
           </a>
@@ -802,7 +788,7 @@ function Header({ currentPage }) {
       </nav>
 
       <div className="nav-actions">
-        <a className="nav-cta" href="https://hinkrokente.com/appointment/">
+        <a className="nav-cta" href="/appointment/">
           Your Kente Awaits
         </a>
         <a
@@ -846,11 +832,11 @@ function Header({ currentPage }) {
             />
 
             <nav className="mobile-panel-nav" aria-label="Mobile navigation">
-              {navItems.map(([label, id]) => (
+              {navItems.map(([label, url, page]) => (
                 <a
-                  key={id}
-                  href={`#${id}`}
-                  className={currentPage === id ? "is-active" : ""}
+                  key={page}
+                  href={url}
+                  className={currentPage === page ? "is-active" : ""}
                   onClick={() => setOpen(false)}
                 >
                   {label}
@@ -858,7 +844,7 @@ function Header({ currentPage }) {
               ))}
             </nav>
 
-            <a className="mobile-panel-cta" href="https://hinkrokente.com/appointment/">
+            <a className="mobile-panel-cta" href="/appointment/">
               Start Your Kente Now
             </a>
 
@@ -970,7 +956,7 @@ function AccessoriesPage() {
             We hope to impact and touch lives through quality services to our loyal
             consumers
           </p>
-          <a href="https://hinkrokente.com/appointment/">
+          <a href="/appointment/">
             Book Appointment <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -1807,7 +1793,7 @@ function BespokePage() {
             creating new realities both within and beyond fabric design. We hope to impact and touch
             lives through quality services to our loyal consumers
           </p>
-          <a className="bespoke-dreams-cta" href="https://hinkrokente.com/appointment/">
+          <a className="bespoke-dreams-cta" href="/appointment/">
             Book Appointment <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -2578,7 +2564,7 @@ function ValueSection() {
             aim to preserve and enhance this tradition. Our custom weaving
             services provide high-quality, unique pieces fit for royalty.
           </p>
-          <a className="value-cta" href="https://hinkrokente.com/appointment/">
+          <a className="value-cta" href="/appointment/">
             Bespoke Service <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -3151,12 +3137,10 @@ function App() {
       setBlogSlug(getBlogSlugFromLocation());
     };
 
-    window.addEventListener("hashchange", syncPage);
     window.addEventListener("popstate", syncPage);
     syncPage();
 
     return () => {
-      window.removeEventListener("hashchange", syncPage);
       window.removeEventListener("popstate", syncPage);
     };
   }, []);
@@ -3205,14 +3189,6 @@ function App() {
       if (anchor.target === "_blank") return;
       if (href.startsWith("mailto:") || href.startsWith("tel:")) return;
       if (href.startsWith("http") && !href.startsWith(window.location.origin)) return;
-
-      if (href.startsWith("#")) {
-        e.preventDefault();
-        window.history.pushState({}, "", "/" + href);
-        navigateRef.current();
-        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-        return;
-      }
 
       if (href.startsWith("/") && !href.startsWith("/portal")) {
         e.preventDefault();
