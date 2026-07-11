@@ -742,6 +742,10 @@ function usePageSeo(title, description, keywords = [], jsonLd = null) {
 }
 
 function getCurrentPage() {
+  const hash = window.location.hash.replace("#", "");
+  if (["tradition", "design", "bespoke", "accessories", "store", "graduation", "blog"].includes(hash)) return hash;
+  if (hash.startsWith("store/")) return "store";
+
   const path = window.location.pathname;
 
   if (path === "/authentic-african-kente-graduation-stole-sashe/") return "graduation";
@@ -772,9 +776,6 @@ function getCurrentPage() {
   };
   if (wpPageRoutes[path]) return wpPageRoutes[path];
 
-  const hash = window.location.hash.replace("#", "");
-  if (["tradition", "design", "bespoke", "accessories", "store", "graduation", "blog"].includes(hash)) return hash;
-  if (hash.startsWith("store/")) return "store";
   return "home";
 }
 
@@ -3207,7 +3208,9 @@ function App() {
 
       if (href.startsWith("#")) {
         e.preventDefault();
-        window.location.hash = href;
+        window.history.pushState({}, "", "/" + href);
+        navigateRef.current();
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
         return;
       }
 
