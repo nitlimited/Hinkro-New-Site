@@ -3188,6 +3188,13 @@ function App() {
     h.appendChild(s);
   }, [currentPage]);
 
+  const navigateRef = React.useRef(null);
+  navigateRef.current = () => {
+    setCurrentPage(getCurrentPage());
+    setProductSlug(getProductSlugFromLocation());
+    setBlogSlug(getBlogSlugFromLocation());
+  };
+
   useEffect(() => {
     const handleClick = (e) => {
       const anchor = e.target.closest("a[href]");
@@ -3204,10 +3211,10 @@ function App() {
         return;
       }
 
-      if (href.startsWith("/") && !href.startsWith("/portal") && !href.startsWith("/product") && !href.startsWith("/blog")) {
+      if (href.startsWith("/") && !href.startsWith("/portal")) {
         e.preventDefault();
         window.history.pushState({}, "", href);
-        window.dispatchEvent(new PopStateEvent("popstate"));
+        navigateRef.current();
         window.scrollTo({ top: 0, left: 0, behavior: "auto" });
         return;
       }
