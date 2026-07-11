@@ -11,6 +11,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
+import RichTextEditor from "../../components/RichTextEditor";
 import {
   addLibraryAsset,
   deleteBlogPost,
@@ -545,7 +546,14 @@ function BlogEditor({
           <Field label="Slug"><input value={slug} onChange={(e) => setSlug(e.target.value)} placeholder={slugify(title)} /></Field>
         </div>
         <Field label="Excerpt"><textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} rows={3} /></Field>
-        <Field label="Content"><textarea value={content} onChange={(e) => setContent(e.target.value)} rows={8} /></Field>
+        <Field label="Content">
+          <RichTextEditor
+            value={content}
+            onChange={setContent}
+            placeholder="Write your blog post content here..."
+            minHeight="400px"
+          />
+        </Field>
         <Field label="Featured image"><input value={featuredImage} onChange={(e) => setFeaturedImage(e.target.value)} placeholder="/images/..." /></Field>
         <div className="portal-form-row">
           <Field label="Status">

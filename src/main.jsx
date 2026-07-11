@@ -293,6 +293,7 @@ const designOfferings = [
     imageAlt: "Yellow purple and green ombre Hinkro Kente fabric",
     layout: "image-first",
     cta: true,
+    ctaHref: "/blog/ombre-kente-transitional-inspirations/",
   },
   {
     title: "Weaving + Mechanical Embroidery",
@@ -315,7 +316,7 @@ const designOfferings = [
     imageAlt: "Custom graduation stole and sash by Hinkro Kente",
     layout: "text-first",
     cta: true,
-    ctaHref: "#graduation",
+    ctaHref: "/authentic-african-kente-graduation-stole-sashe/",
   },
 ];
 
@@ -717,9 +718,10 @@ function getCurrentPage() {
     "/terms-and-conditions-bespoke-service/": "bespoke-terms",
     "/terms-and-conditions-sample-strip-policy-and-pattern-development/": "sample-strip",
     "/terms-and-conditions-refund-policy/": "refund",
-    "/contact-hinkro-kente/": "contact",
-    "/appointment/": "contact",
+    "/contact-hinkro-kente/": "booking",
+    "/appointment/": "booking",
     "/thank-you/": "home",
+    "/team/": "coming-soon-team",
   };
   if (wpPageRoutes[path]) return wpPageRoutes[path];
 
@@ -850,7 +852,7 @@ function Header({ currentPage }) {
 function AccessoriesPage() {
   usePageSeo(
     "Kente Accessories | Graduation Stoles, Duffel Bags, Bridal Fans | Hinkro Kente",
-    "Explore Hinkro Kente accessories — custom Kente graduation stoles, men's duffel bags, bridal hand fans, garment bags, flip boxes, and Moonlight perfume. Bespoke accessories for every occasion.",
+    "Explore Hinkro Kente accessories — custom Kente graduation stoles, men's duffel bags, bridal hand fans, garment bags, and flip boxes. Bespoke accessories for weddings, graduations, and luxury gifts. Personalized Kente accessories made to order in Ghana.",
     [
       "kente accessories",
       "kente graduation stole",
@@ -859,6 +861,7 @@ function AccessoriesPage() {
       "kente garment bag",
       "Hinkro accessories",
       "kente gift box",
+      "custom kente stole",
     ],
   );
 
@@ -930,7 +933,7 @@ function AccessoriesPage() {
 function GraduationStolePage() {
   usePageSeo(
     "Kente Graduation Stole and Sash | Authentic African Graduation Stoles | Hinkro Kente",
-    "Order an authentic Kente Graduation Stole or sash from Hinkro Kente. Custom African graduation stoles with names, school colors, crests, class year, symbols, and rush-order guidance. Handwoven in Ghana, shipped worldwide.",
+    "Order an authentic Kente Graduation Stole or sash from Hinkro Kente. Custom African graduation stoles with names, school colors, crests, class year, symbols, and rush-order guidance. Handwoven in Ghana, shipped worldwide. Celebrate your achievement with a stole that tells your story.",
     [
       "Kente Graduation Stole",
       "Kente Graduation Sash",
@@ -1053,7 +1056,7 @@ function GraduationStolePage() {
         <h2 id="graduation-shop-title">
           Visit our Kente Shop for our curated kente fabric just for your graduation
         </h2>
-        <a className="shop-footer-button" href="#store">
+        <a className="shop-footer-button" href="/authentic-kente-fabric/">
           Shop Now <span aria-hidden="true">→</span>
         </a>
       </section>
@@ -1133,7 +1136,7 @@ function StorePage({ productSlug }) {
       : "Authentic Kente Fabric Store | Buy Handwoven Ghana Kente by Color | Hinkro Kente",
     selectedProduct
       ? selectedProduct.seo.description
-      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse handwoven Ghanaian Kente by color and occasion — gold, blue, green, red, ombre, and more. Chat on WhatsApp to order your preferred Kente cloth.",
+      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse handwoven Ghanaian Kente — gold, blue, green, red, ombre, and more. Can't find the colors you want? Hinkro creates custom Kente in your exact palette. Chat on WhatsApp to order.",
     selectedProduct
       ? selectedProduct.seo.keywords
       : [
@@ -1147,7 +1150,36 @@ function StorePage({ productSlug }) {
           "gold Kente",
           "blue Kente",
           "ombre Kente",
+          "custom Kente colors",
+          "Kente fabric for sale",
         ],
+    selectedProduct ? {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": selectedProduct.name,
+      "description": selectedProduct.seo.description,
+      "image": selectedProduct.images[0]?.src ? `https://www.hinkrokente.com${selectedProduct.images[0].src}` : undefined,
+      "brand": {
+        "@type": "Brand",
+        "name": "Hinkro Kente"
+      },
+      "manufacturer": {
+        "@type": "Organization",
+        "@id": "https://www.hinkrokente.com/#organization"
+      },
+      "category": selectedProduct.categories[0] || "Kente Fabric",
+      "offers": {
+        "@type": "Offer",
+        "url": `https://www.hinkrokente.com/product/${selectedProduct.slug}/`,
+        "priceCurrency": selectedProduct.prices?.international?.currency || "USD",
+        "price": selectedProduct.prices?.international?.min || undefined,
+        "availability": "https://schema.org/InStock",
+        "seller": {
+          "@type": "Organization",
+          "@id": "https://www.hinkrokente.com/#organization"
+        }
+      }
+    } : null
   );
 
   const filteredProducts = useMemo(() => {
@@ -1284,8 +1316,34 @@ function BlogPostDetail({ blogSlug }) {
 
   usePageSeo(
     post ? `${post.title} | Hinkro Kente` : "Blog Post | Hinkro Kente",
-    post?.excerpt || "Read this Hinkro Kente blog post about Kente trends, bespoke Kente styling, and Ghanaian cultural heritage.",
-    post ? [post.title, "Hinkro Kente blog", "Kente trends"] : ["Hinkro Kente blog", "Kente trends"],
+    post?.excerpt || "Read this Hinkro Kente blog post about bespoke Kente trends, custom Kente styling, and Ghanaian cultural heritage.",
+    post ? [post.title, "Hinkro Kente blog", "Kente trends", "bespoke Kente"] : ["Hinkro Kente blog", "Kente trends"],
+    post ? {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": post.title,
+      "description": post.excerpt || "",
+      "image": post.featured_image ? `https://www.hinkrokente.com${post.featured_image}` : undefined,
+      "datePublished": post.publish_at || undefined,
+      "author": {
+        "@type": "Organization",
+        "name": "Hinkro Kente",
+        "@id": "https://www.hinkrokente.com/#organization"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Hinkro Kente",
+        "@id": "https://www.hinkrokente.com/#organization",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://www.hinkrokente.com/images/hinkro-kente-bespoke-kente-weaving-services-logo.png"
+        }
+      },
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://www.hinkrokente.com/blog/${post.slug}/`
+      }
+    } : null
   );
 
   if (!post) {
@@ -1343,19 +1401,15 @@ function BlogPostDetail({ blogSlug }) {
   );
 }
 
-function BlogPage({ blogSlug }) {
+function BlogPage() {
   const posts = usePublicBlogPosts();
   const [postsPerPage, setPostsPerPage] = useState(12);
   const [blogPage, setBlogPage] = useState(1);
 
-  if (blogSlug) {
-    return <BlogPostDetail blogSlug={blogSlug} />;
-  }
-
   usePageSeo(
     "Kente Trends & News | Bespoke Kente Inspiration & Styling | Hinkro Kente",
-    "Read Hinkro Kente trends, bespoke Kente styling inspiration, wedding guidance, graduation ideas, ceremony advice, and custom Kente news from Ghana's trusted kente weaver.",
-    ["Kente trends", "Kente news", "Hinkro Kente blog", "Ghana Kente inspiration", "bespoke Kente styling", "wedding Kente ideas"],
+    "Read Hinkro Kente trends, bespoke Kente styling inspiration, wedding guidance, graduation ideas, ceremony advice, and custom Kente news from Ghana's trusted kente weaver. Expert insights on colors, patterns, and how to choose the perfect Kente.",
+    ["Kente trends", "Kente news", "Hinkro Kente blog", "Ghana Kente inspiration", "bespoke Kente styling", "wedding Kente ideas", "kente colors guide"],
   );
 
   const fallbackPosts = trendsNewsImages.map((image, index) => ({
@@ -1676,29 +1730,49 @@ function ProductDetailPage({ product, currency, products }) {
 function BespokePage() {
   usePageSeo(
     "Bespoke Kente Weaving Services | Custom Kente Designer in Ghana | Hinkro Kente",
-    "Hinkro Kente offers bespoke Kente weaving services — custom-designed, handwoven Kente for weddings, engagements, graduations, and cultural celebrations. Trusted kente weaver in Ghana with worldwide delivery.",
+    "Hinkro Kente offers bespoke Kente weaving services — custom-designed, handwoven Kente for weddings, engagements, graduations, and cultural celebrations. Trusted kente weaver in Ghana with worldwide delivery. Personalized Kente in your exact colors, symbols, and patterns — for weddings, family heirlooms, luxury gifts, and milestone celebrations.",
     [
       "bespoke kente weaving services",
       "custom kente weaving services",
       "personalized kente weaving services",
+      "made for you kente",
       "kente weaver in Ghana",
       "trusted kente weaver",
       "custom kente cloth",
       "bespoke kente designer",
+      "kente in my own colors",
+      "wedding kente cloth",
+      "family heirloom kente",
+      "kente luxury gift",
+      "one of a kind kente",
       "Hinkro Kente bespoke",
     ],
     {
       "@context": "https://schema.org",
       "@type": "Service",
+      "name": "Bespoke Kente Weaving — Custom Kente Made Exclusively For You",
       "serviceType": "Bespoke Kente Weaving",
+      "description": "Hinkro Kente weaves custom Kente fabric designed from scratch for each client. Your exact colors, patterns, Adinkra symbols, names, dates, and meaningful motifs. Handwoven in Ghana by master weavers. Serving clients in Ghana, USA, UK, Canada, Europe, Australia, and worldwide.",
       "provider": {"@type": "Organization", "@id": "https://www.hinkrokente.com/#organization"},
-      "description": "Hinkro Kente provides bespoke Kente weaving services including custom color-way selection, storytelling patterns, and personalized design. Every cloth is handwoven in Ghana.",
       "areaServed": [
         {"@type": "Country", "name": "Ghana"},
         {"@type": "Country", "name": "United States"},
         {"@type": "Country", "name": "United Kingdom"},
-        {"@type": "Country", "name": "Canada"}
-      ]
+        {"@type": "Country", "name": "Canada"},
+        {"@type": "Continent", "name": "Europe"},
+        {"@type": "Continent", "name": "Africa"}
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Bespoke Kente Services",
+        "itemListElement": [
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Custom Kente for Weddings and Engagements"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Family Heirloom Kente"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Luxury Gift Kente"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Kente Graduation Stoles"}},
+          {"@type": "Offer", "itemOffered": {"@type": "Service", "name": "Corporate and Institutional Kente"}}
+        ]
+      }
     }
   );
 
@@ -1734,9 +1808,9 @@ function BespokePage() {
               <h2>{item.title}</h2>
               <p>{item.text}</p>
               {item.cta && (
-                <a className="bespoke-service-cta" href="#store">
+                <span className="bespoke-service-cta bespoke-service-cta--inactive" aria-disabled="true">
                   <span aria-hidden="true">▣</span> {item.cta}
-                </a>
+                </span>
               )}
             </div>
           </article>
@@ -1796,7 +1870,7 @@ function BespokeFaqSection() {
 function DesignPage() {
   usePageSeo(
     "Kente Design Process | Custom Kente Design & Weaving Stages | Hinkro Kente",
-    "See how Hinkro Kente designs and weaves custom Kente — from consultation and concept to sample weaving and finishing. Our 6-stage design process ensures your bespoke Kente is perfect.",
+    "See how Hinkro Kente designs and weaves custom Kente — from consultation and concept to sample weaving and finishing. Our 6-stage design process ensures your bespoke Kente is perfect. Personalized patterns, colors, and symbols woven into every piece.",
     [
       "kente design process",
       "custom kente design",
@@ -1804,6 +1878,7 @@ function DesignPage() {
       "kente weaving stages",
       "Hinkro Kente design",
       "bespoke kente process",
+      "kente sample weaving",
     ],
   );
 
@@ -1961,7 +2036,7 @@ function DesignTeamSection() {
             symbol of creativity and quality, setting new standards for craftsmanship
             and innovation in the world of Kente textiles.
           </p>
-          <a className="design-team-cta" href="#team">
+          <a className="design-team-cta" href="/team/">
             View Team <span aria-hidden="true">→</span>
           </a>
         </article>
@@ -1973,7 +2048,7 @@ function DesignTeamSection() {
 function InspiringTradition() {
   usePageSeo(
     "About Hinkro Kente | Ghanaian Bespoke Kente Weaving Company | Our Story",
-    "Hinkro Kente is a Ghanaian bespoke Kente weaving company specialising in designing and hand-weaving custom-made Kente for weddings, graduations, and cultural celebrations. Learn about our story, mission, and craftsmanship.",
+    "Hinkro Kente is a Ghanaian bespoke Kente weaving company specialising in designing and hand-weaving custom-made Kente for weddings, graduations, and cultural celebrations. Learn about our story, mission, and craftsmanship. Personalized Kente in your exact colors, symbols, and patterns.",
     [
       "about Hinkro Kente",
       "Ghanaian kente weaving company",
@@ -1981,6 +2056,7 @@ function InspiringTradition() {
       "kente weaving history",
       "Hinkro Kente story",
       "traditional kente weaver",
+      "kente company Accra",
     ],
   );
 
@@ -2117,7 +2193,7 @@ function TrendsNewsSection() {
           resources here.
         </h2>
 
-        <a className="trends-news-cta" href="#blog">
+        <a className="trends-news-cta" href="/blog/">
           Kente Trends and News
         </a>
       </div>
@@ -2166,7 +2242,7 @@ function SiteFooter() {
         <h2 id="shop-footer-title">
           Visit our Kente Shop for our curated kente fabric just for you
         </h2>
-        <a className="shop-footer-button" href="#store">
+        <a className="shop-footer-button" href="/authentic-kente-fabric/">
           Shop Now <span aria-hidden="true">→</span>
         </a>
       </section>
@@ -2525,7 +2601,7 @@ function ValueSection() {
             aim to preserve and enhance this tradition. Our custom weaving
             services provide high-quality, unique pieces fit for royalty.
           </p>
-          <a className="value-cta" href="/appointment/">
+          <a className="value-cta" href="/customized-kente-weaving-services/">
             Bespoke Service <span aria-hidden="true">→</span>
           </a>
         </div>
@@ -2696,6 +2772,10 @@ function Hero() {
         <span>Custom Kente Weaving Services</span>
         <span>Personalized Kente Weaving Services</span>
         <span>Trusted Kente Weaver in Ghana</span>
+        <span>Made For You Kente</span>
+        <span>Wedding Kente Cloth</span>
+        <span>Family Heirloom Kente</span>
+        <span>Luxury Kente Gift</span>
       </div>
 
       <button
@@ -3086,6 +3166,379 @@ function ComingSoonPage({ title, subtitle, description }) {
   );
 }
 
+const BOOKING_STEPS = {
+  purpose: {
+    title: "What brings you to Hinkro Kente?",
+    subtitle: "Tell us about your vision so we can guide you to the right path.",
+    options: [
+      { value: "bespoke", label: "I want a bespoke kente piece made for me", icon: "✦" },
+      { value: "corporate", label: "Corporate or organizational order", icon: "◆" },
+      { value: "partnership", label: "I'd like to explore a partnership", icon: "◇" },
+      { value: "question", label: "I have a question or special request", icon: "?" },
+    ],
+  },
+  occasion: {
+    title: "What's the occasion?",
+    subtitle: "Every kente tells a story. What's yours about?",
+    options: [
+      { value: "wedding", label: "Wedding or engagement", icon: "💍" },
+      { value: "graduation", label: "Graduation", icon: "🎓" },
+      { value: "heirloom", label: "Family heirloom / heritage piece", icon: "👑" },
+      { value: "birthday", label: "Birthday or celebration", icon: "🎉" },
+      { value: "corporate-gift", label: "Corporate or ceremonial gift", icon: "🎁" },
+      { value: "personal", label: "Personal style / everyday luxury", icon: "✦" },
+    ],
+    openEnded: true,
+    openLabel: "Something else? Tell us more",
+  },
+  corporateType: {
+    title: "What type of organization?",
+    subtitle: "We've worked with schools, businesses, and organizations across the globe.",
+    options: [
+      { value: "university", label: "University or school", icon: "🏛" },
+      { value: "business", label: "Corporate business", icon: "💼" },
+      { value: "government", label: "Government or NGO", icon: "🌍" },
+      { value: "religious", label: "Religious organization", icon: "⛪" },
+    ],
+    openEnded: true,
+    openLabel: "Something else? Tell us about your organization",
+  },
+  partnershipType: {
+    title: "What kind of partnership?",
+    subtitle: "We love collaborating with creative minds and businesses.",
+    options: [
+      { value: "retail", label: "Retail or reseller", icon: "🛍" },
+      { value: "designer", label: "Fashion designer or stylist", icon: "✂" },
+      { value: "events", label: "Event planner", icon: "🎊" },
+      { value: "media", label: "Media, influencer, or content creator", icon: "📱" },
+    ],
+    openEnded: true,
+    openLabel: "Tell us about your partnership idea",
+  },
+  vision: {
+    title: "Describe your vision",
+    subtitle: "Colors, patterns, meaning — share what inspires you. The more we know, the closer we get to your perfect piece.",
+    isTextarea: true,
+    placeholder: "e.g. I'd love a kente in deep emerald and gold for my daughter's wedding. Something that represents our family's journey...",
+  },
+  timeline: {
+    title: "When do you need this?",
+    subtitle: "Our master weavers craft each piece with care. Knowing your timeline helps us plan the perfect creation process.",
+    options: [
+      { value: "3-months", label: "Within 3 months", icon: "🗓" },
+      { value: "6-months", label: "3–6 months", icon: "📅" },
+      { value: "6-plus", label: "6+ months", icon: "🌱" },
+      { value: "planning", label: "No rush — I'm planning ahead", icon: "⏳" },
+      { value: "unsure", label: "Not sure yet", icon: "…" },
+    ],
+  },
+  contact: {
+    title: "How can we reach you?",
+    subtitle: "Our customer representative will reach out within 24 hours with a personalized plan.",
+  },
+};
+
+function BookingPage() {
+  usePageSeo(
+    "Book a Bespoke Kente Consultation | Hinkro Kente",
+    "Start your custom kente journey. Tell us your vision — colors, patterns, symbols, occasion — and our master weavers will create a personalized plan. Bespoke kente for weddings, graduations, heirlooms, and luxury gifts. Serving Ghana, USA, UK, Canada, Europe & worldwide.",
+  );
+
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  const stepKeys = useMemo(() => {
+    const keys = ["purpose"];
+    const purpose = answers.purpose;
+    if (purpose === "bespoke") {
+      keys.push("occasion", "vision", "timeline");
+    } else if (purpose === "corporate") {
+      keys.push("corporateType", "timeline");
+    } else if (purpose === "partnership") {
+      keys.push("partnershipType");
+    } else {
+      keys.push("vision");
+    }
+    keys.push("contact");
+    return keys;
+  }, [answers.purpose]);
+
+  const currentKey = stepKeys[step];
+  const totalSteps = stepKeys.length;
+  const progress = ((step + 1) / totalSteps) * 100;
+
+  const setAnswer = (key, value) => {
+    setAnswers((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const next = () => {
+    if (step < totalSteps - 1) setStep(step + 1);
+  };
+
+  const back = () => {
+    if (step > 0) setStep(step - 1);
+  };
+
+  const canProceed = () => {
+    if (currentKey === "contact") {
+      return answers.name && answers.email && answers.phone;
+    }
+    if (currentKey === "vision") {
+      return answers.vision && answers.vision.trim().length > 0;
+    }
+    return answers[currentKey] && answers[currentKey].length > 0;
+  };
+
+  const handleSubmit = async () => {
+    setSubmitting(true);
+
+    const purposeLabels = {
+      bespoke: "Bespoke kente piece",
+      corporate: "Corporate/organizational order",
+      partnership: "Partnership inquiry",
+      question: "Question or special request",
+    };
+    const occasionLabels = {
+      wedding: "Wedding or engagement",
+      graduation: "Graduation",
+      heirloom: "Family heirloom / heritage piece",
+      birthday: "Birthday or celebration",
+      "corporate-gift": "Corporate or ceremonial gift",
+      personal: "Personal style / everyday luxury",
+    };
+    const corporateLabels = {
+      university: "University or school",
+      business: "Corporate business",
+      government: "Government or NGO",
+      religious: "Religious organization",
+    };
+    const partnerLabels = {
+      retail: "Retail or reseller",
+      designer: "Fashion designer or stylist",
+      events: "Event planner",
+      media: "Media, influencer, or content creator",
+    };
+    const timelineLabels = {
+      "3-months": "Within 3 months",
+      "6-months": "3–6 months",
+      "6-plus": "6+ months",
+      planning: "No rush — planning ahead",
+      unsure: "Not sure yet",
+    };
+
+    const lines = [];
+    lines.push(`Purpose: ${purposeLabels[answers.purpose] || answers.purpose || "N/A"}`);
+    if (answers.occasion) {
+      const occLabel = occasionLabels[answers.occasion] || answers.occasion;
+      const occOther = answers.occasionOther ? ` — ${answers.occasionOther}` : "";
+      lines.push(`Occasion: ${occLabel}${occOther}`);
+    }
+    if (answers.corporateType) {
+      const corpLabel = corporateLabels[answers.corporateType] || answers.corporateType;
+      const corpOther = answers.corporateTypeOther ? ` — ${answers.corporateTypeOther}` : "";
+      lines.push(`Organization: ${corpLabel}${corpOther}`);
+    }
+    if (answers.partnershipType) {
+      const partLabel = partnerLabels[answers.partnershipType] || answers.partnershipType;
+      const partOther = answers.partnershipTypeOther ? ` — ${answers.partnershipTypeOther}` : "";
+      lines.push(`Partnership: ${partLabel}${partOther}`);
+    }
+    if (answers.vision) lines.push(`Vision: ${answers.vision}`);
+    if (answers.timeline) lines.push(`Timeline: ${timelineLabels[answers.timeline] || answers.timeline}`);
+    if (answers.name) lines.push(`Name: ${answers.name}`);
+    if (answers.email) lines.push(`Email: ${answers.email}`);
+    if (answers.phone) lines.push(`Phone: ${answers.phone}`);
+
+    const body = lines.join("\n");
+    const subject = encodeURIComponent(`New Bespoke Kente Inquiry — ${answers.name || "Visitor"}`);
+    const mailtoUrl = `mailto:hinkrogh@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
+
+    await new Promise((r) => setTimeout(r, 800));
+    window.location.href = mailtoUrl;
+    setSubmitted(true);
+    setSubmitting(false);
+  };
+
+  if (submitted) {
+    return (
+      <main className="booking-page">
+        <div className="booking-hero">
+          <span className="store-kicker">Thank you</span>
+          <h1>Your Kente Journey Has Begun</h1>
+          <p>Our customer representative is already reviewing your answers. You'll receive a personalized response within 24 hours.</p>
+        </div>
+        <div className="booking-success">
+          <div className="booking-success-card">
+            <div className="booking-success-icon">✓</div>
+            <h2>What happens next?</h2>
+            <div className="booking-success-steps">
+              <div className="booking-success-step">
+                <span className="booking-success-num">1</span>
+                <div>
+                  <strong>We review your vision</strong>
+                  <p>Our team studies your answers to understand exactly what you need.</p>
+                </div>
+              </div>
+              <div className="booking-success-step">
+                <span className="booking-success-num">2</span>
+                <div>
+                  <strong>You get a personalized plan</strong>
+                  <p>We'll send you design options, pricing, and a timeline tailored to your request.</p>
+                </div>
+              </div>
+              <div className="booking-success-step">
+                <span className="booking-success-num">3</span>
+                <div>
+                  <strong>Your kente begins</strong>
+                  <p>Once you approve, our master weavers start creating your piece.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <a className="shop-footer-button booking-home-link" href="/">Back to Home</a>
+        </div>
+      </main>
+    );
+  }
+
+  const stepData = BOOKING_STEPS[currentKey];
+
+  return (
+    <main className="booking-page">
+      <div className="booking-hero">
+        <span className="store-kicker">Bespoke Kente Consultation</span>
+        <h1>Let's Create Something Extraordinary</h1>
+        <p>Answer a few quick questions and our customer representative will reach out with a personalized plan — no commitment, no pressure.</p>
+      </div>
+
+      <div className="booking-wizard">
+        <div className="booking-progress">
+          <div className="booking-progress-bar" style={{ width: `${progress}%` }} />
+        </div>
+        <div className="booking-step-label">
+          Step {step + 1} of {totalSteps}
+        </div>
+
+        <div className="booking-step" key={currentKey}>
+          <h2 className="booking-step-title">{stepData.title}</h2>
+          <p className="booking-step-subtitle">{stepData.subtitle}</p>
+
+          {stepData.isTextarea ? (
+            <div className="booking-textarea-wrap">
+              <textarea
+                className="booking-textarea"
+                value={answers[currentKey] || ""}
+                onChange={(e) => setAnswer(currentKey, e.target.value)}
+                placeholder={stepData.placeholder}
+                rows={5}
+                autoFocus
+              />
+            </div>
+          ) : currentKey === "contact" ? (
+            <div className="booking-contact">
+              <div className="booking-field">
+                <label className="booking-label" htmlFor="booking-name">Your name</label>
+                <input
+                  id="booking-name"
+                  className="booking-input"
+                  type="text"
+                  value={answers.name || ""}
+                  onChange={(e) => setAnswer("name", e.target.value)}
+                  placeholder="e.g. Kwame Mensah"
+                  autoFocus
+                />
+              </div>
+              <div className="booking-field">
+                <label className="booking-label" htmlFor="booking-email">Email address</label>
+                <input
+                  id="booking-email"
+                  className="booking-input"
+                  type="email"
+                  value={answers.email || ""}
+                  onChange={(e) => setAnswer("email", e.target.value)}
+                  placeholder="e.g. kwame@example.com"
+                />
+              </div>
+              <div className="booking-field">
+                <label className="booking-label" htmlFor="booking-phone">Phone number</label>
+                <input
+                  id="booking-phone"
+                  className="booking-input"
+                  type="tel"
+                  value={answers.phone || ""}
+                  onChange={(e) => setAnswer("phone", e.target.value)}
+                  placeholder="e.g. +1 234 567 8900"
+                />
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="booking-options">
+                {stepData.options.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className={`booking-option ${answers[currentKey] === opt.value ? "booking-option--active" : ""}`}
+                    onClick={() => setAnswer(currentKey, opt.value)}
+                  >
+                    {opt.icon && <span className="booking-option-icon">{opt.icon}</span>}
+                    <span className="booking-option-label">{opt.label}</span>
+                  </button>
+                ))}
+              </div>
+              {stepData.openEnded && (
+                <div className="booking-open-ended">
+                  <label className="booking-label" htmlFor="booking-open">{stepData.openLabel}</label>
+                  <input
+                    id="booking-open"
+                    className="booking-input"
+                    type="text"
+                    value={answers[`${currentKey}Other`] || ""}
+                    onChange={(e) => {
+                      setAnswer(`${currentKey}Other`, e.target.value);
+                      if (e.target.value) setAnswer(currentKey, "other");
+                    }}
+                    placeholder="Type your answer..."
+                  />
+                </div>
+              )}
+            </>
+          )}
+        </div>
+
+        <div className="booking-nav">
+          {step > 0 && (
+            <button type="button" className="booking-back" onClick={back}>
+              ← Back
+            </button>
+          )}
+          {step < totalSteps - 1 ? (
+            <button
+              type="button"
+              className="booking-next"
+              onClick={next}
+              disabled={!canProceed()}
+            >
+              Continue →
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="booking-submit"
+              onClick={handleSubmit}
+              disabled={!canProceed() || submitting}
+            >
+              {submitting ? "Sending..." : "Send My Enquiry →"}
+            </button>
+          )}
+        </div>
+      </div>
+    </main>
+  );
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState(getCurrentPage);
   const [productSlug, setProductSlug] = useState(getProductSlugFromLocation);
@@ -3187,16 +3640,22 @@ function App() {
         <GraduationStolePage />
       ) : currentPage === "store" ? (
         <StorePage productSlug={productSlug} />
+      ) : currentPage === "blog" && blogSlug ? (
+        <BlogPostDetail blogSlug={blogSlug} />
       ) : currentPage === "blog" ? (
-        <BlogPage blogSlug={blogSlug} />
+        <BlogPage />
       ) : policyPageMap[currentPage] ? (
         <PolicyPage slug={policyPageMap[currentPage]} />
       ) : currentPage === "coming-soon-customized" ? (
-        <ComingSoonPage title="Customized Kente Services" subtitle="Coming Soon" description="Our Customized Kente Services page is being prepared. In the meantime, get in touch to discuss your custom kente project." />
+        <ComingSoonPage title="Customized Kente Services" subtitle="Coming Soon" description="Our Customized Kente Services page is being prepared. Hinkro Kente designs and weaves kente cloth in your exact colors, patterns, and symbols. Every piece is made exclusively for you. Get in touch to discuss your custom kente project." />
       ) : currentPage === "coming-soon-bridal" ? (
-        <ComingSoonPage title="Kente Bridal Package" subtitle="Coming Soon" description="Our Kente Bridal Package page is being prepared. Discover our bespoke bridal kente services by getting in touch." />
+        <ComingSoonPage title="Kente Bridal Package" subtitle="Coming Soon" description="Our Kente Bridal Package page is being prepared. Hinkro Kente creates bespoke bridal kente — from bridal cloths to couples' matching sets and family coordinated designs. Contact us to explore our bridal kente services." />
       ) : currentPage === "coming-soon-weave" ? (
-        <ComingSoonPage title="Weave on Demand Kente" subtitle="Coming Soon" description="Our Weave on Demand page is being prepared. Contact us to learn about our on-demand kente weaving services." />
+        <ComingSoonPage title="Weave on Demand Kente" subtitle="Coming Soon" description="Our Weave on Demand page is being prepared. Hinkro Kente offers on-demand kente weaving services where we create fabric exclusively for you in your specific colors, size, and pattern. Contact us to get started." />
+      ) : currentPage === "coming-soon-team" ? (
+        <ComingSoonPage title="Our Team" subtitle="Coming Soon" description="Meet the talented artisans and designers behind Hinkro Kente. Our full team page is being prepared." />
+      ) : currentPage === "booking" ? (
+        <BookingPage />
       ) : (
         <Hero />
       )}

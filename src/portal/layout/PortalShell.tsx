@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import {
   BarChart3,
@@ -87,6 +87,14 @@ const ROLE_LABEL: Record<UserRole, string> = {
 export function PortalShell() {
   const { profile, signOut, isDemo } = useAuth();
   const [navOpen, setNavOpen] = useState(false);
+
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => { meta.remove(); };
+  }, []);
 
   if (!profile) return null;
   const entries = NAV[sectionForRole(profile.role)];

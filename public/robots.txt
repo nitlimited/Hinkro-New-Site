@@ -73,5 +73,10 @@ Allow: /
 Allow: /llms.txt
 Allow: /llms-full.txt
 
+User-agent: Googlebot
+Allow: /
+Allow: /llms.txt
+Allow: /llms-full.txt
+
 # Sitemaps
 Sitemap: https://www.hinkrokente.com/sitemap.xml

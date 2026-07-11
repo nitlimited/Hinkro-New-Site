@@ -1,3 +1,9 @@
+import { blogContent } from "./blogContent";
+import { blogContent2 } from "./blogContent2";
+import { blogContent3 } from "./blogContent3";
+
+const allContent = { ...blogContent, ...blogContent2, ...blogContent3 };
+
 export const defaultBlogPosts = [
   {
     id: "wp-4700",
@@ -287,4 +293,7 @@ export const defaultBlogPosts = [
     featured_image: null,
     publish_at: "2023-08-12T19:09:55.000Z",
   },
-];
+].map((post) => ({
+  ...post,
+  content: allContent[post.slug] || null,
+}));

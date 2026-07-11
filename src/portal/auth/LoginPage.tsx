@@ -29,6 +29,15 @@ export function LoginPage() {
     }
   }, [loading, profile, navigate]);
 
+  // Noindex the login page
+  useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex, nofollow";
+    document.head.appendChild(meta);
+    return () => { meta.remove(); };
+  }, []);
+
   const submitStaff = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!supabase) return;
