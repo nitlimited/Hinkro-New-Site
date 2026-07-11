@@ -1867,3 +1867,40 @@
     padding: 20px 16px 48px;
   }
 }
+
+/* ---------- Form overflow fixes for small screens ---------- */
+
+@media (max-width: 640px) {
+  .portal-inline-form {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-image-editor-row {
+    grid-template-columns: 72px 1fr;
+  }
+
+  .portal-variation-row {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-image-editor-row {
+    grid-template-columns: 1fr;
+  }
+
+  .portal-image-editor-row > img,
+  .portal-image-placeholder {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+  }
+
+  .portal-composer-row {
+    grid-template-columns: 1fr;
+  }
+}

@@ -2757,7 +2757,8 @@ button {
   opacity: 1;
 }
 
-.accessory-card:hover .accessory-image img {
+.accessory-card:hover .accessory-image img:first-child {
+  opacity: 0;
   filter: saturate(1.04) contrast(1.02);
   transform: scale(1.045);
 }

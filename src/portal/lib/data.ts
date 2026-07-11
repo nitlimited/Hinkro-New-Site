@@ -945,8 +945,13 @@ export async function postUpdate(
       created_at: new Date().toISOString(),
       author: { full_name: author.full_name, role: author.role },
     });
-    (input.files ?? []).forEach((file) => {
-      const url = URL.createObjectURL(file);
+    for (const file of input.files ?? []) {
+      const url = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = () => reject(new Error("Failed to read file for preview"));
+        reader.readAsDataURL(file);
+      });
       demoMedia.unshift({
         id: demoId("md"),
         project_id: input.project_id,
@@ -959,7 +964,7 @@ export async function postUpdate(
         created_at: new Date().toISOString(),
         url,
       });
-    });
+    }
     const p = demoProjects.find((x) => x.id === input.project_id);
     if (p) {
       if (typeof input.progress_pct === "number") p.progress_pct = input.progress_pct;
