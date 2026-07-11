@@ -3188,6 +3188,34 @@ function App() {
     h.appendChild(s);
   }, [currentPage]);
 
+  useEffect(() => {
+    const handleClick = (e) => {
+      const anchor = e.target.closest("a[href]");
+      if (!anchor) return;
+      const href = anchor.getAttribute("href");
+      if (!href) return;
+      if (anchor.target === "_blank") return;
+      if (href.startsWith("mailto:") || href.startsWith("tel:")) return;
+      if (href.startsWith("http") && !href.startsWith(window.location.origin)) return;
+
+      if (href.startsWith("#")) {
+        e.preventDefault();
+        window.location.hash = href;
+        return;
+      }
+
+      if (href.startsWith("/") && !href.startsWith("/portal") && !href.startsWith("/product") && !href.startsWith("/blog")) {
+        e.preventDefault();
+        window.history.pushState({}, "", href);
+        window.dispatchEvent(new PopStateEvent("popstate"));
+        window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+        return;
+      }
+    };
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick, true);
+  }, []);
+
   const policyPageMap = {
     "terms": "terms-and-condition",
     "bespoke-terms": "bespoke-service-terms",
