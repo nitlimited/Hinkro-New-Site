@@ -6837,3 +6837,236 @@ button {
     text-align: center;
   }
 }
+
+/* ── Thread Color Picker ────────────────────────── */
+
+.tcp {
+  margin-top: 8px;
+}
+
+.tcp-hint {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.tcp-classes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tcp-class {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tcp-class-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fafaf8;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.tcp-class-btn:hover {
+  background: #f0f0ec;
+}
+
+.tcp-class-btn--open {
+  background: #f0f0ec;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tcp-class-label {
+  flex: 1;
+}
+
+.tcp-class-count {
+  font-size: 13px;
+  font-weight: 400;
+  color: #888;
+}
+
+.tcp-class-arrow {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e5e7eb;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: 700;
+  color: #555;
+  line-height: 1;
+}
+
+.tcp-colors {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 12px;
+  padding: 16px;
+  animation: tcpFadeIn 0.2s ease;
+}
+
+@keyframes tcpFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tcp-color {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tcp-color:hover {
+  border-color: #d4d4d4;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.tcp-color--selected {
+  border-color: #b8860b;
+  background: #fefdf5;
+  box-shadow: 0 0 0 2px rgba(184, 134, 11, 0.15);
+}
+
+.tcp-color-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.tcp-color-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.tcp-color-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #b8860b;
+  color: white;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tcp-selected {
+  margin-top: 20px;
+  padding: 14px 16px;
+  background: #f8f8f4;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+
+.tcp-selected-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.tcp-selected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tcp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 5px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #333;
+  font-weight: 500;
+}
+
+.tcp-chip-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tcp-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #999;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.tcp-chip-remove:hover {
+  color: #e74c3c;
+}
+
+/* Thread Color Picker Mobile */
+
+@media (max-width: 600px) {
+  .tcp-colors {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .tcp-color-img {
+    width: 64px;
+    height: 64px;
+  }
+
+  .tcp-color-name {
+    font-size: 12px;
+  }
+
+  .tcp-class-btn {
+    padding: 12px 14px;
+    font-size: 15px;
+  }
+
+  .tcp-selected-chips {
+    gap: 6px;
+  }
+
+  .tcp-chip {
+    font-size: 12px;
+  }
+}

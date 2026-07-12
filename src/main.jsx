@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { WHATSAPP_ORDER_NUMBER } from "./storeProducts";
 import { usePublicBlogPosts, usePublicCatalog } from "./publicCatalog";
+import { THREAD_COLOR_CLASSES, findThreadColor } from "./threadColorLibrary";
 import "./styles.css";
 
 const navItems = [
@@ -3166,6 +3167,80 @@ function ComingSoonPage({ title, subtitle, description }) {
   );
 }
 
+function ThreadColorPicker({ selected, onChange }) {
+  const [expandedClass, setExpandedClass] = useState(null);
+
+  const toggle = (colorId) => {
+    if (selected.includes(colorId)) {
+      onChange(selected.filter((id) => id !== colorId));
+    } else {
+      onChange([...selected, colorId]);
+    }
+  };
+
+  return (
+    <div className="tcp">
+      <p className="tcp-hint">Tap a color class to explore, then tap individual colors to select them.</p>
+
+      <div className="tcp-classes">
+        {THREAD_COLOR_CLASSES.map((cls) => (
+          <div key={cls.id} className="tcp-class">
+            <button
+              type="button"
+              className={`tcp-class-btn ${expandedClass === cls.id ? "tcp-class-btn--open" : ""}`}
+              onClick={() => setExpandedClass(expandedClass === cls.id ? null : cls.id)}
+            >
+              <span className="tcp-class-label">{cls.label}</span>
+              <span className="tcp-class-count">{cls.colors.length} colors</span>
+              <span className="tcp-class-arrow">{expandedClass === cls.id ? "−" : "+"}</span>
+            </button>
+
+            {expandedClass === cls.id && (
+              <div className="tcp-colors">
+                {cls.colors.map((color) => (
+                  <button
+                    key={color.id}
+                    type="button"
+                    className={`tcp-color ${selected.includes(color.id) ? "tcp-color--selected" : ""}`}
+                    onClick={() => toggle(color.id)}
+                  >
+                    <img
+                      src={color.image}
+                      alt={`${color.name} thread cone`}
+                      className="tcp-color-img"
+                      loading="lazy"
+                    />
+                    <span className="tcp-color-name">{color.name}</span>
+                    {selected.includes(color.id) && <span className="tcp-color-check">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {selected.length > 0 && (
+        <div className="tcp-selected">
+          <span className="tcp-selected-label">Selected:</span>
+          <div className="tcp-selected-chips">
+            {selected.map((id) => {
+              const color = findThreadColor(id);
+              return color ? (
+                <span key={id} className="tcp-chip">
+                  <img src={color.image} alt="" className="tcp-chip-img" />
+                  {color.name}
+                  <button type="button" className="tcp-chip-remove" onClick={() => toggle(id)}>×</button>
+                </span>
+              ) : null;
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const BOOKING_STEPS = {
   purpose: {
     title: "What brings you to Hinkro Kente?",
@@ -3221,6 +3296,11 @@ const BOOKING_STEPS = {
     isTextarea: true,
     placeholder: "e.g. I'd love a kente in deep emerald and gold for my daughter's wedding. Something that represents our family's journey...",
   },
+  colors: {
+    title: "Browse available thread colors",
+    subtitle: "Select any colors that inspire you. Our weavers will use these as a starting point for your palette. You can skip this step.",
+    isColorPicker: true,
+  },
   timeline: {
     title: "When do you need this?",
     subtitle: "Our master weavers craft each piece with care. Knowing your timeline helps us plan the perfect creation process.",
@@ -3253,9 +3333,9 @@ function BookingPage() {
     const keys = ["purpose"];
     const purpose = answers.purpose;
     if (purpose === "bespoke") {
-      keys.push("occasion", "vision", "timeline");
+      keys.push("occasion", "vision", "colors", "timeline");
     } else if (purpose === "corporate") {
-      keys.push("corporateType", "timeline");
+      keys.push("corporateType", "vision", "colors", "timeline");
     } else if (purpose === "partnership") {
       keys.push("partnershipType");
     } else {
@@ -3287,6 +3367,9 @@ function BookingPage() {
     }
     if (currentKey === "vision") {
       return answers.vision && answers.vision.trim().length > 0;
+    }
+    if (currentKey === "colors") {
+      return true;
     }
     return answers[currentKey] && answers[currentKey].length > 0;
   };
@@ -3346,6 +3429,10 @@ function BookingPage() {
       lines.push(`Partnership: ${partLabel}${partOther}`);
     }
     if (answers.vision) lines.push(`Vision: ${answers.vision}`);
+    if (answers.threadColors && answers.threadColors.length > 0) {
+      const colorNames = answers.threadColors.map((id) => findThreadColor(id)?.name || id);
+      lines.push(`Preferred thread colors: ${colorNames.join(", ")}`);
+    }
     if (answers.timeline) lines.push(`Timeline: ${timelineLabels[answers.timeline] || answers.timeline}`);
     if (answers.name) lines.push(`Name: ${answers.name}`);
     if (answers.email) lines.push(`Email: ${answers.email}`);
@@ -3436,6 +3523,11 @@ function BookingPage() {
                 autoFocus
               />
             </div>
+          ) : stepData.isColorPicker ? (
+            <ThreadColorPicker
+              selected={answers.threadColors || []}
+              onChange={(colors) => setAnswer("threadColors", colors)}
+            />
           ) : currentKey === "contact" ? (
             <div className="booking-contact">
               <div className="booking-field">
