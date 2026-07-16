@@ -2051,19 +2051,19 @@ function CustomizedKenteServicesPage() {
       <section className="customized-dreams" aria-labelledby="customized-dreams-title">
         <figure>
           <img
-            src="/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg"
-            alt="Yellow customized Kente bridal look by Hinkro Kente"
+            src="/images/customized-hero.webp"
+            alt="Customized Kente consultation with Hinkro Kente"
           />
         </figure>
         <div>
           <h2 id="customized-dreams-title">Dreams into<br />shapes and hues</h2>
           <p>
             Ready to embark on your Kente customization journey? Booking an appointment is easy!
-            Simply click the “Book Now” button below and fill out the appointment form. Our team
+            Simply click the "Book Now" button below and fill out the appointment form. Our team
             will get in touch with you to discuss your preferences, schedule a consultation, and
             guide you through the customization process.
           </p>
-          <a className="customized-navy-btn" href="/appointment/">
+          <a className="bespoke-dreams-cta" href="/appointment/">
             Book Appointment <span aria-hidden="true">→</span>
           </a>
         </div>

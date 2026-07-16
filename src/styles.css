@@ -7527,16 +7527,18 @@ button {
 .customized-dreams figure {
   align-self: end;
   margin: 0;
+  margin-bottom: -1px;
   min-height: 620px;
   display: flex;
   align-items: flex-end;
+  overflow: visible;
 }
 
 .customized-dreams img {
   width: min(100%, 560px);
   max-height: 720px;
-  object-fit: cover;
-  object-position: center top;
+  object-fit: contain;
+  object-position: center bottom;
   display: block;
   filter: drop-shadow(0 24px 42px rgba(0, 0, 0, 0.2));
 }
