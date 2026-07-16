@@ -1933,16 +1933,16 @@ const customizedServiceRows = [
   {
     title: "Tailored to your taste",
     text: "Are you looking for a unique and personalized touch to your traditional attire? Our Kente customization services offer you the opportunity to create a one-of-a-kind Kente cloth that reflects your individual style and cultural heritage. Whether you are attending a wedding, graduation ceremony, or any special occasion, our expert artisans are here to help you make a statement.",
-    image: "/images/hinkro-bespoke-dreams-shapes-hues.jpg",
-    imageAlt: "Customized Hinkro Kente cloth folded with Hinkro packaging",
+    image: "/images/design-kente-image.png",
+    imageAlt: "Customized Hinkro Kente color selection and design process",
     cta: "Bespoke",
     href: "/customized-kente-weaving-services/",
   },
   {
     title: "Quality Craftmanship",
     text: "We take immense pride in the craftsmanship of our Kente fabrics. Our skilled artisans have years of experience in weaving and pay meticulous attention to detail, ensuring that every thread is carefully woven to perfection. When you choose our Kente customization service, you can expect a high-quality, durable piece that you will cherish.",
-    image: "/images/hinkro-design-offering-pattern-weave.webp",
-    imageAlt: "Close-up of patterned Kente weaving on a traditional loom",
+    image: "/images/kente-weaver.jpg",
+    imageAlt: "Skilled Kente weaver working on a traditional loom",
     cta: "Design & Process",
     href: "/design-kente/",
     flip: true,
@@ -1950,8 +1950,8 @@ const customizedServiceRows = [
   {
     title: "Cultural Significance",
     text: "Kente cloth holds great cultural significance in many African communities. Each color and pattern tells a unique story, representing values, traditions, and historical events. By customizing your Kente cloth, you have the opportunity to delve deeper into the symbolism and meaning behind the fabric, creating a truly meaningful and personalized garment.",
-    image: "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
-    imageAlt: "Bride in yellow custom Kente celebrating cultural tradition",
+    image: "/images/kente-cultural.jpg",
+    imageAlt: "Vibrant customized Kente cloth showcasing cultural significance",
     cta: "Inspiring Tradition",
     href: "/weaving-authentic-ghanaian-kente-fabric/",
   },
@@ -2022,11 +2022,14 @@ function CustomizedKenteServicesPage() {
           </p>
         </div>
         <div className="customized-hero-media">
-          <img
-            src="/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg"
-            alt="Traditional loom used for customized Hinkro Kente weaving services"
+          <video
+            src="/images/kente-weaving.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            poster="/images/customized-hero.webp"
           />
-          <span className="customized-play" aria-hidden="true">▶</span>
         </div>
       </section>
 

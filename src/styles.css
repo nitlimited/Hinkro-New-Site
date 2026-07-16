@@ -7395,7 +7395,8 @@ button {
   background: #08182e;
 }
 
-.customized-hero-media img {
+.customized-hero-media img,
+.customized-hero-media video {
   width: 100%;
   height: 100%;
   display: block;
