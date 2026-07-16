@@ -35,16 +35,8 @@ export function ProjectCreatePage() {
   const { clients } = useClients();
   const { team } = useTeam();
   const { weavers: weaverProfiles } = useWeaverProfiles();
-  const { projects } = useProjects({});
+  const { projects } = useProjects({ role: "admin" });
   const weavers = team.filter((t) => t.role === "weaver");
-
-  // Smart assignment: rank weavers based on quality, availability, workload
-  const recommendations = useMemo(() => {
-    return rankWeavers(weaverProfiles, projects, form.pattern || null);
-  }, [weaverProfiles, projects, form.pattern]);
-
-  const topPick = recommendations[0];
-  const showSuggestions = recommendations.length > 0 && !form.weaver_id;
 
   const [clientMode, setClientMode] = useState<"existing" | "new">("existing");
   const [newClient, setNewClient] = useState({ name: "", email: "" });
@@ -61,6 +53,14 @@ export function ProjectCreatePage() {
     est_completion: "",
     design_notes: "",
   });
+  // Smart assignment: rank weavers based on quality, availability, workload
+  const recommendations = useMemo(() => {
+    return rankWeavers(weaverProfiles, projects, form.pattern || null);
+  }, [weaverProfiles, projects, form.pattern]);
+
+  const topPick = recommendations[0];
+  const showSuggestions = recommendations.length > 0 && !form.weaver_id;
+
   const [spec, setSpec] = useState<ProjectSpec>(emptySpec());
   const [inspirationFiles, setInspirationFiles] = useState<File[]>([]);
   const [symbolFiles, setSymbolFiles] = useState<File[]>([]);

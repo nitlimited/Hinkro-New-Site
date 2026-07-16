@@ -709,9 +709,9 @@ function getCurrentPage() {
     "/design-kente/": "design",
     "/hinkro-kente-accessories/": "accessories",
     "/customized-kente-weaving-services/": "bespoke",
-    "/customized-kente-services/": "coming-soon-customized",
+    "/customized-kente-services/": "customized-services",
     "/kente-bridal-package/": "coming-soon-bridal",
-    "/weave-on-demand-kente/": "coming-soon-weave",
+    "/weave-on-demand-kente/": "weave-on-demand",
     "/boutique-kente-shop-online-buy/": "store",
     "/lead-time-and-rush-orders/": "lead-time",
     "/privacy-policy/": "privacy",
@@ -1724,6 +1724,349 @@ function ProductDetailPage({ product, currency, products }) {
           </div>
         </section>
       )}
+    </main>
+  );
+}
+
+const weaveOnDemandBenefits = [
+  {
+    title: "Designed before it is woven",
+    text: "We translate your colors, patterns, measurements, symbols, and occasion into a clear weaving direction before production starts.",
+  },
+  {
+    title: "Woven only after confirmation",
+    text: "Your Kente weave on demand order begins after consultation, design review, and approval, so the final cloth reflects the brief.",
+  },
+  {
+    title: "Tracked from loom to delivery",
+    text: "Receive production updates, weaving progress, quality checks, finishing notes, and delivery guidance as your cloth comes alive.",
+  },
+];
+
+const weaveOnDemandSteps = [
+  "Share your vision, occasion, colors, measurements, and preferred pattern direction.",
+  "Hinkro prepares a weaving plan with lead-time guidance and design recommendations.",
+  "You approve the direction, then our weavers prepare the loom, yarns, and pattern setup.",
+  "Your cloth is woven, inspected, finished, packaged, and prepared for collection or delivery.",
+];
+
+const weaveOnDemandLinks = [
+  {
+    title: "Explore Bespoke Kente",
+    href: "/customized-kente-weaving-services/",
+    text: "For fully personalized heirloom cloth, family pieces, bridal sets, and symbolic designs.",
+  },
+  {
+    title: "See the Design Process",
+    href: "/design-kente/",
+    text: "Understand how concepts, colors, samples, and approvals shape every Hinkro Kente order.",
+  },
+  {
+    title: "Shop Ready Kente",
+    href: "/authentic-kente-fabric/",
+    text: "Browse available pieces if you need existing designs instead of a new weave-on-demand order.",
+  },
+  {
+    title: "Read Kente Trends",
+    href: "/kente-trends/",
+    text: "Get inspiration for colors, wedding looks, graduation styling, and cultural occasions.",
+  },
+];
+
+function WeaveOnDemandPage() {
+  usePageSeo(
+    "Kente Weave On Demand | Custom Made Kente Cloth | Hinkro Kente",
+    "Order Kente weave on demand from Hinkro Kente. We design, prepare, hand-weave, inspect, and finish custom Kente cloth based on your colors, pattern, size, and occasion.",
+    [
+      "Kente weave on demand",
+      "weave on demand Kente",
+      "custom made Kente cloth",
+      "made to order Kente",
+      "Kente weaving service Ghana",
+      "personalized Kente weaving",
+      "Hinkro Kente weave on demand",
+      "bespoke Kente order",
+    ],
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Kente Weave On Demand",
+      "serviceType": "Made-to-order Kente weaving",
+      "description": "Hinkro Kente creates weave-on-demand Kente cloth after consultation, design approval, loom preparation, hand weaving, finishing, and quality control.",
+      "provider": { "@type": "Organization", "@id": "https://www.hinkrokente.com/#organization" },
+      "areaServed": ["Ghana", "United States", "United Kingdom", "Canada", "Europe", "Worldwide"],
+      "url": "https://www.hinkrokente.com/weave-on-demand-kente/"
+    }
+  );
+
+  return (
+    <main className="weave-demand-page">
+      <section className="weave-demand-hero" aria-labelledby="weave-demand-title">
+        <div className="weave-demand-video-card">
+          <video
+            src="/videos/weave-on-demand-kente.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg"
+            aria-label="Hinkro Kente weave on demand loom and fabric process"
+          />
+          <div className="weave-demand-video-glow" />
+        </div>
+        <div className="weave-demand-hero-copy">
+          <span className="store-kicker">Kente weave on demand</span>
+          <h1 id="weave-demand-title">Kente woven only when your story is ready</h1>
+          <p>
+            Hinkro Kente&apos;s <strong>Kente weave on demand</strong> service gives you
+            custom-made Kente cloth created after your colors, pattern, size, timeline,
+            and occasion have been understood. No guesswork. No generic stock pretending
+            to be personal. Just thoughtful design, skilled weaving, and a clear process.
+          </p>
+          <div className="weave-demand-actions">
+            <a className="bespoke-dreams-cta" href="/appointment/">
+              Start a weave-on-demand order <span aria-hidden="true">→</span>
+            </a>
+            <a className="bespoke-service-cta" href="/design-kente/">
+              See how we design Kente
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <section className="weave-demand-intro" aria-label="Why choose Hinkro weave on demand">
+        <div>
+          <span className="store-kicker">Made for your timeline</span>
+          <h2>For clients who want Kente made after the brief, not before it</h2>
+        </div>
+        <p>
+          Whether you are preparing for a wedding, engagement, graduation, family ceremony,
+          institutional celebration, or luxury gift, weave-on-demand Kente lets Hinkro
+          produce the cloth around the meaning of the moment. We record the details,
+          guide the design choices, prepare the loom, and keep the order moving through
+          finishing and quality control.
+        </p>
+      </section>
+
+      <section className="weave-demand-benefits" aria-label="Kente weave on demand benefits">
+        {weaveOnDemandBenefits.map((benefit, index) => (
+          <article key={benefit.title}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{benefit.title}</h3>
+            <p>{benefit.text}</p>
+          </article>
+        ))}
+      </section>
+
+      <section className="weave-demand-process" aria-labelledby="weave-demand-process-title">
+        <figure>
+          <img
+            src="/images/hinkro-design-offering-pattern-weave.webp"
+            alt="Pattern weave Kente fabric prepared by Hinkro Kente"
+          />
+        </figure>
+        <div>
+          <span className="store-kicker">The process</span>
+          <h2 id="weave-demand-process-title">How Kente weave on demand works</h2>
+          <ol>
+            {weaveOnDemandSteps.map((step) => (
+              <li key={step}>{step}</li>
+            ))}
+          </ol>
+          <a className="bespoke-dreams-cta" href="/lead-time-and-rush-orders/">
+            Review lead times <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <section className="weave-demand-grid-section" aria-labelledby="weave-demand-use-title">
+        <div className="weave-demand-section-head">
+          <span className="store-kicker">Best for</span>
+          <h2 id="weave-demand-use-title">When to choose weave-on-demand Kente</h2>
+        </div>
+        <div className="weave-demand-use-grid">
+          {[
+            "Wedding and engagement cloths",
+            "Graduation stoles and ceremonial sets",
+            "Family, couple, and group Kente orders",
+            "Corporate, school, and institutional pieces",
+            "Personal statement cloths in exact colors",
+            "Luxury gifts with cultural meaning",
+          ].map((item) => (
+            <span key={item}>{item}</span>
+          ))}
+        </div>
+      </section>
+
+      <section className="weave-demand-links" aria-labelledby="weave-demand-links-title">
+        <div className="weave-demand-section-head">
+          <span className="store-kicker">Continue exploring</span>
+          <h2 id="weave-demand-links-title">Plan the right Kente order</h2>
+        </div>
+        <div className="weave-demand-link-grid">
+          {weaveOnDemandLinks.map((item) => (
+            <a href={item.href} key={item.title}>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <span>Open page →</span>
+            </a>
+          ))}
+        </div>
+      </section>
+
+      <section className="weave-demand-cta" aria-labelledby="weave-demand-cta-title">
+        <span className="store-kicker">Ready when you are</span>
+        <h2 id="weave-demand-cta-title">Start your Kente weave on demand consultation</h2>
+        <p>
+          Tell Hinkro Kente what you want woven, when you need it, and what the cloth
+          should represent. We will guide the next step with care.
+        </p>
+        <a className="bespoke-dreams-cta" href="/appointment/">
+          Book an appointment <span aria-hidden="true">→</span>
+        </a>
+      </section>
+    </main>
+  );
+}
+
+const customizedServiceRows = [
+  {
+    title: "Tailored to your taste",
+    text: "Are you looking for a unique and personalized touch to your traditional attire? Our Kente customization services offer you the opportunity to create a one-of-a-kind Kente cloth that reflects your individual style and cultural heritage. Whether you are attending a wedding, graduation ceremony, or any special occasion, our expert artisans are here to help you make a statement.",
+    image: "/images/hinkro-bespoke-dreams-shapes-hues.jpg",
+    imageAlt: "Customized Hinkro Kente cloth folded with Hinkro packaging",
+    cta: "Bespoke",
+    href: "/customized-kente-weaving-services/",
+  },
+  {
+    title: "Quality Craftmanship",
+    text: "We take immense pride in the craftsmanship of our Kente fabrics. Our skilled artisans have years of experience in weaving and pay meticulous attention to detail, ensuring that every thread is carefully woven to perfection. When you choose our Kente customization service, you can expect a high-quality, durable piece that you will cherish.",
+    image: "/images/hinkro-design-offering-pattern-weave.webp",
+    imageAlt: "Close-up of patterned Kente weaving on a traditional loom",
+    cta: "Design & Process",
+    href: "/design-kente/",
+    flip: true,
+  },
+  {
+    title: "Cultural Significance",
+    text: "Kente cloth holds great cultural significance in many African communities. Each color and pattern tells a unique story, representing values, traditions, and historical events. By customizing your Kente cloth, you have the opportunity to delve deeper into the symbolism and meaning behind the fabric, creating a truly meaningful and personalized garment.",
+    image: "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
+    imageAlt: "Bride in yellow custom Kente celebrating cultural tradition",
+    cta: "Inspiring Tradition",
+    href: "/weaving-authentic-ghanaian-kente-fabric/",
+  },
+];
+
+function CustomizedServicesFaqSection() {
+  const [openFaq, setOpenFaq] = useState(0);
+
+  return (
+    <section className="customized-faq-section bespoke-faq-section" aria-labelledby="customized-faq-title">
+      <h2 id="customized-faq-title">FAQ</h2>
+      <div className="bespoke-faq-list">
+        {bespokeFaqItems.map((item, index) => (
+          <article className="bespoke-faq-item" key={item.question}>
+            <button
+              type="button"
+              aria-expanded={openFaq === index}
+              onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+            >
+              <span>{item.question}</span>
+              <span aria-hidden="true" className="bespoke-faq-icon">⌄</span>
+            </button>
+            <div className={openFaq === index ? "bespoke-faq-answer is-open" : "bespoke-faq-answer"}>
+              <p>{item.answer}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CustomizedKenteServicesPage() {
+  usePageSeo(
+    "Customized Kente Services | Personalized Kente Cloth | Hinkro Kente",
+    "Create a one-of-a-kind Kente cloth with Hinkro Kente customized Kente services. Personalized colors, patterns, symbolism, craftsmanship, and consultation for weddings, graduations, ceremonies, and special occasions.",
+    [
+      "customized Kente services",
+      "Kente customization services",
+      "custom made Kente",
+      "personalized Kente cloth",
+      "custom Kente for wedding",
+      "custom Kente Ghana",
+      "bespoke Kente service",
+      "Hinkro Kente customization",
+    ],
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Customized Kente Services",
+      "serviceType": "Personalized Kente cloth design and weaving",
+      "description": "Hinkro Kente helps clients create personalized Kente cloth for weddings, graduations, ceremonies, cultural events, and special occasions through consultation, color selection, pattern guidance, weaving, finishing, and delivery.",
+      "provider": { "@type": "Organization", "@id": "https://www.hinkrokente.com/#organization" },
+      "url": "https://www.hinkrokente.com/customized-kente-services/"
+    }
+  );
+
+  return (
+    <main className="customized-page">
+      <section className="customized-hero" aria-labelledby="customized-title">
+        <div className="customized-hero-copy">
+          <h1 id="customized-title">Need a customised Kente service for that special occasion?</h1>
+          <p>
+            Are you looking for a unique and personalized touch to your traditional attire? Look no further!
+            Our Kente Customization services offers you the opportunity to create a one-of-a-kind Kente cloth
+            that reflects your individual style and cultural heritage. Whether you&apos;re attending a wedding,
+            a graduation ceremony, or any special occasion, our expert artisans are here to help you make a statement.
+          </p>
+        </div>
+        <div className="customized-hero-media">
+          <img
+            src="/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg"
+            alt="Traditional loom used for customized Hinkro Kente weaving services"
+          />
+          <span className="customized-play" aria-hidden="true">▶</span>
+        </div>
+      </section>
+
+      <section className="customized-service-stack" aria-label="Customized Kente service details">
+        {customizedServiceRows.map((item) => (
+          <article className={`customized-service-row ${item.flip ? "is-flipped" : ""}`} key={item.title}>
+            <figure>
+              <img src={item.image} alt={item.imageAlt} />
+            </figure>
+            <div>
+              <h2>{item.title}</h2>
+              <p>{item.text}</p>
+              <a className="customized-gold-btn" href={item.href}>{item.cta}</a>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="customized-dreams" aria-labelledby="customized-dreams-title">
+        <figure>
+          <img
+            src="/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg"
+            alt="Yellow customized Kente bridal look by Hinkro Kente"
+          />
+        </figure>
+        <div>
+          <h2 id="customized-dreams-title">Dreams into<br />shapes and hues</h2>
+          <p>
+            Ready to embark on your Kente customization journey? Booking an appointment is easy!
+            Simply click the “Book Now” button below and fill out the appointment form. Our team
+            will get in touch with you to discuss your preferences, schedule a consultation, and
+            guide you through the customization process.
+          </p>
+          <a className="customized-navy-btn" href="/appointment/">
+            Book Appointment <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </section>
+
+      <CustomizedServicesFaqSection />
     </main>
   );
 }
@@ -3726,6 +4069,8 @@ function App() {
         <DesignPage />
       ) : currentPage === "bespoke" ? (
         <BespokePage />
+      ) : currentPage === "weave-on-demand" ? (
+        <WeaveOnDemandPage />
       ) : currentPage === "accessories" ? (
         <AccessoriesPage />
       ) : currentPage === "graduation" ? (
@@ -3738,12 +4083,10 @@ function App() {
         <BlogPage />
       ) : policyPageMap[currentPage] ? (
         <PolicyPage slug={policyPageMap[currentPage]} />
-      ) : currentPage === "coming-soon-customized" ? (
-        <ComingSoonPage title="Customized Kente Services" subtitle="Coming Soon" description="Our Customized Kente Services page is being prepared. Hinkro Kente designs and weaves kente cloth in your exact colors, patterns, and symbols. Every piece is made exclusively for you. Get in touch to discuss your custom kente project." />
+      ) : currentPage === "customized-services" ? (
+        <CustomizedKenteServicesPage />
       ) : currentPage === "coming-soon-bridal" ? (
         <ComingSoonPage title="Kente Bridal Package" subtitle="Coming Soon" description="Our Kente Bridal Package page is being prepared. Hinkro Kente creates bespoke bridal kente — from bridal cloths to couples' matching sets and family coordinated designs. Contact us to explore our bridal kente services." />
-      ) : currentPage === "coming-soon-weave" ? (
-        <ComingSoonPage title="Weave on Demand Kente" subtitle="Coming Soon" description="Our Weave on Demand page is being prepared. Hinkro Kente offers on-demand kente weaving services where we create fabric exclusively for you in your specific colors, size, and pattern. Contact us to get started." />
       ) : currentPage === "coming-soon-team" ? (
         <ComingSoonPage title="Our Team" subtitle="Coming Soon" description="Meet the talented artisans and designers behind Hinkro Kente. Our full team page is being prepared." />
       ) : currentPage === "booking" ? (

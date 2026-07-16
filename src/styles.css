@@ -7039,9 +7039,684 @@ button {
   color: #e74c3c;
 }
 
+/* Weave on Demand Kente landing page */
+
+.weave-demand-page {
+  background: #f8f4ea;
+  color: #16233f;
+  overflow: hidden;
+}
+
+.weave-demand-hero {
+  position: relative;
+  min-height: calc(100vh - 92px);
+  display: flex;
+  align-items: center;
+  padding: clamp(112px, 12vw, 176px) clamp(22px, 7vw, 110px) clamp(56px, 7vw, 92px);
+  background: #102242;
+  isolation: isolate;
+}
+
+.weave-demand-video-card {
+  position: absolute;
+  inset: 0;
+  border-radius: 0;
+  min-height: 100%;
+  overflow: hidden;
+  box-shadow: none;
+  border: 0;
+  z-index: -2;
+}
+
+.weave-demand-video-card video {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  transform: scale(1.02);
+}
+
+.weave-demand-video-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(205, 140, 35, 0.22), transparent 28%),
+    linear-gradient(90deg, rgba(5, 14, 29, 0.9), rgba(10, 24, 47, 0.7) 38%, rgba(10, 24, 47, 0.24) 70%),
+    linear-gradient(180deg, rgba(5, 14, 29, 0.3), rgba(5, 14, 29, 0.68));
+  z-index: 1;
+}
+
+.weave-demand-video-glow {
+  position: absolute;
+  inset: auto 7vw 8vh auto;
+  width: min(34vw, 360px);
+  height: min(34vw, 360px);
+  border-radius: 50%;
+  background: rgba(205, 140, 35, 0.28);
+  filter: blur(42px);
+  z-index: 2;
+}
+
+.weave-demand-hero-copy {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 720px);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.weave-demand-hero-copy h1,
+.weave-demand-intro h2,
+.weave-demand-process h2,
+.weave-demand-section-head h2,
+.weave-demand-cta h2 {
+  font-family: Cinzel, Georgia, serif;
+  color: #16233f;
+  letter-spacing: -0.04em;
+}
+
+.weave-demand-hero-copy h1 {
+  margin: 12px 0 18px;
+  font-size: clamp(2.55rem, 5.4vw, 5.6rem);
+  line-height: 0.98;
+  color: #fff7df;
+  letter-spacing: -0.055em;
+  text-shadow: 0 12px 36px rgba(0, 0, 0, 0.42);
+}
+
+.weave-demand-hero-copy p {
+  max-width: 620px;
+  font-size: clamp(0.98rem, 1.22vw, 1.08rem);
+  line-height: 1.78;
+  color: rgba(255, 247, 223, 0.88);
+  margin: 0;
+  text-shadow: 0 8px 26px rgba(0, 0, 0, 0.34);
+}
+
+.weave-demand-hero-copy .store-kicker {
+  color: #f7c873;
+  text-shadow: 0 8px 24px rgba(0, 0, 0, 0.34);
+}
+
+.weave-demand-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.weave-demand-intro {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.8fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 70px);
+  padding: clamp(68px, 8vw, 110px) clamp(22px, 7vw, 120px) 24px;
+  align-items: start;
+}
+
+.weave-demand-intro h2,
+.weave-demand-process h2,
+.weave-demand-section-head h2,
+.weave-demand-cta h2 {
+  margin: 8px 0 0;
+  font-size: clamp(2rem, 4vw, 4.4rem);
+  line-height: 1;
+}
+
+.weave-demand-intro p,
+.weave-demand-process li,
+.weave-demand-cta p {
+  color: #5f6470;
+  font-size: 1.02rem;
+  line-height: 1.8;
+}
+
+.weave-demand-benefits {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  padding: 36px clamp(22px, 7vw, 120px) clamp(60px, 7vw, 96px);
+}
+
+.weave-demand-benefits article,
+.weave-demand-link-grid a {
+  background: #fff;
+  border: 1px solid rgba(205, 140, 35, 0.22);
+  border-radius: 24px;
+  padding: 28px;
+  box-shadow: 0 18px 44px rgba(16, 34, 66, 0.08);
+}
+
+.weave-demand-benefits span {
+  color: #c98c28;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.weave-demand-benefits h3,
+.weave-demand-link-grid h3 {
+  color: #16233f;
+  font-family: Cinzel, Georgia, serif;
+  margin: 16px 0 10px;
+  font-size: 1.35rem;
+}
+
+.weave-demand-benefits p,
+.weave-demand-link-grid p {
+  color: #616672;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.weave-demand-process {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.9fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: center;
+  background: #fff;
+  padding: clamp(64px, 8vw, 112px) clamp(22px, 7vw, 120px);
+}
+
+.weave-demand-process figure {
+  margin: 0;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 28px 70px rgba(16, 34, 66, 0.16);
+}
+
+.weave-demand-process img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.weave-demand-process ol {
+  margin: 28px 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  counter-reset: weaveStep;
+}
+
+.weave-demand-process li {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.weave-demand-process li::before {
+  counter-increment: weaveStep;
+  content: counter(weaveStep);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #16233f;
+  color: #f7c873;
+  font-family: Cinzel, Georgia, serif;
+  font-weight: 800;
+}
+
+.weave-demand-grid-section,
+.weave-demand-links {
+  padding: clamp(64px, 8vw, 108px) clamp(22px, 7vw, 120px);
+}
+
+.weave-demand-section-head {
+  max-width: 780px;
+  margin-bottom: 32px;
+}
+
+.weave-demand-use-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.weave-demand-use-grid span {
+  background: #16233f;
+  color: #f8f4ea;
+  border-radius: 999px;
+  padding: 16px 20px;
+  text-align: center;
+  font-weight: 700;
+  box-shadow: 0 16px 36px rgba(16, 34, 66, 0.16);
+}
+
+.weave-demand-links {
+  background:
+    linear-gradient(180deg, rgba(22, 35, 63, 0.94), rgba(22, 35, 63, 0.94)),
+    url("/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg") center/cover;
+}
+
+.weave-demand-links .store-kicker,
+.weave-demand-links h2 {
+  color: #f8f4ea;
+}
+
+.weave-demand-link-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.weave-demand-link-grid a {
+  color: inherit;
+  text-decoration: none;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.weave-demand-link-grid a:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 24px 56px rgba(0, 0, 0, 0.24);
+}
+
+.weave-demand-link-grid span {
+  display: inline-flex;
+  margin-top: 18px;
+  color: #c98c28;
+  font-weight: 800;
+}
+
+.weave-demand-cta {
+  text-align: center;
+  padding: clamp(72px, 9vw, 126px) clamp(22px, 7vw, 120px);
+  background:
+    radial-gradient(circle at center top, rgba(205, 140, 35, 0.22), transparent 36%),
+    #f8f4ea;
+}
+
+.weave-demand-cta p {
+  max-width: 720px;
+  margin: 18px auto 28px;
+}
+
+/* Customized Kente Services page */
+
+.customized-page {
+  background: #0f2949;
+  color: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+}
+
+.customized-hero {
+  position: relative;
+  padding: clamp(100px, 10vw, 150px) clamp(22px, 7vw, 110px) clamp(80px, 8vw, 128px);
+  text-align: center;
+  background:
+    linear-gradient(180deg, #0f2949 0%, #0f2949 66%, #eda019 66%, #eda019 100%);
+}
+
+.customized-hero-copy {
+  max-width: 960px;
+  margin: 0 auto clamp(70px, 9vw, 130px);
+}
+
+.customized-hero h1,
+.customized-service-row h2,
+.customized-dreams h2 {
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+
+.customized-hero h1 {
+  color: #eda019;
+  font-size: clamp(2.55rem, 4.6vw, 5.25rem);
+  line-height: 1.08;
+  margin: 0 0 28px;
+}
+
+.customized-hero p {
+  max-width: 850px;
+  margin: 0 auto;
+  color: rgba(255, 255, 255, 0.56);
+  font-size: clamp(1rem, 1.25vw, 1.18rem);
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+}
+
+.customized-hero-media {
+  position: relative;
+  width: min(100%, 1260px);
+  margin: 0 auto;
+  aspect-ratio: 16 / 7.4;
+  overflow: hidden;
+  box-shadow: 0 26px 80px rgba(0, 0, 0, 0.22);
+  background: #08182e;
+}
+
+.customized-hero-media img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.customized-play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 74px;
+  height: 74px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(15, 41, 73, 0.86);
+  color: #eda019;
+  font-size: 1.8rem;
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.28);
+}
+
+.customized-service-stack {
+  padding: clamp(96px, 11vw, 170px) clamp(22px, 8vw, 150px);
+  display: grid;
+  gap: clamp(88px, 11vw, 165px);
+}
+
+.customized-service-row {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.94fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(38px, 7vw, 94px);
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.customized-service-row.is-flipped figure {
+  order: 2;
+}
+
+.customized-service-row figure {
+  position: relative;
+  margin: 0;
+}
+
+.customized-service-row:first-child figure::before {
+  content: "";
+  position: absolute;
+  inset: 9% 12% auto auto;
+  width: 52%;
+  height: 74%;
+  border: 7px solid #eda019;
+  transform: translate(8%, -10%);
+  z-index: 0;
+}
+
+.customized-service-row figure img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: 1.15 / 1;
+}
+
+.customized-service-row:first-child figure img {
+  object-fit: contain;
+}
+
+.customized-service-row h2 {
+  color: #eda019;
+  font-size: clamp(2rem, 3.3vw, 3.8rem);
+  line-height: 1.05;
+  margin: 0 0 24px;
+}
+
+.customized-service-row p {
+  color: rgba(255, 255, 255, 0.58);
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.88;
+  margin: 0 0 34px;
+}
+
+.customized-gold-btn,
+.customized-navy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  min-height: 58px;
+  padding: 15px 32px;
+  border-radius: 4px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-weight: 800;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.customized-gold-btn {
+  background: #eda019;
+  color: #fff;
+}
+
+.customized-navy-btn {
+  gap: 12px;
+  background: #0f2949;
+  color: #fff;
+  text-transform: none;
+}
+
+.customized-gold-btn:hover,
+.customized-navy-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.2);
+}
+
+.customized-dreams {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(34px, 7vw, 92px);
+  padding: 0 clamp(22px, 8vw, 150px);
+  background:
+    linear-gradient(180deg, #0f2949 0%, #0f2949 18%, #eda019 18%, #eda019 82%, #0f2949 82%, #0f2949 100%);
+}
+
+.customized-dreams figure {
+  align-self: end;
+  margin: 0;
+  min-height: 620px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.customized-dreams img {
+  width: min(100%, 560px);
+  max-height: 720px;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: drop-shadow(0 24px 42px rgba(0, 0, 0, 0.2));
+}
+
+.customized-dreams div {
+  padding: clamp(76px, 8vw, 126px) 0;
+}
+
+.customized-dreams h2 {
+  margin: 0 0 28px;
+  color: #0f2949;
+  font-size: clamp(3rem, 5.3vw, 6rem);
+  line-height: 0.98;
+}
+
+.customized-dreams p {
+  max-width: 610px;
+  color: #0f2949;
+  font-size: clamp(1rem, 1.2vw, 1.16rem);
+  line-height: 1.75;
+  margin: 0 0 30px;
+  font-weight: 600;
+}
+
+.customized-faq-section {
+  padding-top: clamp(78px, 10vw, 145px);
+}
+
+.customized-faq-section h2 {
+  margin: 0 0 clamp(42px, 5vw, 76px);
+  text-align: center;
+  color: #fff;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+}
+
+@media (max-width: 980px) {
+  .weave-demand-intro,
+  .weave-demand-process {
+    grid-template-columns: 1fr;
+  }
+
+  .weave-demand-hero {
+    min-height: calc(100vh - 76px);
+    align-items: center;
+    padding: 108px 28px 48px;
+  }
+
+  .weave-demand-benefits,
+  .weave-demand-use-grid,
+  .weave-demand-link-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .customized-service-row,
+  .customized-dreams {
+    grid-template-columns: 1fr;
+  }
+
+  .customized-service-row.is-flipped figure {
+    order: 0;
+  }
+
+  .customized-dreams {
+    background: #eda019;
+    padding-top: 24px;
+  }
+
+  .customized-dreams figure {
+    min-height: auto;
+    justify-content: center;
+  }
+
+  .customized-dreams img {
+    max-height: 620px;
+  }
+}
+
 /* Thread Color Picker Mobile */
 
 @media (max-width: 600px) {
+  .weave-demand-hero {
+    min-height: calc(100vh - 70px);
+    align-items: flex-end;
+    padding: 96px 18px 34px;
+  }
+
+  .weave-demand-hero-copy {
+    width: 100%;
+  }
+
+  .weave-demand-hero-copy h1 {
+    font-size: clamp(2.15rem, 13vw, 3.55rem);
+    line-height: 0.98;
+    margin-bottom: 14px;
+  }
+
+  .weave-demand-hero-copy p {
+    font-size: 0.96rem;
+    line-height: 1.65;
+  }
+
+  .weave-demand-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .weave-demand-benefits,
+  .weave-demand-use-grid,
+  .weave-demand-link-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weave-demand-use-grid span {
+    text-align: left;
+    border-radius: 16px;
+  }
+
+  .customized-hero {
+    padding: 78px 18px 58px;
+    background:
+      linear-gradient(180deg, #0f2949 0%, #0f2949 72%, #eda019 72%, #eda019 100%);
+  }
+
+  .customized-hero-copy {
+    margin-bottom: 42px;
+  }
+
+  .customized-hero h1 {
+    font-size: clamp(2.15rem, 11vw, 3.2rem);
+  }
+
+  .customized-hero p {
+    font-size: 0.98rem;
+    line-height: 1.68;
+  }
+
+  .customized-hero-media {
+    aspect-ratio: 1 / 0.82;
+  }
+
+  .customized-service-stack {
+    padding: 68px 18px;
+    gap: 72px;
+  }
+
+  .customized-service-row {
+    gap: 26px;
+  }
+
+  .customized-service-row figure img {
+    aspect-ratio: 1.12 / 1;
+  }
+
+  .customized-gold-btn,
+  .customized-navy-btn {
+    width: 100%;
+  }
+
+  .customized-dreams {
+    padding: 0 18px;
+  }
+
+  .customized-dreams div {
+    padding: 42px 0 58px;
+  }
+
+  .customized-dreams h2 {
+    font-size: clamp(2.7rem, 13vw, 4.2rem);
+  }
+
+  .customized-faq-section {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
   .tcp-colors {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
