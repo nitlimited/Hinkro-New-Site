@@ -15,16 +15,56 @@ function stripFormatting(html: string): string {
     "script", "style", "link", "meta", "head",
     "iframe", "object", "embed", "form", "input",
     "button", "select", "textarea",
+    "o:p", "v:shape", "v:group", "v:rect", "v:textbox",
+    "w:sdt", "w:sdtPr", "w:sdtContent",
+    "m:oMath", "m:oMathPara",
+    "xml", "namespace", "st1:", "o:",
   ];
   forbidden.forEach((tag) => {
     div.querySelectorAll(tag).forEach((el) => el.remove());
   });
 
-  const unsafeAttrs = [
-    "class", "style", "id", "onclick", "onload", "onerror",
-    "onmouseover", "onfocus", "onblur", "data-*", "xmlns",
-    "contenteditable", "tabindex", "accesskey",
-  ];
+  div.querySelectorAll("div, span, p").forEach((el) => {
+    const style = el.getAttribute("style") || "";
+    if (style.match(/mso-|microsoft|word|office/i)) {
+      el.replaceWith(...Array.from(el.childNodes));
+    }
+  });
+
+  div.querySelectorAll("[class]").forEach((el) => {
+    const cls = el.getAttribute("class") || "";
+    if (cls.match(/^(Mso|ms)/) || cls === "") {
+      el.removeAttribute("class");
+    }
+  });
+
+  div.querySelectorAll("[lang]").forEach((el) => el.removeAttribute("lang"));
+  div.querySelectorAll("[xml:lang]").forEach((el) => el.removeAttribute("xml:lang"));
+  div.querySelectorAll("[xmlns]").forEach((el) => el.removeAttribute("xmlns"));
+
+  div.querySelectorAll("div").forEach((el) => {
+    if (el.childNodes.length === 1 && el.firstChild?.nodeName === "BR") {
+      el.replaceWith(document.createElement("br"));
+    }
+  });
+
+  div.querySelectorAll("[style]").forEach((el) => {
+    const style = el.getAttribute("style") || "";
+    const cleaned = style
+      .replace(/mso-[^:]+:[^;]+;?\s*/gi, "")
+      .replace(/microsoft[^:]+:[^;]+;?\s*/gi, "")
+      .replace(/tab-stops:[^;]+;?\s*/gi, "")
+      .replace(/line-height:[^;]+;?\s*/gi, "")
+      .replace(/text-autospace:[^;]+;?\s*/gi, "")
+      .replace(/font-family:[^;]+;?\s*/gi, "")
+      .trim();
+    if (!cleaned) {
+      el.removeAttribute("style");
+    } else {
+      el.setAttribute("style", cleaned);
+    }
+  });
+
   div.querySelectorAll("*").forEach((el) => {
     Array.from(el.attributes).forEach((attr) => {
       const name = attr.name.toLowerCase();
@@ -34,7 +74,9 @@ function stripFormatting(html: string): string {
         name === "style" ||
         name === "id" ||
         name === "data-reactid" ||
-        name === "data-react-checksum"
+        name === "data-react-checksum" ||
+        name.startsWith("xmlns") ||
+        name.startsWith("xml:")
       ) {
         el.removeAttribute(attr.name);
       }
@@ -42,7 +84,7 @@ function stripFormatting(html: string): string {
 
     if (el.tagName === "A") {
       const href = el.getAttribute("href") || "";
-      if (href.startsWith("javascript:")) {
+      if (href.startsWith("javascript:") || href.startsWith("#")) {
         el.removeAttribute("href");
       }
     }
@@ -54,11 +96,23 @@ function stripFormatting(html: string): string {
     }
   });
 
-  div.querySelectorAll("br, div, p, span").forEach((el) => {
-    if (el.tagName === "SPAN" && el.attributes.length === 0) {
+  div.querySelectorAll("span").forEach((el) => {
+    if (el.attributes.length === 0 && el.childNodes.length > 0) {
       el.replaceWith(...Array.from(el.childNodes));
     }
   });
+
+  div.querySelectorAll("b, strong, i, em, u, s, strike").forEach((el) => {
+    if (el.childNodes.length === 0) {
+      el.remove();
+    }
+  });
+
+  div.querySelectorAll("p > br:first-child:last-child").forEach((el) => {
+    el.closest("p")?.remove();
+  });
+
+  div.querySelectorAll("p:empty, div:empty, span:empty").forEach((el) => el.remove());
 
   return div.innerHTML;
 }
@@ -66,9 +120,16 @@ function stripFormatting(html: string): string {
 function cleanPastedText(text: string): string {
   return text
     .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
     .replace(/[ \t]+/g, " ")
     .replace(/^\s+|\s+$/gm, "")
+    .replace(/\u00A0/g, " ")
+    .replace(/\u200B|\u200C|\u200D|\uFEFF/g, "")
+    .replace(/\u2013|\u2014/g, "-")
+    .replace(/\u2018|\u2019/g, "'")
+    .replace(/\u201C|\u201D/g, '"')
+    .replace(/\u2026/g, "...")
     .trim();
 }
 

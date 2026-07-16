@@ -723,6 +723,7 @@ function getCurrentPage() {
     "/appointment/": "booking",
     "/thank-you/": "home",
     "/team/": "coming-soon-team",
+    "/authentic-african-kente-graduation-stole-sashe/": "graduation",
   };
   if (wpPageRoutes[path]) return wpPageRoutes[path];
 
@@ -735,7 +736,7 @@ function Header({ currentPage }) {
 
   return (
     <header className={`site-header ${isHome ? "home-header" : "inner-header"}`}>
-      <a className="brand" href="#home" aria-label="Hinkro Kente home">
+      <a className="brand" href="/" aria-label="Hinkro Kente home">
         <img src={logoUrl} alt="Hinkro Kente bespoke Kente weaving services" />
       </a>
 
@@ -1028,7 +1029,7 @@ function GraduationStolePage() {
               <h2>{feature.title}</h2>
               <p>{feature.text}</p>
               {feature.cta && (
-                <a href={feature.cta === "Bespoke" ? "#bespoke" : "#design"}>
+                <a href={feature.cta === "Bespoke" ? "/customized-kente-weaving-services/" : "/design-kente/"}>
                   {feature.cta} <span aria-hidden="true">→</span>
                 </a>
               )}
@@ -1585,13 +1586,13 @@ function ProductDetailPage({ product, currency, products }) {
   return (
     <main className="product-detail-page">
       <nav className="product-breadcrumb" aria-label="Breadcrumb">
-        <a href="/#store">Store</a>
+        <a href="/authentic-kente-fabric/">Store</a>
         <span aria-hidden="true">/</span>
         <span>{product.name}</span>
       </nav>
 
       <div className="product-back-wrap">
-        <a className="product-back-link" href="/#store">
+        <a className="product-back-link" href="/authentic-kente-fabric/">
           <ChevronLeft size={18} aria-hidden="true" />
           Back to shop
         </a>
@@ -2313,7 +2314,7 @@ function DesignOfferingsSection() {
               <p>{offering.text}</p>
               {offering.cta && (
                 <a
-                  href={offering.ctaHref || "#bespoke"}
+                  href={offering.ctaHref || "/customized-kente-weaving-services/"}
                   className="design-offering-cta"
                 >
                   Learn More <span aria-hidden="true">→</span>
@@ -4042,7 +4043,7 @@ function App() {
       if (href.startsWith("mailto:") || href.startsWith("tel:")) return;
       if (href.startsWith("http") && !href.startsWith(window.location.origin)) return;
 
-      if (href.startsWith("/") && !href.startsWith("/portal")) {
+      if (href.startsWith("/") && !href.startsWith("/portal") && !href.endsWith(".xml")) {
         e.preventDefault();
         window.history.pushState({}, "", href);
         navigateRef.current();

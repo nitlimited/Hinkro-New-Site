@@ -28,6 +28,26 @@
   ],
   "redirects": [
     {
+      "source": "/the-dansinkran-kente/:id(\\d+)/:month(\\d{2})/:day(\\d{2})",
+      "destination": "/blog/dansinkran-kente-wrapped-kente-cloth/",
+      "permanent": true
+    },
+    {
+      "source": "/slideshow-of-kente-cloth-patterns/:id(\\d+)/:month(\\d{2})/:day(\\d{2})",
+      "destination": "/blog/kente-cloth-colors/",
+      "permanent": true
+    },
+    {
+      "source": "/the-dansinkran-kente/",
+      "destination": "/blog/dansinkran-kente-wrapped-kente-cloth/",
+      "permanent": true
+    },
+    {
+      "source": "/slideshow-of-kente-cloth-patterns/",
+      "destination": "/blog/kente-cloth-colors/",
+      "permanent": true
+    },
+    {
       "source": "/:slug([a-z0-9-]+)/:id(\\d+)/:month(\\d{2})/:day(\\d{2})",
       "destination": "/blog/:slug/",
       "permanent": true

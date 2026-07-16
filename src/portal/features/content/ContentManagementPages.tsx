@@ -307,8 +307,22 @@ function ProductEditor({
           <Field label="USD price"><input type="number" value={usd} onChange={(e) => setUsd(e.target.value)} /></Field>
           <Field label="Stock"><input value={stock} onChange={(e) => setStock(e.target.value)} /></Field>
         </div>
-        <Field label="Short description"><textarea value={shortDescription} onChange={(e) => setShortDescription(e.target.value)} rows={3} /></Field>
-        <Field label="Description"><textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} /></Field>
+        <Field label="Short description">
+          <RichTextEditor
+            value={shortDescription}
+            onChange={setShortDescription}
+            placeholder="Brief product summary..."
+            minHeight="120px"
+          />
+        </Field>
+        <Field label="Description">
+          <RichTextEditor
+            value={description}
+            onChange={setDescription}
+            placeholder="Detailed product description..."
+            minHeight="250px"
+          />
+        </Field>
         <section className="portal-editor-panel">
           <div className="portal-editor-panel-head">
             <h3>Product images</h3>
