@@ -3673,17 +3673,35 @@ function BookingPage() {
   );
 
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState(() => {
+    try {
+      const saved = localStorage.getItem("hinkro_preselected_colors");
+      if (saved) {
+        localStorage.removeItem("hinkro_preselected_colors");
+        const colors = JSON.parse(saved);
+        if (Array.isArray(colors) && colors.length > 0) {
+          return { threadColors: colors };
+        }
+      }
+    } catch {}
+    return {};
+  });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+
+  const hasPreselectedColors = !!(answers.threadColors && answers.threadColors.length > 0);
 
   const stepKeys = useMemo(() => {
     const keys = ["purpose"];
     const purpose = answers.purpose;
     if (purpose === "bespoke") {
-      keys.push("occasion", "vision", "colors", "timeline");
+      keys.push("occasion", "vision");
+      if (!hasPreselectedColors) keys.push("colors");
+      keys.push("timeline");
     } else if (purpose === "corporate") {
-      keys.push("corporateType", "vision", "colors", "timeline");
+      keys.push("corporateType", "vision");
+      if (!hasPreselectedColors) keys.push("colors");
+      keys.push("timeline");
     } else if (purpose === "partnership") {
       keys.push("partnershipType");
     } else {
@@ -3691,7 +3709,7 @@ function BookingPage() {
     }
     keys.push("contact");
     return keys;
-  }, [answers.purpose]);
+  }, [answers.purpose, hasPreselectedColors]);
 
   const currentKey = stepKeys[step];
   const totalSteps = stepKeys.length;
@@ -3859,6 +3877,23 @@ function BookingPage() {
         <div className="booking-step" key={currentKey}>
           <h2 className="booking-step-title">{stepData.title}</h2>
           <p className="booking-step-subtitle">{stepData.subtitle}</p>
+
+          {hasPreselectedColors && currentKey !== "colors" && (
+            <div className="booking-preselected-colors">
+              <span className="booking-preselected-label">Your selected colors:</span>
+              <div className="booking-preselected-chips">
+                {(answers.threadColors || []).map((id) => {
+                  const c = findThreadColor(id);
+                  return c ? (
+                    <span key={id} className="booking-preselected-chip">
+                      <img src={c.image} alt="" />
+                      {c.name}
+                    </span>
+                  ) : null;
+                })}
+              </div>
+            </div>
+          )}
 
           {stepData.isTextarea ? (
             <div className="booking-textarea-wrap">
@@ -4065,9 +4100,16 @@ function ThreadColorsPage() {
                 })}
               </div>
             </div>
-            <a className="thread-colors-sticky-cta" href="/appointment/">
+            <button
+              type="button"
+              className="thread-colors-sticky-cta"
+              onClick={() => {
+                try { localStorage.setItem("hinkro_preselected_colors", JSON.stringify(selected)); } catch {}
+                window.location.href = "/appointment/";
+              }}
+            >
               Start Your Kente With Your Selected Colors <span aria-hidden="true">→</span>
-            </a>
+            </button>
           </div>
         </div>
       )}

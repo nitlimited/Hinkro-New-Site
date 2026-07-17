@@ -7256,6 +7256,8 @@ button {
   border-radius: 8px;
   text-decoration: none;
   white-space: nowrap;
+  border: none;
+  cursor: pointer;
   transition: background 0.2s, transform 0.15s;
 }
 
@@ -7272,6 +7274,54 @@ button {
 .thread-colors-empty-cta p {
   font-size: 17px;
   color: #666;
+}
+
+/* Booking Pre-selected Colors */
+
+.booking-preselected-colors {
+  margin: 16px 0 20px;
+  padding: 14px 16px;
+  background: #f6f0e2;
+  border-radius: 10px;
+  border: 1px solid #e0d6c0;
+}
+
+.booking-preselected-label {
+  display: block;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16233f;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.booking-preselected-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.booking-preselected-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #fff;
+  border-radius: 20px;
+  font-family: Overpass, system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #16233f;
+  border: 1px solid #d4c9ad;
+}
+
+.booking-preselected-chip img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* Weave on Demand Kente landing page */
