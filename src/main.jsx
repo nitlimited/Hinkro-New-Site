@@ -3595,6 +3595,7 @@ const BOOKING_STEPS = {
     subtitle: "Tell us about your vision so we can guide you to the right path.",
     options: [
       { value: "bespoke", label: "I want a bespoke kente piece made for me", icon: "✦" },
+      { value: "customization", label: "I want to customize an existing kente pattern", icon: "✎" },
       { value: "corporate", label: "Corporate or organizational order", icon: "◆" },
       { value: "partnership", label: "I'd like to explore a partnership", icon: "◇" },
       { value: "question", label: "I have a question or special request", icon: "?" },
@@ -3649,6 +3650,17 @@ const BOOKING_STEPS = {
     subtitle: "Select any colors that inspire you. Our weavers will use these as a starting point for your palette. You can skip this step.",
     isColorPicker: true,
   },
+  referenceImage: {
+    title: "Share your reference",
+    subtitle: "Upload a photo or paste a link to a pattern that inspires your design.",
+    isReferencePicker: true,
+  },
+  referenceImageRequired: {
+    title: "Attach the existing kente pattern",
+    subtitle: "Upload a photo or paste a link to the existing kente pattern you'd like to customize. This helps our weavers match it precisely.",
+    isReferencePicker: true,
+    required: true,
+  },
   timeline: {
     title: "When do you need this?",
     subtitle: "Our master weavers craft each piece with care. Knowing your timeline helps us plan the perfect creation process.",
@@ -3665,6 +3677,147 @@ const BOOKING_STEPS = {
     subtitle: "Our customer representative will reach out within 24 hours with a personalized plan.",
   },
 };
+
+function ReferenceImagePicker({ references = [], onChange, required = false }) {
+  const [uploading, setUploading] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
+  const [error, setError] = useState("");
+  const fileInputRef = useRef(null);
+
+  const addUrl = () => {
+    const url = urlInput.trim();
+    if (!url) return;
+    if (!/^https?:\/\//i.test(url)) {
+      setError("Please enter a valid URL starting with http:// or https://");
+      return;
+    }
+    setError("");
+    onChange([...references, { type: "url", value: url, label: url }]);
+    setUrlInput("");
+  };
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setError("");
+    setUploading(true);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          filename: file.name,
+          contentType: file.type,
+          size: file.size,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Upload failed");
+      }
+
+      const { presignedUrl, publicUrl } = await res.json();
+
+      await fetch(presignedUrl, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file,
+      });
+
+      onChange([...references, { type: "file", value: publicUrl, label: file.name }]);
+    } catch (err) {
+      setError(err.message || "Failed to upload file. Please try again.");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const removeRef = (idx) => {
+    onChange(references.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div className="ref-picker">
+      <div className="ref-picker-actions">
+        <button
+          type="button"
+          className="ref-picker-upload-btn"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+        >
+          {uploading ? (
+            <>
+              <span className="ref-picker-spinner" />
+              Uploading…
+            </>
+          ) : (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              Upload Image
+            </>
+          )}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/gif"
+          onChange={handleFile}
+          style={{ display: "none" }}
+        />
+        <span className="ref-picker-divider">or</span>
+        <div className="ref-picker-url-row">
+          <input
+            className="ref-picker-url-input"
+            type="url"
+            placeholder="Paste a link to your reference image"
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addUrl())}
+          />
+          <button type="button" className="ref-picker-url-btn" onClick={addUrl} disabled={!urlInput.trim()}>
+            Add
+          </button>
+        </div>
+      </div>
+
+      {error && <p className="ref-picker-error">{error}</p>}
+
+      {references.length > 0 && (
+        <div className="ref-picker-list">
+          {references.map((ref, idx) => (
+            <div key={idx} className="ref-picker-item">
+              {ref.type === "file" ? (
+                <img src={ref.value} alt={ref.label} className="ref-picker-thumb" />
+              ) : (
+                <span className="ref-picker-link-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                  </svg>
+                </span>
+              )}
+              <span className="ref-picker-item-label">{ref.label}</span>
+              <button type="button" className="ref-picker-item-remove" onClick={() => removeRef(idx)} aria-label="Remove">✕</button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!required && references.length === 0 && (
+        <button type="button" className="ref-picker-skip" onClick={() => onChange([])}>
+          Skip for now
+        </button>
+      )}
+    </div>
+  );
+}
 
 function BookingPage() {
   usePageSeo(
@@ -3695,11 +3848,17 @@ function BookingPage() {
     const keys = ["purpose"];
     const purpose = answers.purpose;
     if (purpose === "bespoke") {
-      keys.push("occasion", "vision");
+      keys.push("occasion", "referenceImage");
+      keys.push("vision");
+      if (!hasPreselectedColors) keys.push("colors");
+      keys.push("timeline");
+    } else if (purpose === "customization") {
+      keys.push("referenceImageRequired", "vision");
       if (!hasPreselectedColors) keys.push("colors");
       keys.push("timeline");
     } else if (purpose === "corporate") {
-      keys.push("corporateType", "vision");
+      keys.push("corporateType", "referenceImage");
+      keys.push("vision");
       if (!hasPreselectedColors) keys.push("colors");
       keys.push("timeline");
     } else if (purpose === "partnership") {
@@ -3737,6 +3896,12 @@ function BookingPage() {
     if (currentKey === "colors") {
       return true;
     }
+    if (currentKey === "referenceImageRequired") {
+      return answers.referenceImage && answers.referenceImage.length > 0;
+    }
+    if (currentKey === "referenceImage") {
+      return true;
+    }
     return answers[currentKey] && answers[currentKey].length > 0;
   };
 
@@ -3745,6 +3910,7 @@ function BookingPage() {
 
     const purposeLabels = {
       bespoke: "Bespoke kente piece",
+      customization: "Customize existing kente pattern",
       corporate: "Corporate/organizational order",
       partnership: "Partnership inquiry",
       question: "Question or special request",
@@ -3800,12 +3966,18 @@ function BookingPage() {
       lines.push(`Preferred thread colors: ${colorNames.join(", ")}`);
     }
     if (answers.timeline) lines.push(`Timeline: ${timelineLabels[answers.timeline] || answers.timeline}`);
+    const refImage = answers.referenceImage || answers.referenceImageRequired || [];
+    if (refImage && refImage.length > 0) {
+      lines.push(`Reference images:`);
+      refImage.forEach((ref) => lines.push(`  ${ref.value}`));
+    }
     if (answers.name) lines.push(`Name: ${answers.name}`);
     if (answers.email) lines.push(`Email: ${answers.email}`);
     if (answers.phone) lines.push(`Phone: ${answers.phone}`);
 
     const body = lines.join("\n");
-    const subject = encodeURIComponent(`New Bespoke Kente Inquiry — ${answers.name || "Visitor"}`);
+    const subjectLabel = answers.purpose === "customization" ? "Customization" : "Bespoke";
+    const subject = encodeURIComponent(`New ${subjectLabel} Kente Inquiry — ${answers.name || "Visitor"}`);
     const mailtoUrl = `mailto:hinkrogh@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
 
     await new Promise((r) => setTimeout(r, 800));
@@ -3831,21 +4003,21 @@ function BookingPage() {
                 <span className="booking-success-num">1</span>
                 <div>
                   <strong>We review your vision</strong>
-                  <p>Our team studies your answers to understand exactly what you need.</p>
+                  <p>A customer representative will reach out within 24 hours to confirm your consultation appointment.</p>
                 </div>
               </div>
               <div className="booking-success-step">
                 <span className="booking-success-num">2</span>
                 <div>
-                  <strong>You get a personalized plan</strong>
-                  <p>We'll send you design options, pricing, and a timeline tailored to your request.</p>
+                  <strong>Your consultation appointment</strong>
+                  <p>Appointments are held virtually or in person. This is where we bring your vision to life — from pattern design and 3D mockups to a sample weave of your approved design. <a className="booking-success-link" href="/terms-and-conditions/">Learn more about our terms, conditions and policies →</a></p>
                 </div>
               </div>
               <div className="booking-success-step">
                 <span className="booking-success-num">3</span>
                 <div>
-                  <strong>Your kente begins</strong>
-                  <p>Once you approve, our master weavers start creating your piece.</p>
+                  <strong>We begin weaving</strong>
+                  <p>Once you approve the final design, a deposit of 70% of the total cost is required to commence work. You'll receive a unique code to log into the Hinkro Client Portal for real-time updates and progress on your project.</p>
                 </div>
               </div>
             </div>
@@ -3910,6 +4082,12 @@ function BookingPage() {
             <ThreadColorPicker
               selected={answers.threadColors || []}
               onChange={(colors) => setAnswer("threadColors", colors)}
+            />
+          ) : stepData.isReferencePicker ? (
+            <ReferenceImagePicker
+              references={answers[currentKey] || []}
+              onChange={(refs) => setAnswer(currentKey, refs)}
+              required={stepData.required}
             />
           ) : currentKey === "contact" ? (
             <div className="booking-contact">

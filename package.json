@@ -8,6 +8,8 @@
     "import:products": "node scripts/import-store-products.mjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1089.0",
+    "@aws-sdk/s3-request-presigner": "^3.1089.0",
     "@supabase/supabase-js": "^2.110.2",
     "@tiptap/extension-code-block-lowlight": "^3.27.3",
     "@tiptap/extension-image": "^3.27.3",
