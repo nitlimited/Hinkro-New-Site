@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run prerender",
+  "outputDirectory": "dist",
   "rewrites": [
     { "source": "/portal/:path*", "destination": "/index.html" },
     { "source": "/product/:path*", "destination": "/index.html" },
