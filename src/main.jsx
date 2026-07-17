@@ -724,6 +724,7 @@ function getCurrentPage() {
     "/thank-you/": "home",
     "/team/": "coming-soon-team",
     "/authentic-african-kente-graduation-stole-sashe/": "graduation",
+    "/thread-colors/": "thread-colors",
   };
   if (wpPageRoutes[path]) return wpPageRoutes[path];
 
@@ -2156,9 +2157,9 @@ function BespokePage() {
               <h2>{item.title}</h2>
               <p>{item.text}</p>
               {item.cta && (
-                <span className="bespoke-service-cta bespoke-service-cta--inactive" aria-disabled="true">
+                <a className="bespoke-service-cta" href={item.title === "Custom Color-way" ? "/thread-colors/" : "#"}>
                   <span aria-hidden="true">▣</span> {item.cta}
-                </span>
+                </a>
               )}
             </div>
           </article>
@@ -3978,6 +3979,108 @@ function BookingPage() {
   );
 }
 
+function ThreadColorsPage() {
+  const [selected, setSelected] = useState([]);
+
+  const toggle = (colorId) => {
+    setSelected((prev) =>
+      prev.includes(colorId) ? prev.filter((id) => id !== colorId) : [...prev, colorId]
+    );
+  };
+
+  usePageSeo({
+    title: "Kente Thread Color Card | Browse All Available Colors | Hinkro Kente",
+    description:
+      "Browse all 38 authentic Kente thread colors available at Hinkro Kente. Select your preferred colors and start your custom Kente weaving journey today.",
+    canonical: "https://www.hinkrokente.com/thread-colors/",
+    ogTitle: "Kente Thread Color Card — Browse All Colors",
+    ogDescription:
+      "Browse all 38 authentic Kente thread colors by Hinkro Kente. Select your colors and start weaving your custom Kente today.",
+    ogImage: "https://www.hinkrokente.com/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg",
+    keywords:
+      "kente thread colors, kente color card, kente fabric colors, custom kente colors, hinkro kente colors, kente color palette",
+  });
+
+  return (
+    <main className="thread-colors-page">
+      <section className="thread-colors-hero">
+        <div className="thread-colors-hero-inner">
+          <p className="thread-colors-eyebrow">Hinkro Kente Thread Library</p>
+          <h1>Choose Your Kente Colors</h1>
+          <p>
+            Every Hinkro Kente begins with a conversation about color. Browse our full palette
+            of 38 authentic thread colors — ordered lighter to darker within each class — then
+            select the shades that speak to your vision.
+          </p>
+        </div>
+      </section>
+
+      <section className="thread-colors-grid-section">
+        {THREAD_COLOR_CLASSES.map((cls) => (
+          <div key={cls.id} className="thread-colors-class">
+            <h2 className="thread-colors-class-title">{cls.label}</h2>
+            <div className="thread-colors-grid">
+              {cls.colors.map((color) => (
+                <button
+                  key={color.id}
+                  type="button"
+                  className={`thread-colors-card ${selected.includes(color.id) ? "thread-colors-card--selected" : ""}`}
+                  onClick={() => toggle(color.id)}
+                >
+                  <div className="thread-colors-card-img-wrap">
+                    <img
+                      src={color.image}
+                      alt={`${color.name} thread cone`}
+                      loading="lazy"
+                    />
+                    {selected.includes(color.id) && (
+                      <span className="thread-colors-card-check">&#10003;</span>
+                    )}
+                  </div>
+                  <span className="thread-colors-card-name">{color.name}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {selected.length > 0 && (
+        <div className="thread-colors-sticky-bar">
+          <div className="thread-colors-sticky-inner">
+            <div className="thread-colors-sticky-info">
+              <span className="thread-colors-sticky-count">
+                {selected.length} color{selected.length !== 1 ? "s" : ""} selected
+              </span>
+              <div className="thread-colors-sticky-chips">
+                {selected.map((id) => {
+                  const color = findThreadColor(id);
+                  return color ? (
+                    <span key={id} className="thread-colors-sticky-chip">
+                      <img src={color.image} alt="" />
+                      {color.name}
+                      <button type="button" onClick={() => toggle(id)} aria-label={`Remove ${color.name}`}>×</button>
+                    </span>
+                  ) : null;
+                })}
+              </div>
+            </div>
+            <a className="thread-colors-sticky-cta" href="/appointment/">
+              Start Your Kente With Your Selected Colors <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </div>
+      )}
+
+      {selected.length === 0 && (
+        <section className="thread-colors-empty-cta">
+          <p>Tap any color above to start building your palette, then begin your custom Kente.</p>
+        </section>
+      )}
+    </main>
+  );
+}
+
 function App() {
   const [currentPage, setCurrentPage] = useState(getCurrentPage);
   const [productSlug, setProductSlug] = useState(getProductSlugFromLocation);
@@ -4095,6 +4198,8 @@ function App() {
         <ComingSoonPage title="Our Team" subtitle="Coming Soon" description="Meet the talented artisans and designers behind Hinkro Kente. Our full team page is being prepared." />
       ) : currentPage === "booking" ? (
         <BookingPage />
+      ) : currentPage === "thread-colors" ? (
+        <ThreadColorsPage />
       ) : (
         <Hero />
       )}

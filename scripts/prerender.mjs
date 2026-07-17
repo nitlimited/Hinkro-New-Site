@@ -38,6 +38,7 @@ const allRoutes = [
   "/team/",
   "/thank-you/",
   "/blog/",
+  "/thread-colors/",
   "/blog/types-of-threads-used-in-kente/",
   "/blog/kente-belt/",
   "/blog/in-appreciation-of-nana-konadu-agyeman-rawlings/",

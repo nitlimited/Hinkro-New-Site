@@ -26,7 +26,8 @@
     { "source": "/appointment/", "destination": "/index.html" },
     { "source": "/thank-you/", "destination": "/index.html" },
     { "source": "/kente-trends/", "destination": "/index.html" },
-    { "source": "/team/", "destination": "/index.html" }
+    { "source": "/team/", "destination": "/index.html" },
+    { "source": "/thread-colors/", "destination": "/index.html" }
   ],
   "redirects": [
     {
