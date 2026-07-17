@@ -7556,6 +7556,27 @@ button {
   object-fit: cover;
 }
 
+.booking-preselected-remove {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+
+.booking-preselected-remove:hover {
+  color: #b33;
+  background: #fff0f0;
+}
+
 /* Weave on Demand Kente landing page */
 
 .weave-demand-page {

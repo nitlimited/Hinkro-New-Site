@@ -3837,23 +3837,25 @@ function BookingPage() {
   );
 
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState(() => {
+  const [savedColors] = useState(() => {
     try {
       const saved = localStorage.getItem("hinkro_preselected_colors");
       if (saved) {
         localStorage.removeItem("hinkro_preselected_colors");
         const colors = JSON.parse(saved);
-        if (Array.isArray(colors) && colors.length > 0) {
-          return { threadColors: colors };
-        }
+        if (Array.isArray(colors) && colors.length > 0) return colors;
       }
     } catch {}
+    return null;
+  });
+  const [answers, setAnswers] = useState(() => {
+    if (savedColors) return { threadColors: savedColors };
     return {};
   });
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const hasPreselectedColors = !!(answers.threadColors && answers.threadColors.length > 0);
+  const hasPreselectedColors = !!(savedColors && savedColors.length > 0);
 
   const stepKeys = useMemo(() => {
     const keys = ["purpose"];
@@ -4071,6 +4073,17 @@ function BookingPage() {
                     <span key={id} className="booking-preselected-chip">
                       <img src={c.image} alt="" />
                       {c.name}
+                      <button
+                        type="button"
+                        className="booking-preselected-remove"
+                        onClick={() => {
+                          const next = (answers.threadColors || []).filter((cid) => cid !== id);
+                          setAnswer("threadColors", next);
+                        }}
+                        aria-label={`Remove ${c.name}`}
+                      >
+                        ✕
+                      </button>
                     </span>
                   ) : null;
                 })}
