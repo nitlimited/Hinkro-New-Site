@@ -80,7 +80,7 @@ const traditionCarouselItems = [
 ];
 
 const traditionCarouselCopy =
-  "At Hinkro Kente, every masterpiece begins with passion, precision, and artistry. Our master weavers create kente cloths that are more than fabric — they are personal statements of elegance, woven to embody your story.";
+  "At Hinkro Kente, every masterpiece begins with passion, precision, and artistry. Our master weavers create kente cloths that are more than fabric, they are personal statements of elegance, woven to embody your story.";
 
 const valueCards = [
   {
@@ -536,7 +536,7 @@ const accessoryItems = [
     image: "/images/graduation-stole/kente-graduation-stole-custom-name-closeup.jpg",
     hoverImage: "/images/graduation-stole/kente-graduation-stole-personalized-name.jpg",
     imageAlt: "Personalized Kente graduation stole with embroidered name",
-    text: "Celebrate your achievement with a custom Kente graduation stole — woven in your school colours with your name, program, crest, and class year. A ceremonial keepsake that photographs beautifully and carries the pride of your journey.",
+    text: "Celebrate your achievement with a custom Kente graduation stole, woven in your school colours with your name, program, crest, and class year. A ceremonial keepsake that photographs beautifully and carries the pride of your journey.",
     availability: "Graduation Season · Group Orders Welcome",
     actions: [
       ["View Graduation Stoles", "/authentic-african-kente-graduation-stole-sashe/"],
@@ -855,7 +855,7 @@ function Header({ currentPage }) {
 function AccessoriesPage() {
   usePageSeo(
     "Kente Accessories | Graduation Stoles, Duffel Bags, Bridal Fans | Hinkro Kente",
-    "Explore Hinkro Kente accessories — custom Kente graduation stoles, men's duffel bags, bridal hand fans, garment bags, and flip boxes. Bespoke accessories for weddings, graduations, and luxury gifts. Personalized Kente accessories made to order in Ghana.",
+    "Explore Hinkro Kente accessories, custom Kente graduation stoles, men's duffel bags, bridal hand fans, garment bags, and flip boxes. Bespoke accessories for weddings, graduations, and luxury gifts. Personalized Kente accessories made to order in Ghana.",
     [
       "kente accessories",
       "kente graduation stole",
@@ -1139,7 +1139,7 @@ function StorePage({ productSlug }) {
       : "Authentic Kente Fabric Store | Buy Handwoven Ghana Kente by Color | Hinkro Kente",
     selectedProduct
       ? selectedProduct.seo.description
-      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse handwoven Ghanaian Kente — gold, blue, green, red, ombre, and more. Can't find the colors you want? Hinkro creates custom Kente in your exact palette. Chat on WhatsApp to order.",
+      : "Shop authentic Hinkro Kente fabrics by color, design, ceremony, and style. Browse handwoven Ghanaian Kente, gold, blue, green, red, ombre, and more. Can't find the colors you want? Hinkro creates custom Kente in your exact palette. Chat on WhatsApp to order.",
     selectedProduct
       ? selectedProduct.seo.keywords
       : [
@@ -1229,7 +1229,7 @@ function StorePage({ productSlug }) {
       <section className="store-hero" aria-labelledby="store-title">
         <p className="store-kicker">Authentic Kente Fabric Store</p>
         <h1 id="store-title">
-          Buy authentic Kente online — own a piece of tradition.
+          Buy authentic Kente online, own a piece of tradition.
         </h1>
         <p>
           Shop handwoven Ghanaian Kente fabric, ready-to-wear pieces, and
@@ -2079,7 +2079,7 @@ function CustomizedKenteServicesPage() {
 function BespokePage() {
   usePageSeo(
     "Bespoke Kente Weaving Services | Custom Kente Designer in Ghana | Hinkro Kente",
-    "Hinkro Kente offers bespoke Kente weaving services — custom-designed, handwoven Kente for weddings, engagements, graduations, and cultural celebrations. Trusted kente weaver in Ghana with worldwide delivery. Personalized Kente in your exact colors, symbols, and patterns — for weddings, family heirlooms, luxury gifts, and milestone celebrations.",
+    "Hinkro Kente offers bespoke Kente weaving services, custom-designed, handwoven Kente for weddings, engagements, graduations, and cultural celebrations. Trusted kente weaver in Ghana with worldwide delivery. Personalized Kente in your exact colors, symbols, and patterns for weddings, family heirlooms, luxury gifts, and milestone celebrations.",
     [
       "bespoke kente weaving services",
       "custom kente weaving services",
@@ -2099,7 +2099,7 @@ function BespokePage() {
     {
       "@context": "https://schema.org",
       "@type": "Service",
-      "name": "Bespoke Kente Weaving — Custom Kente Made Exclusively For You",
+      "name": "Bespoke Kente Weaving, Custom Kente Made Exclusively For You",
       "serviceType": "Bespoke Kente Weaving",
       "description": "Hinkro Kente weaves custom Kente fabric designed from scratch for each client. Your exact colors, patterns, Adinkra symbols, names, dates, and meaningful motifs. Handwoven in Ghana by master weavers. Serving clients in Ghana, USA, UK, Canada, Europe, Australia, and worldwide.",
       "provider": {"@type": "Organization", "@id": "https://www.hinkrokente.com/#organization"},
@@ -2219,7 +2219,7 @@ function BespokeFaqSection() {
 function DesignPage() {
   usePageSeo(
     "Kente Design Process | Custom Kente Design & Weaving Stages | Hinkro Kente",
-    "See how Hinkro Kente designs and weaves custom Kente — from consultation and concept to sample weaving and finishing. Our 6-stage design process ensures your bespoke Kente is perfect. Personalized patterns, colors, and symbols woven into every piece.",
+    "See how Hinkro Kente designs and weaves custom Kente, from consultation and concept to sample weaving and finishing. Our 6-stage design process ensures your bespoke Kente is perfect. Personalized patterns, colors, and symbols woven into every piece.",
     [
       "kente design process",
       "custom kente design",
@@ -2433,12 +2433,12 @@ function InspiringTradition() {
           </h1>
           <p className="tradition-lead">
             We serve discerning brides, grooms, families, and cultural
-            enthusiasts—in Ghana, Africa, and the diaspora—who want more than
+            enthusiasts in Ghana, Africa, and the diaspora who want more than
             just fabric. Our clients value authenticity, artistry, and personal
             storytelling woven into every thread.
           </p>
           <p className="tradition-body">
-            Because kente is more than clothing—it&apos;s identity, heritage,
+            Because kente is more than clothing, it&apos;s identity, heritage,
             and pride. Every Hinkro piece preserves centuries-old artistry while
             expressing the modern elegance and individuality of its wearer. We
             make sure that when you step out in Hinkro Kente, you carry both
@@ -3350,7 +3350,7 @@ const policyPages = {
         <li>Accepting potential limitations in design customization due to time constraints.</li>
         <li>Covering any additional rush-related fees as outlined in the order agreement.</li>
       </ul>
-      <p>By maintaining these lead time standards and offering structured options for rush orders, we ensure that every client receives a product that meets Hinkro Kente's hallmark of excellence—whether planned well in advance or needed on a shorter timeline.</p>
+      <p>By maintaining these lead time standards and offering structured options for rush orders, we ensure that every client receives a product that meets Hinkro Kente's hallmark of excellence, whether planned well in advance or needed on a shorter timeline.</p>
     `,
   },
 
@@ -3641,7 +3641,7 @@ const BOOKING_STEPS = {
   },
   vision: {
     title: "Describe your vision",
-    subtitle: "Colors, patterns, meaning — share what inspires you. The more we know, the closer we get to your perfect piece.",
+    subtitle: "Colors, patterns, meaning, share what inspires you. The more we know, the closer we get to your perfect piece.",
     isTextarea: true,
     placeholder: "e.g. I'd love a kente in deep emerald and gold for my daughter's wedding. Something that represents our family's journey...",
   },
@@ -3668,7 +3668,7 @@ const BOOKING_STEPS = {
       { value: "3-months", label: "Within 3 months", icon: "🗓" },
       { value: "6-months", label: "3–6 months", icon: "📅" },
       { value: "6-plus", label: "6+ months", icon: "🌱" },
-      { value: "planning", label: "No rush — I'm planning ahead", icon: "⏳" },
+      { value: "planning", label: "No rush, I'm planning ahead", icon: "⏳" },
       { value: "unsure", label: "Not sure yet", icon: "…" },
     ],
   },
@@ -3833,7 +3833,7 @@ function ReferenceImagePicker({ references = [], onChange, required = false, onS
 function BookingPage() {
   usePageSeo(
     "Book a Bespoke Kente Consultation | Hinkro Kente",
-    "Start your custom kente journey. Tell us your vision — colors, patterns, symbols, occasion — and our master weavers will create a personalized plan. Bespoke kente for weddings, graduations, heirlooms, and luxury gifts. Serving Ghana, USA, UK, Canada, Europe & worldwide.",
+    "Start your custom kente journey. Tell us your vision, colors, patterns, symbols, occasion, and our master weavers will create a personalized plan. Bespoke kente for weddings, graduations, heirlooms, and luxury gifts. Serving Ghana, USA, UK, Canada, Europe & worldwide.",
   );
 
   const [step, setStep] = useState(0);
@@ -3952,7 +3952,7 @@ function BookingPage() {
       "3-months": "Within 3 months",
       "6-months": "3–6 months",
       "6-plus": "6+ months",
-      planning: "No rush — planning ahead",
+      planning: "No rush, planning ahead",
       unsure: "Not sure yet",
     };
 
@@ -3960,17 +3960,17 @@ function BookingPage() {
     lines.push(`Purpose: ${purposeLabels[answers.purpose] || answers.purpose || "N/A"}`);
     if (answers.occasion) {
       const occLabel = occasionLabels[answers.occasion] || answers.occasion;
-      const occOther = answers.occasionOther ? ` — ${answers.occasionOther}` : "";
+      const occOther = answers.occasionOther ? `, ${answers.occasionOther}` : "";
       lines.push(`Occasion: ${occLabel}${occOther}`);
     }
     if (answers.corporateType) {
       const corpLabel = corporateLabels[answers.corporateType] || answers.corporateType;
-      const corpOther = answers.corporateTypeOther ? ` — ${answers.corporateTypeOther}` : "";
+      const corpOther = answers.corporateTypeOther ? `, ${answers.corporateTypeOther}` : "";
       lines.push(`Organization: ${corpLabel}${corpOther}`);
     }
     if (answers.partnershipType) {
       const partLabel = partnerLabels[answers.partnershipType] || answers.partnershipType;
-      const partOther = answers.partnershipTypeOther ? ` — ${answers.partnershipTypeOther}` : "";
+      const partOther = answers.partnershipTypeOther ? `, ${answers.partnershipTypeOther}` : "";
       lines.push(`Partnership: ${partLabel}${partOther}`);
     }
     if (answers.vision) lines.push(`Vision: ${answers.vision}`);
@@ -3990,7 +3990,7 @@ function BookingPage() {
 
     const body = lines.join("\n");
     const subjectLabel = answers.purpose === "customization" ? "Customization" : "Bespoke";
-    const subject = encodeURIComponent(`New ${subjectLabel} Kente Inquiry — ${answers.name || "Visitor"}`);
+    const subject = encodeURIComponent(`New ${subjectLabel} Kente Inquiry, ${answers.name || "Visitor"}`);
     const mailtoUrl = `mailto:hinkrogh@gmail.com?subject=${subject}&body=${encodeURIComponent(body)}`;
 
     await new Promise((r) => setTimeout(r, 800));
@@ -4023,7 +4023,7 @@ function BookingPage() {
                 <span className="booking-success-num">2</span>
                 <div>
                   <strong>Your consultation appointment</strong>
-                  <p>Appointments are held virtually or in person. This is where we bring your vision to life — from pattern design and 3D mockups to a sample weave of your approved design. <a className="booking-success-link" href="/terms-and-conditions/">Learn more about our terms, conditions and policies →</a></p>
+                  <p>Appointments are held virtually or in person. This is where we bring your vision to life, from pattern design and 3D mockups to a sample weave of your approved design. <a className="booking-success-link" href="/terms-and-conditions/">Learn more about our terms, conditions and policies →</a></p>
                 </div>
               </div>
               <div className="booking-success-step">
@@ -4048,7 +4048,7 @@ function BookingPage() {
       <div className="booking-hero">
         <span className="store-kicker">Bespoke Kente Consultation</span>
         <h1>Let's Create Something Extraordinary</h1>
-        <p>Answer a few quick questions and our customer representative will reach out with a personalized plan — no commitment, no pressure.</p>
+        <p>Answer a few quick questions and our customer representative will reach out with a personalized plan, no commitment, no pressure.</p>
       </div>
 
       <div className="booking-wizard">
@@ -4231,7 +4231,7 @@ function ThreadColorsPage() {
     description:
       "Browse all 38 authentic Kente thread colors available at Hinkro Kente. Select your preferred colors and start your custom Kente weaving journey today.",
     canonical: "https://www.hinkrokente.com/thread-colors/",
-    ogTitle: "Kente Thread Color Card — Browse All Colors",
+    ogTitle: "Kente Thread Color Card, Browse All Colors",
     ogDescription:
       "Browse all 38 authentic Kente thread colors by Hinkro Kente. Select your colors and start weaving your custom Kente today.",
     ogImage: "https://www.hinkrokente.com/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg",
@@ -4247,7 +4247,7 @@ function ThreadColorsPage() {
           <h1>Choose Your Kente Colors</h1>
           <p>
             Every Hinkro Kente begins with a conversation about color. Browse our full palette
-            of 38 authentic thread colors — ordered lighter to darker within each class — then
+            of 38 authentic thread colors, ordered lighter to darker within each class, then
             select the shades that speak to your vision.
           </p>
         </div>
@@ -4438,7 +4438,7 @@ function App() {
       ) : currentPage === "customized-services" ? (
         <CustomizedKenteServicesPage />
       ) : currentPage === "coming-soon-bridal" ? (
-        <ComingSoonPage title="Kente Bridal Package" subtitle="Coming Soon" description="Our Kente Bridal Package page is being prepared. Hinkro Kente creates bespoke bridal kente — from bridal cloths to couples' matching sets and family coordinated designs. Contact us to explore our bridal kente services." />
+        <ComingSoonPage title="Kente Bridal Package" subtitle="Coming Soon" description="Our Kente Bridal Package page is being prepared. Hinkro Kente creates bespoke bridal kente, from bridal cloths to couples' matching sets and family coordinated designs. Contact us to explore our bridal kente services." />
       ) : currentPage === "coming-soon-team" ? (
         <ComingSoonPage title="Our Team" subtitle="Coming Soon" description="Meet the talented artisans and designers behind Hinkro Kente. Our full team page is being prepared." />
       ) : currentPage === "booking" ? (
