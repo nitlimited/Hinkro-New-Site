@@ -3678,7 +3678,7 @@ const BOOKING_STEPS = {
   },
 };
 
-function ReferenceImagePicker({ references = [], onChange, required = false }) {
+function ReferenceImagePicker({ references = [], onChange, required = false, onSkip }) {
   const [uploading, setUploading] = useState(false);
   const [urlInput, setUrlInput] = useState("");
   const [error, setError] = useState("");
@@ -3822,7 +3822,7 @@ function ReferenceImagePicker({ references = [], onChange, required = false }) {
       )}
 
       {!required && references.length === 0 && (
-        <button type="button" className="ref-picker-skip" onClick={() => onChange([])}>
+        <button type="button" className="ref-picker-skip" onClick={() => { onChange([]); if (onSkip) onSkip(); }}>
           Skip for now
         </button>
       )}
@@ -4099,6 +4099,7 @@ function BookingPage() {
               references={answers[currentKey] || []}
               onChange={(refs) => setAnswer(currentKey, refs)}
               required={stepData.required}
+              onSkip={next}
             />
           ) : currentKey === "contact" ? (
             <div className="booking-contact">
