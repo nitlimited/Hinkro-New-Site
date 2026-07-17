@@ -3713,18 +3713,29 @@ function ReferenceImagePicker({ references = [], onChange, required = false }) {
         }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Upload failed");
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        throw new Error("Upload service is not configured yet. Please paste an image link instead, or try again later.");
       }
 
-      const { presignedUrl, publicUrl } = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Upload failed. Please try again.");
+      }
 
-      await fetch(presignedUrl, {
+      const { presignedUrl, publicUrl } = data;
+
+      const uploadRes = await fetch(presignedUrl, {
         method: "PUT",
         headers: { "Content-Type": file.type },
         body: file,
       });
+
+      if (!uploadRes.ok) {
+        throw new Error("Failed to upload file to storage. Please try again.");
+      }
 
       onChange([...references, { type: "file", value: publicUrl, label: file.name }]);
     } catch (err) {

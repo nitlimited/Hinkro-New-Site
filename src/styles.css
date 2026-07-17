@@ -6999,20 +6999,23 @@ button {
 }
 
 .ref-picker-skip {
-  margin-top: 14px;
-  padding: 0;
-  background: none;
-  border: none;
-  color: #999;
+  margin-top: 16px;
+  padding: 12px 24px;
+  background: #fff;
+  border: 1px solid #d4c9ad;
+  border-radius: 8px;
+  color: #666;
   font-family: Overpass, system-ui, sans-serif;
-  font-size: 14px;
-  text-decoration: underline;
+  font-size: 15px;
+  font-weight: 600;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
 
 .ref-picker-skip:hover {
-  color: #666;
+  background: #f6f0e2;
+  color: #16233f;
+  border-color: #c8b97a;
 }
 
 /* ── Booking Mobile ───────────────────────────── */
