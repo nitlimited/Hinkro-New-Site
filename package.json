@@ -2,6 +2,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
+    "prerender": "PRERENDER=1 vite build && node scripts/prerender.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "typecheck": "tsc --noEmit",
     "import:products": "node scripts/import-store-products.mjs"
@@ -27,6 +28,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.2",
+    "puppeteer": "^25.3.0",
     "typescript": "^5.7.0",
     "vite": "^8.0.16"
   }

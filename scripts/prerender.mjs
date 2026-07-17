@@ -1,0 +1,268 @@
+#!/usr/bin/env node
+
+import { createServer } from "http";
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = join(__dirname, "..");
+const DIST = join(ROOT, "dist");
+
+const CHROME_PATH =
+  process.env.PUPPETEER_EXECUTABLE_PATH ||
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+
+const allRoutes = [
+  "/",
+  "/authentic-african-kente-graduation-stole-sashe/",
+  "/authentic-kente-fabric/",
+  "/weaving-authentic-ghanaian-kente-fabric/",
+  "/authentic-kente-cloth/",
+  "/kente-trends/",
+  "/design-kente/",
+  "/hinkro-kente-accessories/",
+  "/customized-kente-weaving-services/",
+  "/customized-kente-services/",
+  "/boutique-kente-shop-online-buy/",
+  "/weave-on-demand-kente/",
+  "/kente-bridal-package/",
+  "/lead-time-and-rush-orders/",
+  "/contact-hinkro-kente/",
+  "/appointment/",
+  "/privacy-policy/",
+  "/terms-and-condition/",
+  "/terms-and-conditions-bespoke-service/",
+  "/terms-and-conditions-sample-strip-policy-and-pattern-development/",
+  "/terms-and-conditions-refund-policy/",
+  "/team/",
+  "/thank-you/",
+  "/blog/",
+  "/blog/types-of-threads-used-in-kente/",
+  "/blog/kente-belt/",
+  "/blog/in-appreciation-of-nana-konadu-agyeman-rawlings/",
+  "/blog/kente-officially-protected-as-a-national-treasure/",
+  "/blog/kente-for-organizational-groups-and-corporate-businesses/",
+  "/blog/black-star-experience/",
+  "/blog/kente-and-kitenge/",
+  "/blog/kente-in-your-own-colors/",
+  "/blog/kente-weaver/",
+  "/blog/case-study-crafting-a-bespoke-kente-for-client-josephine-by-hinkro-kente/",
+  "/blog/rediscovering-history-the-revamped-kwame-nkrumah-memorial-park/",
+  "/blog/custom-kente-stole/",
+  "/blog/why-obama-kente/",
+  "/blog/ombre-kente-transitional-inspirations/",
+  "/blog/african-artifact/",
+  "/blog/computerized-kente-pattern/",
+  "/blog/kente/",
+  "/blog/kente-2/",
+  "/blog/kente-cloth/",
+  "/blog/kente-cloth-2/",
+  "/blog/ghana-month/",
+  "/blog/dansinkran-kente-wrapped-kente-cloth/",
+  "/blog/value-to-kente/",
+  "/blog/exploring-the-distinctive-charms-of-kente-and-ankara-fabrics/",
+  "/blog/kente-graduation-stole-significance-in-black-academics/",
+  "/blog/black-star-kente/",
+  "/blog/the-timeless-allure-of-the-fatia-fata-nkrumah-kente-cloth/",
+  "/blog/unveiling-the-radiance-of-ombre-kente/",
+  "/blog/crafting-the-perfect-kente-a-comprehensive-guide-to-authentic-african-kente-fabric/",
+  "/blog/how-kente-cloths-are-made/",
+  "/blog/discover-the-finest-kente-buying-experience-in-the-uk-with-hinkro-kente/",
+  "/blog/where-to-buy-kente-fabric-online-in-the-usa/",
+  "/blog/wesley-girls-high-school-187-anniversary/",
+  "/blog/ankara-fabric-and-kente-fabric/",
+  "/blog/kente-cloth-colors/",
+  "/blog/developing-kente-pattern-for-weaving/",
+  "/product/ash-yellow-pink-and-green-with-silver-shimmering-kente/",
+  "/product/black-and-gold-kente/",
+  "/product/black-and-gold-with-shimmering-kente/",
+  "/product/black-gold-and-purple-with-shimmering-kente/",
+  "/product/blue-and-red-kente/",
+  "/product/blue-fatia-fata-nkrumah-kente/",
+  "/product/blue-gold-and-ash-with-silver-shimmering-kente/",
+  "/product/blue-orange-gold-pink-and-purple-kente/",
+  "/product/blue-white-and-yellow-with-silver-shimmering-kente/",
+  "/product/blue-yellow-and-green-kente/",
+  "/product/bridal-gown-bag/",
+  "/product/cream-with-silver-shimmering-kente/",
+  "/product/cyan-blue-and-emerald-green-kente/",
+  "/product/dark-blue-kente-with-plain-shimmer/",
+  "/product/dark-blue-kente/",
+  "/product/emerald-green-and-grey-kente/",
+  "/product/emerald-green-and-peach-with-silver-shimmering-kente/",
+  "/product/emerald-green-kente-2/",
+  "/product/emerald-green-kente-and-gold/",
+  "/product/emerald-green-kente/",
+  "/product/emerald-green-orange-and-black-with-silver-shimmering-kente/",
+  "/product/gold-green-navy-blue-kente/",
+  "/product/gold-orange-brown-and-cream-with-shimmering-kente/",
+  "/product/gold-purple-and-red-with-shimmering-plain-kente/",
+  "/product/green-blue-black-and-gold-with-gold-shimmering-kente/",
+  "/product/green-gold-and-purple-ombre-kente/",
+  "/product/green-ombre-kente/",
+  "/product/greenblue-yellow-pink-and-dark-blue-kente/",
+  "/product/grey-and-red-kente/",
+  "/product/hinkro-hand-held-bridal-fan/",
+  "/product/hinkro-men-duffel-bag/",
+  "/product/hinkro-moonlight-perfume/",
+  "/product/hot-pink-ombre-kente/",
+  "/product/kente-stole-for-graduation/",
+  "/product/lemon-green-yellow-blue-and-ash-with-silver-shimmering/",
+  "/product/ombre-kente-bespoke-order/",
+  "/product/orange-and-gold-ombre-kente/",
+  "/product/orange-brown-blue-ash-with-silver-shimmering/",
+  "/product/orange-kente-with-burgundy-and-grey/",
+  "/product/orange-red-and-blue-kente/",
+  "/product/peach-dark-pink-blue-black-and-aqua-kente/",
+  "/product/pink-and-gold-with-plain-pink-silver-shimmering-kente/",
+  "/product/pink-gold-and-cream-with-shimmering-kente/",
+  "/product/pink-grey-white-dark-brown-kente/",
+  "/product/pink-yellow-and-dark-blue-with-silver-shimmering-kente/",
+  "/product/pink-yellow-and-dark-red-kente/",
+  "/product/purple-black-and-white-with-silver-shimmering-kente/",
+  "/product/purple-kente-with-plain-shimmering/",
+  "/product/red-and-blue-with-silver-shimmering-kente/",
+  "/product/red-and-grey-kente-with-silver-shimmering/",
+  "/product/red-and-purple-kente/",
+  "/product/red-and-white-with-silver-shimmering-kente/",
+  "/product/red-ash-white-and-gold-with-shimmering-kente/",
+  "/product/red-gold-and-white-kente/",
+  "/product/red-light-blue-and-blue-black-kente/",
+  "/product/red-white-and-gold-kente/",
+  "/product/royal-blue-and-red-with-silver-shimmering-kente/",
+  "/product/royal-blue-kente-with-plain-turquoise-shimmering/",
+  "/product/royal-blue-peace-gold-kente-fabric/",
+  "/product/white-and-gold-with-gold-shimmering-plain-kente/",
+  "/product/white-gold-and-purple-with-shimmering-kente/",
+  "/product/white-yellow-and-yellowish-brown-with-shimmering-kente/",
+  "/product/yellow-black-green-blue-and-red-kente/",
+  "/product/yellow-purple-orange-and-pink-kente/",
+  "/product/yellow-red-and-blue-kente/",
+  "/product/yellow-red-pink-and-gold-with-shimmering-kente/",
+  "/product/yellow-redblue-white-and-green-kente/",
+];
+
+function serveStatic(req, res) {
+  let url = req.url.split("?")[0];
+  let filePath = join(DIST, url);
+  if (existsSync(filePath) && !filePath.endsWith(".html")) {
+    if (existsSync(join(filePath, "index.html"))) {
+      filePath = join(filePath, "index.html");
+    }
+  }
+  if (!existsSync(filePath)) {
+    filePath = join(DIST, "index.html");
+  }
+  try {
+    const data = readFileSync(filePath);
+    const ext = filePath.split(".").pop().toLowerCase();
+    const mimeTypes = {
+      html: "text/html",
+      js: "application/javascript",
+      mjs: "application/javascript",
+      css: "text/css",
+      json: "application/json",
+      png: "image/png",
+      jpg: "image/jpeg",
+      jpeg: "image/jpeg",
+      gif: "image/gif",
+      svg: "image/svg+xml",
+      webp: "image/webp",
+      woff: "font/woff",
+      woff2: "font/woff2",
+      ttf: "font/ttf",
+      mp4: "video/mp4",
+      webm: "video/webm",
+      ico: "image/x-icon",
+    };
+    const contentType = mimeTypes[ext] || "application/octet-stream";
+    res.writeHead(200, { "Content-Type": contentType });
+    res.end(data);
+  } catch {
+    res.writeHead(404);
+    res.end("Not found");
+  }
+}
+
+async function renderRoute(page, baseUrl, route, retries = 2) {
+  const url = `${baseUrl}${route}`;
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: "networkidle0", timeout: 20000 });
+      await new Promise((r) => setTimeout(r, 500));
+      const html = await page.content();
+      const outPath = join(DIST, route === "/" ? "index.html" : join(route.slice(1), "index.html"));
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, html, "utf-8");
+      return true;
+    } catch (err) {
+      if (attempt < retries) {
+        await page.close().catch(() => {});
+        return null;
+      }
+      throw err;
+    }
+  }
+}
+
+async function main() {
+  let puppeteer;
+  try {
+    puppeteer = await import("puppeteer");
+  } catch {
+    console.error("puppeteer not found. Run: npm install --save-dev puppeteer");
+    process.exit(1);
+  }
+
+  const server = createServer(serveStatic);
+  const port = 14723;
+  await new Promise((r) => server.listen(port, r));
+  console.log(`Static server on http://localhost:${port}`);
+
+  let success = 0;
+  let fail = 0;
+  const baseUrl = `http://localhost:${port}`;
+
+  const launchOpts = {
+    executablePath: CHROME_PATH,
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
+  };
+  let browser = await puppeteer.default.launch(launchOpts);
+
+  for (let i = 0; i < allRoutes.length; i++) {
+    const route = allRoutes[i];
+    let page;
+    try {
+      if (!browser.connected) {
+        process.stdout.write(`  ↻ Relaunching browser...\n`);
+        browser = await puppeteer.default.launch(launchOpts);
+      }
+      page = await browser.newPage();
+      const url = `${baseUrl}${route}`;
+      await page.goto(url, { waitUntil: "networkidle0", timeout: 20000 });
+      await new Promise((r) => setTimeout(r, 500));
+      const html = await page.content();
+      const outPath = join(DIST, route === "/" ? "index.html" : join(route.slice(1), "index.html"));
+      mkdirSync(dirname(outPath), { recursive: true });
+      writeFileSync(outPath, html, "utf-8");
+      success++;
+      process.stdout.write(`  ✓ [${i + 1}/${allRoutes.length}] ${route}\n`);
+    } catch (err) {
+      fail++;
+      process.stdout.write(`  ✗ [${i + 1}/${allRoutes.length}] ${route} — ${err.message.slice(0, 80)}\n`);
+    } finally {
+      if (page) await page.close().catch(() => {});
+    }
+  }
+
+  await browser.close();
+  server.close();
+  console.log(`\nDone: ${success} rendered, ${fail} failed out of ${allRoutes.length} routes`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
