@@ -62,25 +62,22 @@ function serveStatic(req, res) {
   }
 }
 
-async function renderRoute(page, baseUrl, route, retries = 2) {
-  const url = `${baseUrl}${route}`;
-  for (let attempt = 0; attempt <= retries; attempt++) {
-    try {
-      await page.goto(url, { waitUntil: "networkidle0", timeout: 20000 });
-      await new Promise((r) => setTimeout(r, 500));
-      const html = await page.content();
-      const outPath = join(DIST, route === "/" ? "index.html" : join(route.slice(1), "index.html"));
-      mkdirSync(dirname(outPath), { recursive: true });
-      writeFileSync(outPath, html, "utf-8");
-      return true;
-    } catch (err) {
-      if (attempt < retries) {
-        await page.close().catch(() => {});
-        return null;
-      }
-      throw err;
+async function createPrerenderPage(browser, baseUrl) {
+  const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on("request", (request) => {
+    const requestUrl = request.url();
+    if (
+      requestUrl.startsWith(baseUrl) ||
+      requestUrl.startsWith("data:") ||
+      requestUrl.startsWith("blob:")
+    ) {
+      request.continue();
+      return;
     }
-  }
+    request.abort();
+  });
+  return page;
 }
 
 async function main() {
@@ -108,39 +105,39 @@ async function main() {
     server.close();
     throw error;
   }
-  const page = await browser.newPage();
-  await page.setRequestInterception(true);
-  page.on("request", (request) => {
-    const requestUrl = request.url();
-    if (
-      requestUrl.startsWith(baseUrl) ||
-      requestUrl.startsWith("data:") ||
-      requestUrl.startsWith("blob:")
-    ) {
-      request.continue();
-      return;
-    }
-    request.abort();
-  });
+  let page = await createPrerenderPage(browser, baseUrl);
 
   for (let i = 0; i < allRoutes.length; i++) {
     const route = allRoutes[i];
-    try {
-      const url = `${baseUrl}${route}`;
-      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
-      await page.waitForSelector('html[data-seo-ready="true"]', { timeout: 5000 });
-      await page.evaluate(
-        () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
-      );
-      const html = await page.content();
-      const outPath = join(DIST, route === "/" ? "index.html" : join(route.slice(1), "index.html"));
-      mkdirSync(dirname(outPath), { recursive: true });
-      writeFileSync(outPath, html, "utf-8");
-      success++;
-      process.stdout.write(`  ✓ [${i + 1}/${allRoutes.length}] ${route}\n`);
-    } catch (err) {
-      failures.push({ route, message: err.message });
-      process.stdout.write(`  ✗ [${i + 1}/${allRoutes.length}] ${route} — ${err.message.slice(0, 80)}\n`);
+    let routeError;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const url = `${baseUrl}${route}`;
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
+        await page.waitForSelector('html[data-seo-ready="true"]', { timeout: 10000 });
+        await page.evaluate(
+          () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+        );
+        const html = await page.content();
+        const outPath = join(DIST, route === "/" ? "index.html" : join(route.slice(1), "index.html"));
+        mkdirSync(dirname(outPath), { recursive: true });
+        writeFileSync(outPath, html, "utf-8");
+        success++;
+        routeError = null;
+        process.stdout.write(`  ✓ [${i + 1}/${allRoutes.length}] ${route}\n`);
+        break;
+      } catch (error) {
+        routeError = error;
+        if (attempt < 3) {
+          process.stdout.write(`  ↻ [${i + 1}/${allRoutes.length}] ${route} retry ${attempt}\n`);
+          await page.close().catch(() => {});
+          page = await createPrerenderPage(browser, baseUrl);
+        }
+      }
+    }
+    if (routeError) {
+      failures.push({ route, message: routeError.message });
+      process.stdout.write(`  ✗ [${i + 1}/${allRoutes.length}] ${route} — ${routeError.message.slice(0, 80)}\n`);
     }
   }
 
