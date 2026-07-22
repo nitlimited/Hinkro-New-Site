@@ -848,7 +848,17 @@ export async function inviteClient(clientId: string): Promise<void> {
   const { data, error } = await supabase!.functions.invoke("invite-client", {
     body: { client_id: clientId },
   });
-  if (error) throw error;
+  if (error) {
+    let message = error.message;
+    const context = (error as { context?: Response }).context;
+    if (context) {
+      try {
+        const payload = (await context.json()) as { error?: string };
+        message = payload.error ?? message;
+      } catch {}
+    }
+    throw new Error(message);
+  }
   const functionError = (data as { error?: string } | null)?.error;
   if (functionError) throw new Error(functionError);
 }
