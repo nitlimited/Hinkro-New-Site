@@ -43,6 +43,8 @@ const mimeTypes = new Map([
   [".woff", "font/woff"],
   [".woff2", "font/woff2"],
   [".xml", "application/xml; charset=utf-8"],
+  // Browsers only apply a sitemap stylesheet when it's served as XSL.
+  [".xsl", "text/xsl; charset=utf-8"],
 ]);
 
 const fixedRedirects = new Map([

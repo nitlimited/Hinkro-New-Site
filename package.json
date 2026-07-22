@@ -2,11 +2,12 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "prerender": "PRERENDER=1 vite build && node scripts/prerender.mjs",
+    "prerender": "node scripts/generate-sitemap.mjs && PRERENDER=1 vite build && node scripts/prerender.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "start": "node server.mjs",
     "typecheck": "tsc --noEmit",
-    "import:products": "node scripts/import-store-products.mjs"
+    "import:products": "node scripts/import-store-products.mjs",
+    "sitemap": "node scripts/generate-sitemap.mjs"
   },
   "engines": {
     "node": ">=22.12"
