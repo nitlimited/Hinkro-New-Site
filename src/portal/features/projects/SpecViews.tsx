@@ -177,14 +177,36 @@ export function ApprovalPanel({
   const approvals = getApprovals(project);
   const isClient = role === "client";
   const isAdmin = role === "super_admin" || role === "admin";
-  const bothApproved = approvals.thread === "approved" && approvals.pattern === "approved";
   const [busy, setBusy] = useState("");
+  const [approvedNow, setApprovedNow] = useState<Array<"thread" | "pattern">>([]);
+  const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
+  const approvalStatus = (kind: "thread" | "pattern") =>
+    approvedNow.includes(kind) ? "approved" : approvals[kind];
+  const bothApproved =
+    approvalStatus("thread") === "approved" &&
+    approvalStatus("pattern") === "approved";
 
   const approve = async (kind: "thread" | "pattern") => {
     setBusy(kind);
-    await grantApproval(project.id, kind, currentUser);
-    setBusy("");
-    onChanged();
+    setError("");
+    setNotice("");
+    try {
+      await grantApproval(project.id, kind, currentUser);
+      setApprovedNow((current) =>
+        current.includes(kind) ? current : [...current, kind],
+      );
+      setNotice(
+        kind === "thread"
+          ? "Thread colours approved."
+          : "Pattern and design approved.",
+      );
+      onChanged();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Approval could not be saved.");
+    } finally {
+      setBusy("");
+    }
   };
 
   return (
@@ -198,10 +220,19 @@ export function ApprovalPanel({
           keeps your project on schedule.
         </p>
       )}
+      {isAdmin && !bothApproved && (
+        <p className="portal-muted-text">
+          Only the assigned client can approve this project brief.
+        </p>
+      )}
+      {notice && <div className="portal-notice">{notice}</div>}
+      {error && <div className="portal-error">{error}</div>}
       {(["thread", "pattern"] as const).map((kind) => {
-        const status = approvals[kind];
-        const at = approvals[`${kind}_at`];
-        const canApprove = (isClient || isAdmin) && status === "pending";
+        const status = approvalStatus(kind);
+        const at = approvedNow.includes(kind)
+          ? new Date().toISOString()
+          : approvals[`${kind}_at`];
+        const canApprove = isClient && status === "pending";
         return (
           <div className="portal-approval-row" key={kind}>
             <div>
@@ -221,9 +252,7 @@ export function ApprovalPanel({
               >
                 {busy === kind
                   ? "Approving…"
-                  : isAdmin && !isClient
-                    ? "Approve (on behalf)"
-                    : "Approve"}
+                  : "Approve"}
               </button>
             ) : (
               <span className="portal-approval-pending">Awaiting client</span>

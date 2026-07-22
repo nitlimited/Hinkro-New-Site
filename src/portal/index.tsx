@@ -48,6 +48,7 @@ const router = createBrowserRouter([
       { index: true, element: <AdminDashboard /> },
       { path: "projects", element: <ProjectsListPage /> },
       { path: "projects/new", element: <ProjectCreatePage /> },
+      { path: "projects/:projectId/edit", element: <ProjectCreatePage /> },
       { path: "projects/:projectId", element: <ProjectDetailPage /> },
       { path: "clients", element: <ClientsPage /> },
       { path: "weavers", element: <WeaversPage /> },

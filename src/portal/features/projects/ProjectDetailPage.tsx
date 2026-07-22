@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import {
   Calendar,
   CheckCircle2,
@@ -9,6 +9,7 @@ import {
   MessageSquare,
   Milestone,
   Pause,
+  Pencil,
   Play,
   ShieldCheck,
   StickyNote,
@@ -99,6 +100,14 @@ export function ProjectDetailPage() {
             )}
           </div>
         </div>
+        {isAdmin && (
+          <Link
+            className="portal-btn-secondary"
+            to={`/portal/admin/projects/${project.id}/edit`}
+          >
+            <Pencil size={15} /> Edit project
+          </Link>
+        )}
       </div>
 
       <div className="portal-detail-grid">

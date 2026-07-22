@@ -1,18 +1,21 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Camera, Plus, X, Sparkles, Star, Clock, Zap } from "lucide-react";
 import { useAuth } from "../../auth/useAuth";
 import {
   createClient,
   createProject,
   useClients,
+  useProject,
   useProjects,
   useTeam,
   useWeaverProfiles,
+  updateProjectBrief,
 } from "../../lib/data";
 import { Field } from "../../components/ui";
 import {
   emptySpec,
+  getSpec,
   needsYardage,
   totalYards,
   yardsGuidance,
@@ -31,7 +34,10 @@ import type {
 
 export function ProjectCreatePage() {
   const navigate = useNavigate();
+  const { projectId } = useParams();
+  const isEditing = Boolean(projectId);
   const { profile } = useAuth();
+  const { project, loading: projectLoading } = useProject(projectId);
   const { clients } = useClients();
   const { team } = useTeam();
   const { weavers: weaverProfiles } = useWeaverProfiles();
@@ -66,6 +72,30 @@ export function ProjectCreatePage() {
   const [symbolFiles, setSymbolFiles] = useState<File[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [initializedProjectId, setInitializedProjectId] = useState("");
+
+  useEffect(() => {
+    if (!project || initializedProjectId === project.id) return;
+    setClientMode("existing");
+    setForm({
+      title: project.title,
+      client_id: project.client_id,
+      weaver_id: project.weaver_id ?? "",
+      pattern: project.pattern ?? "",
+      measurements_note:
+        typeof project.measurements?.note === "string"
+          ? project.measurements.note
+          : "",
+      thread_colors: project.thread_colors.join(", "),
+      accessories: (project.accessories as string[]).join(", "),
+      priority: project.priority,
+      est_start: project.est_start ?? "",
+      est_completion: project.est_completion ?? "",
+      design_notes: project.design_notes ?? "",
+    });
+    setSpec(getSpec(project));
+    setInitializedProjectId(project.id);
+  }, [initializedProjectId, project]);
 
   const patchSpec = (patch: Partial<ProjectSpec>) =>
     setSpec((s) => ({ ...s, ...patch }));
@@ -137,33 +167,36 @@ export function ProjectCreatePage() {
         setBusy(false);
         return;
       }
-      const project = await createProject(
-        {
-          title: form.title,
-          client_id: clientId,
-          weaver_id: form.weaver_id || null,
-          pattern: form.pattern,
-          measurements_note: form.measurements_note,
-          thread_colors: form.thread_colors
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          accessories: form.accessories
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          quantity: Math.max(1, yardsToPieces(spec)),
-          priority: form.priority,
-          est_start: form.est_start || null,
-          est_completion: form.est_completion || null,
-          design_notes: form.design_notes,
-          spec,
-          inspirationFiles,
-          embroiderySymbolFiles: spec.has_embroidery ? symbolFiles : [],
-        },
-        profile.id,
-      );
-      navigate(`/portal/admin/projects/${project.id}`);
+      const projectInput = {
+        title: form.title,
+        client_id: clientId,
+        weaver_id: form.weaver_id || null,
+        pattern: form.pattern,
+        measurements_note: form.measurements_note,
+        thread_colors: form.thread_colors
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+        accessories: form.accessories
+          .split(",")
+          .map((value) => value.trim())
+          .filter(Boolean),
+        quantity: Math.max(1, yardsToPieces(spec)),
+        priority: form.priority,
+        est_start: form.est_start || null,
+        est_completion: form.est_completion || null,
+        design_notes: form.design_notes,
+        spec,
+        inspirationFiles,
+        embroiderySymbolFiles: spec.has_embroidery ? symbolFiles : [],
+      };
+      if (isEditing && projectId) {
+        await updateProjectBrief(projectId, projectInput, profile.id);
+        navigate(`/portal/admin/projects/${projectId}`);
+      } else {
+        const createdProject = await createProject(projectInput, profile.id);
+        navigate(`/portal/admin/projects/${createdProject.id}`);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
@@ -171,16 +204,38 @@ export function ProjectCreatePage() {
     }
   };
 
+  if (isEditing && projectLoading) {
+    return <div className="portal-loading-inline">Loading project…</div>;
+  }
+
+  if (isEditing && !project) {
+    return <div className="portal-error">Project not found.</div>;
+  }
+
   return (
     <section className="portal-narrow">
-      <h1 className="portal-page-title">New project</h1>
+      <h1 className="portal-page-title">
+        {isEditing ? "Edit project" : "New project"}
+      </h1>
       <p className="portal-page-sub">
-        A reference number is generated automatically. The assigned weaver sees
-        the full brief instantly, and the client confirms thread colours and
-        pattern before weaving begins.
+        {isEditing
+          ? "Update the project brief when the client requests a change. Changes to the weaving brief require fresh client approval."
+          : "A reference number is generated automatically. The assigned weaver sees the full brief instantly, and the client confirms thread colours and pattern before weaving begins."}
       </p>
 
-      <form onSubmit={submit} className="portal-form portal-card portal-form-card">
+      <form
+        onSubmit={submit}
+        onKeyDown={(event) => {
+          if (
+            event.key === "Enter" &&
+            event.target instanceof HTMLInputElement &&
+            event.target.type !== "submit"
+          ) {
+            event.preventDefault();
+          }
+        }}
+        className="portal-form portal-card portal-form-card"
+      >
         <h2 className="portal-form-section">Order</h2>
         <Field label="Project title">
           <input
@@ -192,7 +247,7 @@ export function ProjectCreatePage() {
         </Field>
 
         <h2 className="portal-form-section">Client</h2>
-        <div className="portal-filters">
+        {!isEditing && <div className="portal-filters">
           <button
             type="button"
             className={clientMode === "existing" ? "is-active" : ""}
@@ -207,7 +262,7 @@ export function ProjectCreatePage() {
           >
             New client
           </button>
-        </div>
+        </div>}
         {clientMode === "existing" ? (
           <Field label="Client">
             <select
@@ -690,7 +745,13 @@ export function ProjectCreatePage() {
 
         {error && <div className="portal-error">{error}</div>}
         <button className="portal-btn-primary" type="submit" disabled={busy}>
-          {busy ? "Creating…" : "Create project"}
+          {busy
+            ? isEditing
+              ? "Saving…"
+              : "Creating…"
+            : isEditing
+              ? "Save project changes"
+              : "Create project"}
         </button>
       </form>
     </section>

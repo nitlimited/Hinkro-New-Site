@@ -33,7 +33,7 @@ import type {
   WorkLogRow,
   Priority,
 } from "./rows";
-import { defaultApprovals } from "./projectSpec";
+import { defaultApprovals, emptySpec } from "./projectSpec";
 import {
   demoClients,
   demoBlogPosts,
@@ -1037,12 +1037,99 @@ export async function createProject(
   return data as unknown as ProjectRow;
 }
 
-/** Client (or admin on their behalf) approves a gate; unblocks the weaver. */
+export async function updateProjectBrief(
+  projectId: string,
+  input: CreateProjectInput,
+  authorId: string,
+): Promise<void> {
+  const payload = {
+    title: input.title,
+    client_id: input.client_id,
+    weaver_id: input.weaver_id,
+    pattern: input.pattern || null,
+    measurements: { note: input.measurements_note },
+    thread_colors: input.thread_colors,
+    accessories: input.accessories,
+    quantity: input.quantity,
+    priority: input.priority,
+    est_start: input.est_start,
+    est_completion: input.est_completion,
+    design_notes: input.design_notes || null,
+    spec: input.spec,
+  };
+
+  if (!isSupabaseConfigured) {
+    const project = demoProjects.find((item) => item.id === projectId);
+    if (!project) throw new Error("Project not found.");
+    const approvalSensitiveChange =
+      project.pattern !== payload.pattern ||
+      JSON.stringify(project.thread_colors) !== JSON.stringify(payload.thread_colors) ||
+      JSON.stringify(project.spec ?? emptySpec()) !== JSON.stringify(payload.spec);
+    Object.assign(project, payload, {
+      approvals: approvalSensitiveChange ? defaultApprovals() : project.approvals,
+      updated_at: new Date().toISOString(),
+    });
+    await addDemoAttachments(projectId, input.inspirationFiles ?? [], "inspiration", authorId);
+    await addDemoAttachments(
+      projectId,
+      input.embroiderySymbolFiles ?? [],
+      "embroidery_symbol",
+      authorId,
+    );
+    emitDemo();
+    return;
+  }
+
+  const { data: current, error: currentError } = await supabase!
+    .from("projects")
+    .select("pattern,thread_colors,spec,approvals")
+    .eq("id", projectId)
+    .single();
+  if (currentError) throw currentError;
+
+  const approvalSensitiveChange =
+    current.pattern !== payload.pattern ||
+    JSON.stringify(current.thread_colors ?? []) !== JSON.stringify(payload.thread_colors) ||
+    JSON.stringify(current.spec ?? emptySpec()) !== JSON.stringify(payload.spec);
+  const updatePayload = {
+    ...payload,
+    ...(approvalSensitiveChange ? { approvals: defaultApprovals() } : {}),
+  };
+  const { error } = await supabase!
+    .from("projects")
+    .update(updatePayload)
+    .eq("id", projectId);
+  if (error) throw error;
+
+  await uploadAttachments(projectId, input.inspirationFiles ?? [], "inspiration", authorId);
+  await uploadAttachments(
+    projectId,
+    input.embroiderySymbolFiles ?? [],
+    "embroidery_symbol",
+    authorId,
+  );
+
+  const { error: updateError } = await supabase!.from("project_updates").insert({
+    project_id: projectId,
+    author_id: authorId,
+    type: "note",
+    body: approvalSensitiveChange
+      ? "Project brief updated. Client approval is required again."
+      : "Project details updated.",
+  });
+  if (updateError) throw updateError;
+}
+
+/** The assigned client approves a gate; unblocks the weaver. */
 export async function grantApproval(
   projectId: string,
   kind: "thread" | "pattern",
   actor: { id: string; full_name: string; role: UserRole },
 ): Promise<void> {
+  if (actor.role !== "client") {
+    throw new Error("Only the client can approve a project brief.");
+  }
+
   const nowIso = new Date().toISOString();
   const label = kind === "thread" ? "thread colours" : "pattern & design";
   const body = `${actor.full_name} approved the ${label}.`;
@@ -1083,24 +1170,11 @@ export async function grantApproval(
     return;
   }
 
-  const { data: current } = await supabase!
-    .from("projects")
-    .select("approvals")
-    .eq("id", projectId)
-    .single();
-  const approvals = {
-    ...defaultApprovals(),
-    ...((current?.approvals as object) ?? {}),
-    [kind]: "approved",
-    [`${kind}_at`]: nowIso,
-  };
-  await supabase!.from("projects").update({ approvals }).eq("id", projectId);
-  await supabase!.from("project_updates").insert({
-    project_id: projectId,
-    author_id: actor.id,
-    type: "approval_granted",
-    body,
+  const { error } = await supabase!.rpc("approve_project_brief", {
+    target_project_id: projectId,
+    approval_kind: kind,
   });
+  if (error) throw error;
 }
 
 /* ================= weaver profiles ================= */
