@@ -212,8 +212,14 @@ async function main() {
   try {
     puppeteer = await import("puppeteer");
   } catch {
-    console.error("puppeteer not found. Run: npm install --save-dev puppeteer");
-    process.exit(1);
+    // Best-effort: the Vite build in dist/ is already valid and deployable.
+    // Never fail the deploy just because prerendering can't run.
+    console.warn(
+      "\n[prerender] SKIPPED — puppeteer unavailable. The site will deploy as a\n" +
+        "client-rendered SPA (no pre-rendered HTML for crawlers).\n" +
+        "Fix with: npm install --save-dev puppeteer\n",
+    );
+    return;
   }
 
   const server = createServer(serveStatic);
@@ -264,6 +270,9 @@ async function main() {
 }
 
 main().catch((err) => {
+  // Prerendering is a progressive enhancement for SEO. If it fails (missing
+  // Chromium, sandbox restrictions in a CI builder, a crashed page), we still
+  // want the built site in dist/ to ship rather than blocking the deploy.
+  console.error("\n[prerender] FAILED — deploying without pre-rendered HTML.");
   console.error(err);
-  process.exit(1);
 });
