@@ -296,7 +296,8 @@ export const defaultBlogPosts = [
   },
 ].map((post) => ({
   ...post,
-  featured_image:
-    post.featured_image?.replace("https://www.hinkrokente.com", "") || null,
+  featured_image: post.featured_image
+    ? `${post.featured_image.replace("https://www.hinkrokente.com", "")}?v=original`
+    : null,
   content: allContent[post.slug] || null,
 }));
