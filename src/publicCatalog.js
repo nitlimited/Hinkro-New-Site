@@ -84,7 +84,26 @@ export function usePublicBlogPosts() {
       .order("publish_at", { ascending: false })
       .then(({ data, error }) => {
         if (cancelled || error) return;
-        setPosts(data ?? []);
+        if (!data || data.length === 0) return;
+
+        const postsBySlug = new Map(
+          defaultBlogPosts.map((post) => [post.slug, post]),
+        );
+
+        data.forEach((post) => {
+          const fallbackPost = postsBySlug.get(post.slug);
+          postsBySlug.set(post.slug, {
+            ...fallbackPost,
+            ...post,
+            content: post.content || fallbackPost?.content || null,
+          });
+        });
+
+        setPosts(
+          Array.from(postsBySlug.values()).sort((a, b) =>
+            (b.publish_at ?? "").localeCompare(a.publish_at ?? ""),
+          ),
+        );
       });
     return () => {
       cancelled = true;
