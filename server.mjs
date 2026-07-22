@@ -1,4 +1,4 @@
-import { createReadStream, existsSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
 import { createServer } from "node:http";
 import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,6 +14,10 @@ const MAX_JSON_BYTES = 16 * 1024;
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_REQUESTS = 20;
+const routeManifestPath = join(DIST, "seo-routes.json");
+const knownPublicRoutes = new Set(
+  existsSync(routeManifestPath) ? JSON.parse(readFileSync(routeManifestPath, "utf8")) : ["/"],
+);
 
 const uploadTypes = new Map([
   ["image/jpeg", "jpg"],
@@ -185,7 +189,7 @@ async function handleUpload(req, res) {
 }
 
 function redirectFor(pathname) {
-  if (pathname === "/blog") return { status: 307, location: "/blog/" };
+  if (pathname === "/blog") return { status: 308, location: "/blog/" };
   const normalizedPath = pathname.endsWith("/") ? pathname : `${pathname}/`;
   const fixed = fixedRedirects.get(normalizedPath);
   if (fixed) return { status: 308, location: fixed };
@@ -198,6 +202,21 @@ function redirectFor(pathname) {
       "slideshow-of-kente-cloth-patterns": "kente-cloth-colors",
     }[slug];
     return { status: 308, location: `/blog/${special || slug}/` };
+  }
+
+  if (
+    pathname !== "/" &&
+    !pathname.endsWith("/") &&
+    !extname(pathname) &&
+    !pathname.startsWith("/portal")
+  ) {
+    if (knownPublicRoutes.has(`${pathname}/`)) {
+      return { status: 308, location: `${pathname}/` };
+    }
+    const directory = safeStaticPath(`${pathname}/`);
+    if (directory && existsSync(join(directory, "index.html"))) {
+      return { status: 308, location: `${pathname}/` };
+    }
   }
   return null;
 }
@@ -225,7 +244,7 @@ function resolveStaticFile(pathname) {
       if (existsSync(index)) return index;
     }
   }
-  return join(DIST, "index.html");
+  return null;
 }
 
 function cacheHeader(pathname, filePath) {
@@ -238,7 +257,11 @@ function cacheHeader(pathname, filePath) {
 }
 
 function serveFile(req, res, pathname) {
-  const filePath = resolveStaticFile(pathname);
+  let filePath = resolveStaticFile(pathname);
+  const isPortalRoute = pathname === "/portal" || pathname.startsWith("/portal/");
+  const isKnownPublicRoute = knownPublicRoutes.has(pathname);
+  const isNotFound = !filePath && !isPortalRoute && !isKnownPublicRoute;
+  if (!filePath) filePath = join(DIST, "index.html");
   if (!existsSync(filePath)) return sendJson(res, 503, { error: "Application build is missing" });
 
   const stat = statSync(filePath);
@@ -249,6 +272,7 @@ function serveFile(req, res, pathname) {
   if (pathname === "/llms.txt" || pathname === "/llms-full.txt") {
     res.setHeader("X-Robots-Tag", "index, follow");
   }
+  if (isNotFound) res.setHeader("X-Robots-Tag", "noindex, nofollow");
 
   const range = req.headers.range;
   if (range) {
@@ -273,7 +297,7 @@ function serveFile(req, res, pathname) {
     return createReadStream(filePath, { start, end: boundedEnd }).pipe(res);
   }
 
-  res.statusCode = 200;
+  res.statusCode = isNotFound ? 404 : 200;
   res.setHeader("Content-Length", String(stat.size));
   if (req.method === "HEAD") return res.end();
   return createReadStream(filePath).pipe(res);

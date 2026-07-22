@@ -9,7 +9,7 @@ import {
   UserRound,
   X,
 } from "lucide-react";
-import { WHATSAPP_ORDER_NUMBER } from "./storeProducts";
+import { WHATSAPP_ORDER_NUMBER } from "./siteConfig";
 import { usePublicBlogPosts, usePublicCatalog } from "./publicCatalog";
 import { THREAD_COLOR_CLASSES, findThreadColor } from "./threadColorLibrary";
 import "./styles.css";
@@ -632,7 +632,7 @@ function getWhatsAppUrl(product) {
 function getGraduationOrderUrl() {
   const message = [
     "Hello Hinkro Kente, I am interested in ordering a Kente Graduation Stole or sash.",
-    "Page: https://www.hinkrokente.com/authentic-african-kente-graduation-stole-sashe/",
+    "Page: https://hinkrokente.com/authentic-african-kente-graduation-stole-sashe/",
     "Please share design options, pricing, lead time, and delivery details.",
   ].join("\n");
 
@@ -649,8 +649,29 @@ function cleanStoreCopy(text = "") {
     .trim();
 }
 
-function usePageSeo(title, description, keywords = [], jsonLd = null) {
+const SITE_ORIGIN = "https://hinkrokente.com";
+const DEFAULT_SOCIAL_IMAGE = `${SITE_ORIGIN}/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg`;
+
+function toAbsoluteSiteUrl(value) {
+  if (!value) return undefined;
+  return new URL(value, SITE_ORIGIN).href;
+}
+
+function usePageSeo(title, description, keywords = [], jsonLd = null, options = {}) {
+  const socialImage =
+    options.image ||
+    (typeof jsonLd?.image === "string" ? jsonLd.image : jsonLd?.image?.[0]) ||
+    DEFAULT_SOCIAL_IMAGE;
+  const noindex = options.noindex === true;
+  const ready = options.ready !== false;
+
   useEffect(() => {
+    if (!ready) {
+      document.documentElement.removeAttribute("data-seo-ready");
+      return undefined;
+    }
+
+    const canonicalUrl = `${SITE_ORIGIN}${window.location.pathname}`;
     const previousTitle = document.title;
     const metaDescription = document.querySelector('meta[name="description"]');
     const previousDescription = metaDescription?.getAttribute("content") || "";
@@ -658,20 +679,46 @@ function usePageSeo(title, description, keywords = [], jsonLd = null) {
     const previousKeywords = metaKeywords?.getAttribute("content") || "";
     const ogTitle = document.querySelector('meta[property="og:title"]');
     const ogDesc = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    const ogImage = document.querySelector('meta[property="og:image"]');
     const twTitle = document.querySelector('meta[name="twitter:title"]');
     const twDesc = document.querySelector('meta[name="twitter:description"]');
+    const twImage = document.querySelector('meta[name="twitter:image"]');
+    const canonical = document.querySelector('link[rel="canonical"]');
+    const robots = document.querySelector('meta[name="robots"]');
+    const alternateLinks = document.querySelectorAll('link[rel="alternate"][hreflang]');
     const prevOgTitle = ogTitle?.getAttribute("content") || "";
     const prevOgDesc = ogDesc?.getAttribute("content") || "";
+    const prevOgUrl = ogUrl?.getAttribute("content") || "";
+    const prevOgImage = ogImage?.getAttribute("content") || "";
     const prevTwTitle = twTitle?.getAttribute("content") || "";
     const prevTwDesc = twDesc?.getAttribute("content") || "";
+    const prevTwImage = twImage?.getAttribute("content") || "";
+    const prevCanonical = canonical?.getAttribute("href") || "";
+    const prevRobots = robots?.getAttribute("content") || "";
+    const prevAlternates = Array.from(alternateLinks, (link) => link.getAttribute("href") || "");
 
     document.title = title;
     if (metaDescription) metaDescription.setAttribute("content", description);
     if (metaKeywords) metaKeywords.setAttribute("content", keywords.join(", "));
     if (ogTitle) ogTitle.setAttribute("content", title);
     if (ogDesc) ogDesc.setAttribute("content", description);
+    if (ogUrl) ogUrl.setAttribute("content", canonicalUrl);
+    if (ogImage) ogImage.setAttribute("content", socialImage);
     if (twTitle) twTitle.setAttribute("content", title);
     if (twDesc) twDesc.setAttribute("content", description);
+    if (twImage) twImage.setAttribute("content", socialImage);
+    if (canonical) canonical.setAttribute("href", canonicalUrl);
+    if (robots) {
+      robots.setAttribute(
+        "content",
+        noindex
+          ? "noindex, nofollow"
+          : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+      );
+    }
+    alternateLinks.forEach((link) => link.setAttribute("href", canonicalUrl));
+    document.documentElement.setAttribute("data-seo-ready", "true");
 
     let scriptEl = null;
     if (jsonLd) {
@@ -687,15 +734,24 @@ function usePageSeo(title, description, keywords = [], jsonLd = null) {
       if (metaKeywords) metaKeywords.setAttribute("content", previousKeywords);
       if (ogTitle) ogTitle.setAttribute("content", prevOgTitle);
       if (ogDesc) ogDesc.setAttribute("content", prevOgDesc);
+      if (ogUrl) ogUrl.setAttribute("content", prevOgUrl);
+      if (ogImage) ogImage.setAttribute("content", prevOgImage);
       if (twTitle) twTitle.setAttribute("content", prevTwTitle);
       if (twDesc) twDesc.setAttribute("content", prevTwDesc);
+      if (twImage) twImage.setAttribute("content", prevTwImage);
+      if (canonical) canonical.setAttribute("href", prevCanonical);
+      if (robots) robots.setAttribute("content", prevRobots);
+      alternateLinks.forEach((link, index) => link.setAttribute("href", prevAlternates[index]));
+      document.documentElement.removeAttribute("data-seo-ready");
       if (scriptEl?.parentNode) scriptEl.parentNode.removeChild(scriptEl);
     };
-  }, [description, jsonLd, keywords, title]);
+  }, [description, jsonLd, keywords, noindex, ready, socialImage, title]);
 }
 
 function getCurrentPage() {
   const path = window.location.pathname;
+
+  if (path === "/") return "home";
 
   if (path === "/authentic-african-kente-graduation-stole-sashe/") return "graduation";
   if (path === "/authentic-kente-fabric/" || path.startsWith("/product/")) return "store";
@@ -721,14 +777,14 @@ function getCurrentPage() {
     "/terms-and-conditions-refund-policy/": "refund",
     "/contact-hinkro-kente/": "booking",
     "/appointment/": "booking",
-    "/thank-you/": "home",
+    "/thank-you/": "thank-you",
     "/team/": "coming-soon-team",
     "/authentic-african-kente-graduation-stole-sashe/": "graduation",
     "/thread-colors/": "thread-colors",
   };
   if (wpPageRoutes[path]) return wpPageRoutes[path];
 
-  return "home";
+  return "not-found";
 }
 
 function Header({ currentPage }) {
@@ -960,7 +1016,7 @@ function GraduationStolePage() {
         "@type": "AggregateOffer",
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock",
-        "seller": {"@type": "Organization", "@id": "https://www.hinkrokente.com/#organization"}
+        "seller": {"@type": "Organization", "@id": "https://hinkrokente.com/#organization"}
       },
       "aggregateRating": {
         "@type": "AggregateRating",
@@ -1161,28 +1217,32 @@ function StorePage({ productSlug }) {
       "@type": "Product",
       "name": selectedProduct.name,
       "description": selectedProduct.seo.description,
-      "image": selectedProduct.images[0]?.src ? `https://www.hinkrokente.com${selectedProduct.images[0].src}` : undefined,
+      "image": toAbsoluteSiteUrl(selectedProduct.images[0]?.src),
       "brand": {
         "@type": "Brand",
         "name": "Hinkro Kente"
       },
       "manufacturer": {
         "@type": "Organization",
-        "@id": "https://www.hinkrokente.com/#organization"
+        "@id": "https://hinkrokente.com/#organization"
       },
       "category": selectedProduct.categories[0] || "Kente Fabric",
       "offers": {
         "@type": "Offer",
-        "url": `https://www.hinkrokente.com/product/${selectedProduct.slug}/`,
+        "url": `https://hinkrokente.com/product/${selectedProduct.slug}/`,
         "priceCurrency": selectedProduct.prices?.international?.currency || "USD",
         "price": selectedProduct.prices?.international?.min || undefined,
         "availability": "https://schema.org/InStock",
         "seller": {
           "@type": "Organization",
-          "@id": "https://www.hinkrokente.com/#organization"
+          "@id": "https://hinkrokente.com/#organization"
         }
       }
-    } : null
+    } : null,
+    {
+      noindex: Boolean(productSlug && products.length > 0 && !selectedProduct),
+      ready: products.length > 0,
+    },
   );
 
   const filteredProducts = useMemo(() => {
@@ -1326,27 +1386,28 @@ function BlogPostDetail({ blogSlug }) {
       "@type": "BlogPosting",
       "headline": post.title,
       "description": post.excerpt || "",
-      "image": post.featured_image ? `https://www.hinkrokente.com${post.featured_image}` : undefined,
+      "image": toAbsoluteSiteUrl(post.featured_image),
       "datePublished": post.publish_at || undefined,
       "author": {
         "@type": "Organization",
         "name": "Hinkro Kente",
-        "@id": "https://www.hinkrokente.com/#organization"
+        "@id": "https://hinkrokente.com/#organization"
       },
       "publisher": {
         "@type": "Organization",
         "name": "Hinkro Kente",
-        "@id": "https://www.hinkrokente.com/#organization",
+        "@id": "https://hinkrokente.com/#organization",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://www.hinkrokente.com/images/hinkro-kente-bespoke-kente-weaving-services-logo.png"
+          "url": "https://hinkrokente.com/images/hinkro-kente-bespoke-kente-weaving-services-logo.png"
         }
       },
       "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": `https://www.hinkrokente.com/blog/${post.slug}/`
+        "@id": `https://hinkrokente.com/blog/${post.slug}/`
       }
-    } : null
+    } : null,
+    { noindex: posts.length > 0 && !post, ready: posts.length > 0 },
   );
 
   if (!post) {
@@ -1413,6 +1474,8 @@ function BlogPage() {
     "Kente Trends & News | Bespoke Kente Inspiration & Styling | Hinkro Kente",
     "Read Hinkro Kente trends, bespoke Kente styling inspiration, wedding guidance, graduation ideas, ceremony advice, and custom Kente news from Ghana's trusted kente weaver. Expert insights on colors, patterns, and how to choose the perfect Kente.",
     ["Kente trends", "Kente news", "Hinkro Kente blog", "Ghana Kente inspiration", "bespoke Kente styling", "wedding Kente ideas", "kente colors guide"],
+    null,
+    { ready: posts.length > 0 },
   );
 
   const fallbackPosts = trendsNewsImages.map((image, index) => ({
@@ -1795,9 +1858,9 @@ function WeaveOnDemandPage() {
       "name": "Kente Weave On Demand",
       "serviceType": "Made-to-order Kente weaving",
       "description": "Hinkro Kente creates weave-on-demand Kente cloth after consultation, design approval, loom preparation, hand weaving, finishing, and quality control.",
-      "provider": { "@type": "Organization", "@id": "https://www.hinkrokente.com/#organization" },
+      "provider": { "@type": "Organization", "@id": "https://hinkrokente.com/#organization" },
       "areaServed": ["Ghana", "United States", "United Kingdom", "Canada", "Europe", "Worldwide"],
-      "url": "https://www.hinkrokente.com/weave-on-demand-kente/"
+      "url": "https://hinkrokente.com/weave-on-demand-kente/"
     }
   );
 
@@ -2006,8 +2069,8 @@ function CustomizedKenteServicesPage() {
       "name": "Customized Kente Services",
       "serviceType": "Personalized Kente cloth design and weaving",
       "description": "Hinkro Kente helps clients create personalized Kente cloth for weddings, graduations, ceremonies, cultural events, and special occasions through consultation, color selection, pattern guidance, weaving, finishing, and delivery.",
-      "provider": { "@type": "Organization", "@id": "https://www.hinkrokente.com/#organization" },
-      "url": "https://www.hinkrokente.com/customized-kente-services/"
+      "provider": { "@type": "Organization", "@id": "https://hinkrokente.com/#organization" },
+      "url": "https://hinkrokente.com/customized-kente-services/"
     }
   );
 
@@ -2102,7 +2165,7 @@ function BespokePage() {
       "name": "Bespoke Kente Weaving, Custom Kente Made Exclusively For You",
       "serviceType": "Bespoke Kente Weaving",
       "description": "Hinkro Kente weaves custom Kente fabric designed from scratch for each client. Your exact colors, patterns, Adinkra symbols, names, dates, and meaningful motifs. Handwoven in Ghana by master weavers. Serving clients in Ghana, USA, UK, Canada, Europe, Australia, and worldwide.",
-      "provider": {"@type": "Organization", "@id": "https://www.hinkrokente.com/#organization"},
+      "provider": {"@type": "Organization", "@id": "https://hinkrokente.com/#organization"},
       "areaServed": [
         {"@type": "Country", "name": "Ghana"},
         {"@type": "Country", "name": "United States"},
@@ -3063,6 +3126,18 @@ function Hero() {
   const [activeIndex, setActiveIndex] = useState(0);
   const activeSlide = slides[activeIndex];
 
+  usePageSeo(
+    "Bespoke Kente Weaving Services | Custom Kente Weaver in Ghana | Hinkro Kente",
+    "Hinkro Kente is a Ghanaian bespoke Kente weaving company specialising in custom-made Kente fabrics for weddings, traditional marriages, graduations, and cultural celebrations. Trusted kente weaver in Ghana delivering worldwide.",
+    [
+      "bespoke kente weaving services",
+      "custom kente weaving services",
+      "kente weaver in Ghana",
+      "authentic handwoven kente",
+      "Hinkro Kente",
+    ],
+  );
+
   useEffect(() => {
     const timer = window.setInterval(() => {
       setActiveIndex((index) => (index + 1) % slides.length);
@@ -3498,6 +3573,8 @@ function ComingSoonPage({ title, subtitle, description }) {
     `${title} | Hinkro Kente`,
     description,
     [title, "Hinkro Kente", "kente weaving services Ghana"],
+    null,
+    { noindex: true },
   );
 
   return (
@@ -3509,6 +3586,51 @@ function ComingSoonPage({ title, subtitle, description }) {
         <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
           <a href="mailto:ask@hinkrokente.com" className="cta-button">Get in touch</a>
           <a href="/contact-hinkro-kente/" className="cta-button" style={{ background: "transparent", border: "1px solid var(--gold-bright)" }}>Contact us</a>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function ThankYouPage() {
+  usePageSeo(
+    "Thank You | Hinkro Kente",
+    "Thank you for contacting Hinkro Kente. Our team will respond to your bespoke Kente request shortly.",
+    [],
+    null,
+    { noindex: true },
+  );
+
+  return (
+    <main className="store-page coming-soon-page">
+      <section className="store-hero" aria-labelledby="thank-you-title">
+        <p className="store-kicker">Request received</p>
+        <h1 id="thank-you-title">Thank you for choosing Hinkro Kente.</h1>
+        <p>Our team will review your request and contact you with the next steps.</p>
+        <a href="/" className="cta-button">Return home</a>
+      </section>
+    </main>
+  );
+}
+
+function NotFoundPage() {
+  usePageSeo(
+    "Page Not Found | Hinkro Kente",
+    "The requested Hinkro Kente page could not be found.",
+    [],
+    null,
+    { noindex: true },
+  );
+
+  return (
+    <main className="store-page coming-soon-page">
+      <section className="store-hero" aria-labelledby="not-found-title">
+        <p className="store-kicker">404</p>
+        <h1 id="not-found-title">This page could not be found.</h1>
+        <p>Explore our authentic Kente fabrics or return to the homepage.</p>
+        <div style={{ marginTop: "2rem", display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+          <a href="/" className="cta-button">Return home</a>
+          <a href="/authentic-kente-fabric/" className="cta-button" style={{ background: "transparent", border: "1px solid var(--gold-bright)" }}>Browse Kente</a>
         </div>
       </section>
     </main>
@@ -4445,6 +4567,10 @@ function App() {
         <BookingPage />
       ) : currentPage === "thread-colors" ? (
         <ThreadColorsPage />
+      ) : currentPage === "thank-you" ? (
+        <ThankYouPage />
+      ) : currentPage === "not-found" ? (
+        <NotFoundPage />
       ) : (
         <Hero />
       )}

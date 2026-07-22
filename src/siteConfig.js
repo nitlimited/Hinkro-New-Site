@@ -1,0 +1,1 @@
+export const WHATSAPP_ORDER_NUMBER = "233209707235";

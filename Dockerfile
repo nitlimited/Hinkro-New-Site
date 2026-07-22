@@ -1,8 +1,13 @@
 FROM node:22-bookworm-slim AS builder
 
 ENV PUPPETEER_SKIP_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends chromium \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 RUN npm ci
@@ -21,7 +26,7 @@ ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY \
     VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY \
     VITE_VAPID_PUBLIC_KEY=$VITE_VAPID_PUBLIC_KEY
 
-RUN npm run typecheck && npm run build
+RUN npm run typecheck && npm run prerender
 
 FROM node:22-bookworm-slim AS runtime
 

@@ -1,7 +1,4 @@
-// Single source of truth for the site's public routes.
-// Used by both the prerenderer (scripts/prerender.mjs) and the sitemap
-// generator (scripts/generate-sitemap.mjs) so the two can never drift apart.
-export const allRoutes = [
+[
   "/",
   "/authentic-african-kente-graduation-stole-sashe/",
   "/authentic-kente-fabric/",
@@ -129,13 +126,5 @@ export const allRoutes = [
   "/product/yellow-purple-orange-and-pink-kente/",
   "/product/yellow-red-and-blue-kente/",
   "/product/yellow-red-pink-and-gold-with-shimmering-kente/",
-  "/product/yellow-redblue-white-and-green-kente/",
-];
-
-const nonIndexableRoutes = new Set([
-  "/kente-bridal-package/",
-  "/team/",
-  "/thank-you/",
-]);
-
-export const indexableRoutes = allRoutes.filter((route) => !nonIndexableRoutes.has(route));
+  "/product/yellow-redblue-white-and-green-kente/"
+]

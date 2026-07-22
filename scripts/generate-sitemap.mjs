@@ -20,31 +20,42 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { allRoutes } from "./routes.mjs";
+import { allRoutes, indexableRoutes } from "./routes.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, "..");
 const PUBLIC = join(ROOT, "public");
-const ORIGIN = "https://www.hinkrokente.com";
+const ORIGIN = "https://hinkrokente.com";
 const TODAY = new Date().toISOString().slice(0, 10);
 
 /** Pull existing per-URL metadata so nothing hand-tuned is lost. */
 function readExistingMeta() {
-  const file = join(PUBLIC, "sitemap.xml");
   const meta = new Map();
-  if (!existsSync(file)) return meta;
-  const xml = readFileSync(file, "utf-8");
-  for (const block of xml.match(/<url>[\s\S]*?<\/url>/g) || []) {
-    const loc = (block.match(/<loc>(.*?)<\/loc>/) || [])[1];
-    if (!loc) continue;
-    const path = loc.replace(ORIGIN, "").replace(/^https?:\/\/[^/]+/, "") || "/";
-    const images = (block.match(/<image:image>[\s\S]*?<\/image:image>/g) || []).join("\n      ");
-    meta.set(path, {
-      lastmod: (block.match(/<lastmod>(.*?)<\/lastmod>/) || [])[1],
-      changefreq: (block.match(/<changefreq>(.*?)<\/changefreq>/) || [])[1],
-      priority: (block.match(/<priority>(.*?)<\/priority>/) || [])[1],
-      images,
-    });
+  const sitemapFiles = [
+    "sitemap.xml",
+    "sitemap-pages.xml",
+    "sitemap-blog.xml",
+    "sitemap-products.xml",
+  ];
+
+  for (const sitemapFile of sitemapFiles) {
+    const file = join(PUBLIC, sitemapFile);
+    if (!existsSync(file)) continue;
+    const xml = readFileSync(file, "utf-8");
+    for (const block of xml.match(/<url>[\s\S]*?<\/url>/g) || []) {
+      const loc = (block.match(/<loc>(.*?)<\/loc>/) || [])[1];
+      if (!loc) continue;
+      const path = loc.replace(ORIGIN, "").replace(/^https?:\/\/[^/]+/, "") || "/";
+      const images = (block.match(/<image:image>[\s\S]*?<\/image:image>/g) || [])
+        .join("\n      ")
+        .replaceAll("https://www.hinkrokente.com", ORIGIN);
+      meta.set(path, {
+        lastmod: (block.match(/<lastmod>(.*?)<\/lastmod>/) || [])[1],
+        changefreq: (block.match(/<changefreq>(.*?)<\/changefreq>/) || [])[1],
+        priority: (block.match(/<priority>(.*?)<\/priority>/) || [])[1],
+        images,
+      });
+    }
   }
   return meta;
 }
@@ -100,11 +111,7 @@ function sitemapIndex(children) {
 
 const meta = readExistingMeta();
 
-// Union of the shared route list and anything already in the sitemap, so a URL
-// can never silently disappear.
-const routes = [...new Set([...allRoutes, ...meta.keys()])].filter(
-  (r) => !r.startsWith("/portal"),
-);
+const routes = [...new Set(indexableRoutes)].filter((route) => !route.startsWith("/portal"));
 
 const groups = [
   {
@@ -133,5 +140,6 @@ for (const g of groups) {
 }
 
 writeFileSync(join(PUBLIC, "sitemap.xml"), sitemapIndex(groups), "utf-8");
+writeFileSync(join(PUBLIC, "seo-routes.json"), `${JSON.stringify(allRoutes, null, 2)}\n`, "utf-8");
 console.log(`  Index      ${groups.length} sitemaps -> sitemap.xml`);
 console.log(`\nTotal: ${groups.reduce((n, g) => n + g.routes.length, 0)} urls`);

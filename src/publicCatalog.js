@@ -1,7 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { defaultBlogPosts } from "./blogArchive";
-import { storeCategories, storeProducts } from "./storeProducts";
-import { supabase, isSupabaseConfigured } from "./portal/lib/supabaseClient";
 
 function normalizeProduct(row) {
   const images = (row.images ?? []).sort((a, b) => a.position - b.position);
@@ -37,22 +34,32 @@ function normalizeProduct(row) {
 }
 
 export function usePublicCatalog() {
-  const [products, setProducts] = useState(storeProducts);
+  const [products, setProducts] = useState([]);
+  const [fallbackCategories, setFallbackCategories] = useState([]);
   const [loadedFromDatabase, setLoadedFromDatabase] = useState(false);
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return;
     let cancelled = false;
-    supabase
-      .from("products")
-      .select("*, images:product_images(*), variations:product_variations(*)")
-      .eq("status", "published")
-      .order("sort")
-      .then(({ data, error }) => {
-        if (cancelled || error || !data || data.length === 0) return;
-        setProducts(data.map(normalizeProduct));
-        setLoadedFromDatabase(true);
-      });
+
+    async function loadCatalog() {
+      const { storeCategories, storeProducts } = await import("./storeProducts");
+      if (cancelled) return;
+      setProducts(storeProducts);
+      setFallbackCategories(storeCategories);
+
+      const { supabase, isSupabaseConfigured } = await import("./portal/lib/supabaseClient");
+      if (!isSupabaseConfigured || !supabase) return;
+      const { data, error } = await supabase
+        .from("products")
+        .select("*, images:product_images(*), variations:product_variations(*)")
+        .eq("status", "published")
+        .order("sort");
+      if (cancelled || error || !data || data.length === 0) return;
+      setProducts(data.map(normalizeProduct));
+      setLoadedFromDatabase(true);
+    }
+
+    loadCatalog();
     return () => {
       cancelled = true;
     };
@@ -65,46 +72,50 @@ export function usePublicCatalog() {
 
   return {
     products,
-    categories: categories.length > 0 ? categories : storeCategories,
+    categories: categories.length > 0 ? categories : fallbackCategories,
     loadedFromDatabase,
   };
 }
 
 export function usePublicBlogPosts() {
-  const [posts, setPosts] = useState(defaultBlogPosts);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return;
     let cancelled = false;
-    supabase
-      .from("blog_posts")
-      .select("*")
-      .eq("status", "published")
-      .or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`)
-      .order("publish_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (cancelled || error) return;
-        if (!data || data.length === 0) return;
 
-        const postsBySlug = new Map(
-          defaultBlogPosts.map((post) => [post.slug, post]),
-        );
+    async function loadPosts() {
+      const { defaultBlogPosts } = await import("./blogArchive");
+      if (cancelled) return;
+      setPosts(defaultBlogPosts);
 
-        data.forEach((post) => {
-          const fallbackPost = postsBySlug.get(post.slug);
-          postsBySlug.set(post.slug, {
-            ...fallbackPost,
-            ...post,
-            content: post.content || fallbackPost?.content || null,
-          });
+      const { supabase, isSupabaseConfigured } = await import("./portal/lib/supabaseClient");
+      if (!isSupabaseConfigured || !supabase) return;
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("*")
+        .eq("status", "published")
+        .or(`publish_at.is.null,publish_at.lte.${new Date().toISOString()}`)
+        .order("publish_at", { ascending: false });
+      if (cancelled || error || !data || data.length === 0) return;
+
+      const postsBySlug = new Map(defaultBlogPosts.map((post) => [post.slug, post]));
+      data.forEach((post) => {
+        const fallbackPost = postsBySlug.get(post.slug);
+        postsBySlug.set(post.slug, {
+          ...fallbackPost,
+          ...post,
+          content: post.content || fallbackPost?.content || null,
         });
-
-        setPosts(
-          Array.from(postsBySlug.values()).sort((a, b) =>
-            (b.publish_at ?? "").localeCompare(a.publish_at ?? ""),
-          ),
-        );
       });
+
+      setPosts(
+        Array.from(postsBySlug.values()).sort((a, b) =>
+          (b.publish_at ?? "").localeCompare(a.publish_at ?? ""),
+        ),
+      );
+    }
+
+    loadPosts();
     return () => {
       cancelled = true;
     };

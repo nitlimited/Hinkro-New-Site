@@ -69,7 +69,7 @@ R2_ACCESS_KEY_ID=YOUR_R2_ACCESS_KEY_ID
 R2_SECRET_ACCESS_KEY=YOUR_R2_SECRET_ACCESS_KEY
 R2_BUCKET_NAME=YOUR_BUCKET
 R2_PUBLIC_URL=https://YOUR_PUBLIC_R2_DOMAIN
-ALLOWED_ORIGINS=https://hinkrokente.com,https://www.hinkrokente.com
+ALLOWED_ORIGINS=https://hinkrokente.com,https://hinkrokente.com
 PORT=3000
 ```
 
@@ -87,7 +87,7 @@ is:
   {
     "AllowedOrigins": [
       "https://hinkrokente.com",
-      "https://www.hinkrokente.com"
+      "https://hinkrokente.com"
     ],
     "AllowedMethods": ["PUT"],
     "AllowedHeaders": ["Content-Type"],

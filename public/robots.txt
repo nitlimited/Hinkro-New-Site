@@ -1,5 +1,5 @@
 # Hinkro Kente robots.txt
-# https://www.hinkrokente.com/robots.txt
+# https://hinkrokente.com/robots.txt
 
 User-agent: *
 Allow: /
@@ -79,4 +79,4 @@ Allow: /llms.txt
 Allow: /llms-full.txt
 
 # Sitemaps
-Sitemap: https://www.hinkrokente.com/sitemap.xml
+Sitemap: https://hinkrokente.com/sitemap.xml

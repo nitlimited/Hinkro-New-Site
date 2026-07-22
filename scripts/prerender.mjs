@@ -12,7 +12,11 @@ const DIST = join(ROOT, "dist");
 
 const CHROME_PATH =
   process.env.PUPPETEER_EXECUTABLE_PATH ||
-  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+  [
+    "/usr/bin/chromium",
+    "/usr/bin/chromium-browser",
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  ].find((candidate) => existsSync(candidate));
 
 // Route list lives in scripts/routes.mjs (shared with the sitemap generator).
 
@@ -80,19 +84,8 @@ async function renderRoute(page, baseUrl, route, retries = 2) {
 }
 
 async function main() {
-  let puppeteer;
-  try {
-    puppeteer = await import("puppeteer");
-  } catch {
-    // Best-effort: the Vite build in dist/ is already valid and deployable.
-    // Never fail the deploy just because prerendering can't run.
-    console.warn(
-      "\n[prerender] SKIPPED — puppeteer unavailable. The site will deploy as a\n" +
-        "client-rendered SPA (no pre-rendered HTML for crawlers).\n" +
-        "Fix with: npm install --save-dev puppeteer\n",
-    );
-    return;
-  }
+  const puppeteer = await import("puppeteer");
+  if (!CHROME_PATH) throw new Error("Chromium is required for SEO prerendering.");
 
   const server = createServer(serveStatic);
   const port = 14723;
@@ -100,7 +93,7 @@ async function main() {
   console.log(`Static server on http://localhost:${port}`);
 
   let success = 0;
-  let fail = 0;
+  const failures = [];
   const baseUrl = `http://localhost:${port}`;
 
   const launchOpts = {
@@ -108,20 +101,37 @@ async function main() {
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox", "--disable-gpu", "--disable-dev-shm-usage"],
   };
-  let browser = await puppeteer.default.launch(launchOpts);
+  let browser;
+  try {
+    browser = await puppeteer.default.launch(launchOpts);
+  } catch (error) {
+    server.close();
+    throw error;
+  }
+  const page = await browser.newPage();
+  await page.setRequestInterception(true);
+  page.on("request", (request) => {
+    const requestUrl = request.url();
+    if (
+      requestUrl.startsWith(baseUrl) ||
+      requestUrl.startsWith("data:") ||
+      requestUrl.startsWith("blob:")
+    ) {
+      request.continue();
+      return;
+    }
+    request.abort();
+  });
 
   for (let i = 0; i < allRoutes.length; i++) {
     const route = allRoutes[i];
-    let page;
     try {
-      if (!browser.connected) {
-        process.stdout.write(`  ↻ Relaunching browser...\n`);
-        browser = await puppeteer.default.launch(launchOpts);
-      }
-      page = await browser.newPage();
       const url = `${baseUrl}${route}`;
-      await page.goto(url, { waitUntil: "networkidle0", timeout: 20000 });
-      await new Promise((r) => setTimeout(r, 500));
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 15000 });
+      await page.waitForSelector('html[data-seo-ready="true"]', { timeout: 5000 });
+      await page.evaluate(
+        () => new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve))),
+      );
       const html = await page.content();
       const outPath = join(DIST, route === "/" ? "index.html" : join(route.slice(1), "index.html"));
       mkdirSync(dirname(outPath), { recursive: true });
@@ -129,22 +139,22 @@ async function main() {
       success++;
       process.stdout.write(`  ✓ [${i + 1}/${allRoutes.length}] ${route}\n`);
     } catch (err) {
-      fail++;
+      failures.push({ route, message: err.message });
       process.stdout.write(`  ✗ [${i + 1}/${allRoutes.length}] ${route} — ${err.message.slice(0, 80)}\n`);
-    } finally {
-      if (page) await page.close().catch(() => {});
     }
   }
 
+  await page.close();
   await browser.close();
   server.close();
-  console.log(`\nDone: ${success} rendered, ${fail} failed out of ${allRoutes.length} routes`);
+  console.log(`\nDone: ${success} rendered, ${failures.length} failed out of ${allRoutes.length} routes`);
+  if (failures.length > 0) {
+    throw new Error(`SEO prerendering failed for ${failures.map(({ route }) => route).join(", ")}`);
+  }
 }
 
 main().catch((err) => {
-  // Prerendering is a progressive enhancement for SEO. If it fails (missing
-  // Chromium, sandbox restrictions in a CI builder, a crashed page), we still
-  // want the built site in dist/ to ship rather than blocking the deploy.
-  console.error("\n[prerender] FAILED — deploying without pre-rendered HTML.");
+  console.error("\n[prerender] FAILED — refusing to deploy incomplete SEO output.");
   console.error(err);
+  process.exitCode = 1;
 });
