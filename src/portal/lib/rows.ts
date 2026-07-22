@@ -67,6 +67,8 @@ export interface ClientRow {
   phone: string | null;
   country: string | null;
   notes: string | null;
+  invited_at: string | null;
+  accepted_at: string | null;
   created_at: string;
 }
 

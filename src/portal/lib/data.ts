@@ -390,9 +390,14 @@ export function useProject(projectId: string | undefined): {
   return { ...state, refresh };
 }
 
-export function useClients(): { clients: ClientRow[]; loading: boolean } {
+export function useClients(): {
+  clients: ClientRow[];
+  loading: boolean;
+  refresh: () => void;
+} {
   const demo = !isSupabaseConfigured;
   const demoV = useDemoVersion(demo);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [clients, setClients] = useState<ClientRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -411,9 +416,13 @@ export function useClients(): { clients: ClientRow[]; loading: boolean } {
         setClients((data as ClientRow[]) ?? []);
         setLoading(false);
       });
-  }, [demo, demoV]);
+  }, [demo, demoV, refreshKey]);
 
-  return { clients, loading };
+  return {
+    clients,
+    loading,
+    refresh: () => setRefreshKey((key) => key + 1),
+  };
 }
 
 export function useTeam(): { team: ProfileRow[]; loading: boolean } {
@@ -811,6 +820,8 @@ export async function createClient(input: CreateClientInput): Promise<ClientRow>
       phone: input.phone || null,
       country: input.country || null,
       notes: input.notes || null,
+      invited_at: null,
+      accepted_at: null,
       created_at: new Date().toISOString(),
     };
     demoClients.unshift(row);
@@ -824,6 +835,22 @@ export async function createClient(input: CreateClientInput): Promise<ClientRow>
     .single();
   if (error) throw error;
   return data as ClientRow;
+}
+
+export async function inviteClient(clientId: string): Promise<void> {
+  if (!isSupabaseConfigured) {
+    const client = demoClients.find((item) => item.id === clientId);
+    if (client) client.invited_at = new Date().toISOString();
+    emitDemo();
+    return;
+  }
+
+  const { data, error } = await supabase!.functions.invoke("invite-client", {
+    body: { client_id: clientId },
+  });
+  if (error) throw error;
+  const functionError = (data as { error?: string } | null)?.error;
+  if (functionError) throw new Error(functionError);
 }
 
 export interface CreateProjectInput {

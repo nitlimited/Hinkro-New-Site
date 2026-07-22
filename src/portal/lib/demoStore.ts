@@ -163,6 +163,8 @@ export const demoClients: ClientRow[] = [
     phone: "+233 55 555 6666",
     country: "Ghana",
     notes: "Wedding in late July — colours must match the invitation suite.",
+    invited_at: daysAgo(11),
+    accepted_at: daysAgo(10),
     created_at: daysAgo(12),
   },
   {
@@ -173,6 +175,8 @@ export const demoClients: ClientRow[] = [
     phone: null,
     country: "United Kingdom",
     notes: null,
+    invited_at: daysAgo(9),
+    accepted_at: null,
     created_at: daysAgo(9),
   },
   {
@@ -183,6 +187,8 @@ export const demoClients: ClientRow[] = [
     phone: "+233 27 777 8888",
     country: "Ghana",
     notes: "Koforidua Technical University — batch order contact.",
+    invited_at: null,
+    accepted_at: null,
     created_at: daysAgo(20),
   },
 ];

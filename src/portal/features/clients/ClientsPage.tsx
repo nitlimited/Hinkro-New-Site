@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { UserPlus } from "lucide-react";
-import { createClient, useClients } from "../../lib/data";
+import { createClient, inviteClient, useClients } from "../../lib/data";
 import { EmptyState, Field, Modal, formatDate } from "../../components/ui";
 
 export function ClientsPage() {
-  const { clients, loading } = useClients();
+  const { clients, loading, refresh } = useClients();
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState({
     name: "",
@@ -15,19 +15,52 @@ export function ClientsPage() {
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [pageError, setPageError] = useState("");
+  const [invitingId, setInvitingId] = useState("");
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError("");
+    setNotice("");
+    setPageError("");
     try {
-      await createClient(form);
+      const client = await createClient(form);
+      try {
+        await inviteClient(client.id);
+        setNotice(`${client.name} was added and the portal invitation was sent.`);
+      } catch (inviteError) {
+        setPageError(
+          `${client.name} was added, but the invitation could not be sent: ${
+            inviteError instanceof Error ? inviteError.message : "Please try again."
+          }`,
+        );
+      }
       setShowCreate(false);
       setForm({ name: "", email: "", phone: "", country: "", notes: "" });
+      refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setBusy(false);
+    }
+  };
+
+  const resendInvitation = async (clientId: string, name: string) => {
+    setInvitingId(clientId);
+    setNotice("");
+    setPageError("");
+    try {
+      await inviteClient(clientId);
+      setNotice(`A new portal invitation was sent to ${name}.`);
+      refresh();
+    } catch (inviteError) {
+      setPageError(
+        inviteError instanceof Error ? inviteError.message : "The invitation could not be sent.",
+      );
+    } finally {
+      setInvitingId("");
     }
   };
 
@@ -49,6 +82,9 @@ export function ClientsPage() {
           <UserPlus size={15} /> New client
         </button>
       </div>
+
+      {notice && <div className="portal-notice portal-client-feedback">{notice}</div>}
+      {pageError && <div className="portal-error portal-client-feedback">{pageError}</div>}
 
       {!loading && clients.length === 0 && (
         <EmptyState
@@ -78,10 +114,19 @@ export function ClientsPage() {
                   <td>{c.phone ?? "—"}</td>
                   <td>{c.country ?? "—"}</td>
                   <td>
-                    {c.profile_id ? (
-                      <span className="portal-stage">Active</span>
+                    {c.accepted_at ? (
+                      <span className="portal-invite-status is-active">Portal active</span>
+                    ) : c.invited_at ? (
+                      <span className="portal-invite-status is-pending">Invitation pending</span>
                     ) : (
-                      <span className="portal-muted-text">Not invited yet</span>
+                      <button
+                        className="portal-btn-link portal-resend-invite"
+                        type="button"
+                        disabled={invitingId === c.id}
+                        onClick={() => void resendInvitation(c.id, c.name)}
+                      >
+                        {invitingId === c.id ? "Sending…" : "Send invitation"}
+                      </button>
                     )}
                   </td>
                   <td>{formatDate(c.created_at)}</td>

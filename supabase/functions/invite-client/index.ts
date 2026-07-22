@@ -1,11 +1,11 @@
 // Invite a client to their project dashboard.
-// Called by an admin after creating a project. Creates (or finds) the client's
+// Called by an admin after creating a client. Creates the client's
 // auth user, links it to the clients row, and sends a Supabase invite email
 // that lands them on /portal via the invitation link.
 //
 // Deploy: supabase functions deploy invite-client
 // Requires secrets: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (set automatically),
-// and SITE_URL (e.g. https://www.hinkrokente.com).
+// and SITE_URL (e.g. https://hinkrokente.com).
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     if (!caller.user) {
       return new Response(JSON.stringify({ error: "Not signed in" }), {
         status: 401,
-        headers: cors,
+        headers: { ...cors, "Content-Type": "application/json" },
       });
     }
     const { data: callerProfile } = await admin
@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     if (!callerProfile || !["super_admin", "admin"].includes(callerProfile.role)) {
       return new Response(JSON.stringify({ error: "Not authorized" }), {
         status: 403,
-        headers: cors,
+        headers: { ...cors, "Content-Type": "application/json" },
       });
     }
 
@@ -53,35 +53,39 @@ Deno.serve(async (req) => {
     if (!client?.email) {
       return new Response(JSON.stringify({ error: "Client has no email" }), {
         status: 400,
-        headers: cors,
+        headers: { ...cors, "Content-Type": "application/json" },
       });
     }
 
-    const siteUrl = Deno.env.get("SITE_URL") ?? "http://localhost:5173";
+    const siteUrl = Deno.env.get("SITE_URL") ?? "https://hinkrokente.com";
+    const portalUrl = Deno.env.get("PORTAL_URL") ?? new URL("/portal/", siteUrl).toString();
 
     // Send the invitation (creates the auth user if needed).
-    const { data: invited, error: inviteErr } =
+    const { data: invited, error: inviteError } =
       await admin.auth.admin.inviteUserByEmail(client.email, {
-        redirectTo: `${siteUrl}/portal`,
+        redirectTo: portalUrl,
         data: { full_name: client.name },
       });
+    if (inviteError) throw inviteError;
 
-    let userId = invited?.user?.id;
-    if (inviteErr) {
-      // Already registered → just look them up; they sign in with OTP.
-      const { data: list } = await admin.auth.admin.listUsers();
-      userId = list?.users.find(
-        (u) => u.email?.toLowerCase() === client.email.toLowerCase(),
-      )?.id;
-      if (!userId) throw inviteErr;
-    }
+    const userId = invited.user.id;
 
     // Link profile to the clients row and pin the role.
+    const { data: authUser } = await admin.auth.admin.getUserById(userId);
+    const acceptedAt = authUser.user?.email_confirmed_at ? new Date().toISOString() : null;
+
     await admin
       .from("profiles")
       .update({ role: "client", full_name: client.name })
       .eq("id", userId);
-    await admin.from("clients").update({ profile_id: userId }).eq("id", client_id);
+    await admin
+      .from("clients")
+      .update({
+        profile_id: userId,
+        invited_at: new Date().toISOString(),
+        accepted_at: acceptedAt,
+      })
+      .eq("id", client_id);
 
     return new Response(JSON.stringify({ ok: true, user_id: userId }), {
       headers: { ...cors, "Content-Type": "application/json" },
