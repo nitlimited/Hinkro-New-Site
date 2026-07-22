@@ -4226,18 +4226,18 @@ function ThreadColorsPage() {
     );
   };
 
-  usePageSeo({
-    title: "Kente Thread Color Card | Browse All Available Colors | Hinkro Kente",
-    description:
-      "Browse all 38 authentic Kente thread colors available at Hinkro Kente. Select your preferred colors and start your custom Kente weaving journey today.",
-    canonical: "https://www.hinkrokente.com/thread-colors/",
-    ogTitle: "Kente Thread Color Card, Browse All Colors",
-    ogDescription:
-      "Browse all 38 authentic Kente thread colors by Hinkro Kente. Select your colors and start weaving your custom Kente today.",
-    ogImage: "https://www.hinkrokente.com/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg",
-    keywords:
-      "kente thread colors, kente color card, kente fabric colors, custom kente colors, hinkro kente colors, kente color palette",
-  });
+  usePageSeo(
+    "Kente Thread Colors",
+    "Browse all 38 authentic Kente thread colors available at Hinkro Kente. Select your preferred colors and start your custom Kente weaving journey today.",
+    [
+      "kente thread colors",
+      "kente color card",
+      "kente fabric colors",
+      "custom kente colors",
+      "Hinkro Kente colors",
+      "kente color palette",
+    ],
+  );
 
   return (
     <main className="thread-colors-page">
