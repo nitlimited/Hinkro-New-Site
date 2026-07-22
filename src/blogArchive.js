@@ -4,6 +4,45 @@ import { blogContent3 } from "./blogContent3";
 
 const allContent = { ...blogContent, ...blogContent2, ...blogContent3 };
 
+const blogFeaturedImages = {
+  "types-of-threads-used-in-kente": "/images/inspiring-tradition-yarn-value-illustration.png",
+  "kente-belt": "/images/hinkro-bespoke-storytelling-pattern.jpg",
+  "in-appreciation-of-nana-konadu-agyeman-rawlings": "/images/kente-cultural.jpg",
+  "kente-officially-protected-as-a-national-treasure": "/images/authentic-bespoke-kente-weaving-services-ghana.jpg",
+  "kente-for-organizational-groups-and-corporate-businesses": "/images/hinkro-kente-trends-news-gold-garden-kente-gown.jpg",
+  "black-star-experience": "/images/hinkro-kente-trends-news-green-blue-kente-gown.jpg",
+  "kente-and-kitenge": "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
+  "developing-kente-pattern-for-weaving": "/images/design-kente-image.png",
+  "african-artifact": "/images/inspiring-tradition-carousel-tradition-new-ways.jpg",
+  "computerized-kente-pattern": "/images/hinkro-kente-design-process-sketch.png",
+  "kente-in-your-own-colors": "/images/hinkro-bespoke-custom-color-way.jpg",
+  "the-timeless-allure-of-the-fatia-fata-nkrumah-kente-cloth": "/images/hinkro-kente-trends-news-peach-bespoke-kente-gown.jpg",
+  "ombre-kente-transitional-inspirations": "/images/hinkro-design-offering-transitional-ombre-weave.webp",
+  "custom-kente-stole": "/images/hinkro-design-offering-graduation-stoles.jpg",
+  "value-to-kente": "/images/hinkro-bespoke-dreams-shapes-hues.jpg",
+  kente: "/images/authentic-bespoke-kente-weaving-services-ghana.jpg",
+  "ankara-fabric-and-kente-fabric": "/images/hinkro-kente-trends-news-yellow-bridal-kente.jpg",
+  "wesley-girls-high-school-187-anniversary": "/images/graduation-stole/kente-graduation-stole-group-honours-campus.jpg",
+  "black-star-kente": "/images/hinkro-kente-trends-news-purple-red-kente-gown.jpg",
+  "kente-weaver": "/images/kente-weaver.jpg",
+  "discover-the-finest-kente-buying-experience-in-the-uk-with-hinkro-kente": "/images/hinkro-kente-trends-news-silver-blue-kente-fan.jpg",
+  "exploring-the-distinctive-charms-of-kente-and-ankara-fabrics": "/images/hinkro-kente-trends-news-green-blue-kente-gown.jpg",
+  "rediscovering-history-the-revamped-kwame-nkrumah-memorial-park": "/images/kente-cultural.jpg",
+  "crafting-the-perfect-kente-a-comprehensive-guide-to-authentic-african-kente-fabric": "/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg",
+  "where-to-buy-kente-fabric-online-in-the-usa": "/images/customized-hero.webp",
+  "unveiling-the-radiance-of-ombre-kente": "/images/hinkro-design-offering-transitional-ombre-weave.webp",
+  "kente-cloth-2": "/images/kente-cultural.jpg",
+  "why-obama-kente": "/images/inspiring-tradition-carousel-exclusivity.jpg",
+  "dansinkran-kente-wrapped-kente-cloth": "/images/hinkro-kente-trends-news-peach-bespoke-kente-gown.jpg",
+  "kente-graduation-stole-significance-in-black-academics": "/images/graduation-stole/kente-graduation-stole-university-of-ghana-deborah.jpg",
+  "how-kente-cloths-are-made": "/images/bespoke-kente-weaving-services-hinkro-kente-loom.jpg",
+  "kente-cloth-colors": "/images/hinkro-bespoke-custom-color-way.jpg",
+  "kente-2": "/images/authentic-bespoke-kente-weaving-services-ghana.jpg",
+  "case-study-crafting-a-bespoke-kente-for-client-josephine-by-hinkro-kente": "/images/hinkro-bespoke-dreams-shapes-hues.jpg",
+  "ghana-month": "/images/kente-cultural.jpg",
+  "kente-cloth": "/images/hinkro-design-offering-plain-weave.webp",
+};
+
 export const defaultBlogPosts = [
   {
     id: "wp-4700",
@@ -295,5 +334,6 @@ export const defaultBlogPosts = [
   },
 ].map((post) => ({
   ...post,
+  featured_image: blogFeaturedImages[post.slug] || post.featured_image,
   content: allContent[post.slug] || null,
 }));
