@@ -32,7 +32,10 @@ ENV NODE_ENV=production \
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev --ignore-scripts \
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm ci --omit=dev --ignore-scripts \
     && npm cache clean --force
 
 COPY --chown=node:node server.mjs ./
