@@ -7,13 +7,23 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const CREATABLE = ["weaver", "editor", "content_manager", "admin"] as const;
+const cors = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+};
+
+function json(payload: unknown, status = 200) {
+  return new Response(JSON.stringify(payload), {
+    status,
+    headers: { ...cors, "Content-Type": "application/json" },
+  });
+}
 
 Deno.serve(async (req) => {
-  const cors = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "authorization, content-type",
-  };
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
+  if (req.method !== "POST") return json({ error: "Method not allowed" }, 405);
 
   try {
     const admin = createClient(
@@ -24,54 +34,50 @@ Deno.serve(async (req) => {
     const jwt = (req.headers.get("Authorization") ?? "").replace("Bearer ", "");
     const { data: caller } = await admin.auth.getUser(jwt);
     if (!caller.user) {
-      return new Response(JSON.stringify({ error: "Not signed in" }), {
-        status: 401,
-        headers: cors,
-      });
+      return json({ error: "Not signed in" }, 401);
     }
-    const { data: callerProfile } = await admin
+    const { data: callerProfile, error: profileError } = await admin
       .from("profiles")
       .select("role")
       .eq("id", caller.user.id)
       .single();
+    if (profileError) throw profileError;
 
     const { email, full_name, role } = await req.json();
+    if (!email?.trim() || !full_name?.trim()) {
+      return json({ error: "Full name and email are required" }, 400);
+    }
     if (!CREATABLE.includes(role)) {
-      return new Response(JSON.stringify({ error: "Invalid role" }), {
-        status: 400,
-        headers: cors,
-      });
+      return json({ error: "Invalid role" }, 400);
     }
     const callerRole = callerProfile?.role;
     const allowed =
       callerRole === "super_admin" ||
       (callerRole === "admin" && role !== "admin");
     if (!allowed) {
-      return new Response(JSON.stringify({ error: "Not authorized" }), {
-        status: 403,
-        headers: cors,
-      });
+      return json({ error: "Not authorized" }, 403);
     }
 
-    const siteUrl = Deno.env.get("SITE_URL") ?? "http://localhost:5173";
+    const siteUrl = Deno.env.get("SITE_URL") ?? "https://hinkrokente.com";
+    const portalUrl =
+      Deno.env.get("PORTAL_URL") ?? new URL("/portal/", siteUrl).toString();
     const { data: invited, error } = await admin.auth.admin.inviteUserByEmail(
-      email,
-      { redirectTo: `${siteUrl}/portal`, data: { full_name } },
+      email.trim().toLowerCase(),
+      { redirectTo: portalUrl, data: { full_name: full_name.trim() } },
     );
     if (error) throw error;
 
-    await admin
+    const { error: updateError } = await admin
       .from("profiles")
-      .update({ role, full_name })
+      .update({ role, full_name: full_name.trim() })
       .eq("id", invited.user.id);
+    if (updateError) throw updateError;
 
-    return new Response(JSON.stringify({ ok: true, user_id: invited.user.id }), {
-      headers: { ...cors, "Content-Type": "application/json" },
-    });
+    return json({ ok: true, user_id: invited.user.id });
   } catch (err) {
-    return new Response(
-      JSON.stringify({ error: err instanceof Error ? err.message : String(err) }),
-      { status: 500, headers: cors },
+    return json(
+      { error: err instanceof Error ? err.message : String(err) },
+      500,
     );
   }
 });

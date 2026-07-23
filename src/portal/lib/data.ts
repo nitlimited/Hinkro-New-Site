@@ -1446,33 +1446,51 @@ export async function addWeaver(input: AddWeaverInput): Promise<void> {
   const { data, error } = await supabase!.functions.invoke("admin-create-user", {
     body: { email: input.email, full_name: input.full_name, role: "weaver" },
   });
-  if (error) throw error;
-  const userId = (data as { user_id?: string })?.user_id;
-  if (userId) {
-    await supabase!.from("weaver_profiles").insert({
-      profile_id: userId,
-      years_experience: input.years_experience ?? null,
-      specialties: input.specialties ?? [],
-      bio: input.bio ?? null,
-      portrait_url: input.portrait_url ?? null,
-      hometown: input.hometown ?? null,
-      languages: input.languages ?? [],
-      loom_count: input.loom_count ?? 1,
-      occupied_looms: input.occupied_looms ?? 0,
-      avg_weaving_hours_per_day: input.avg_weaving_hours_per_day ?? null,
-      avg_days_per_cloth: input.avg_days_per_cloth ?? null,
-      queue_length: input.queue_length ?? 0,
-      unavailable_until: input.unavailable_until ?? null,
-      availability_note: input.availability_note ?? null,
-      reliability_score: input.reliability_score ?? 70,
-      quality_score: input.quality_score ?? 70,
-      address: input.address ?? null,
-      id_number: input.id_number ?? null,
-      emergency_contact: input.emergency_contact ?? null,
-    });
-    if (input.phone) {
-      await supabase!.from("profiles").update({ phone: input.phone }).eq("id", userId);
+  if (error) {
+    let message = error.message;
+    const context = (error as { context?: Response }).context;
+    if (context) {
+      try {
+        const payload = (await context.json()) as { error?: string; message?: string };
+        message = payload.error ?? payload.message ?? message;
+      } catch {}
     }
+    throw new Error(message);
+  }
+  const functionError = (data as { error?: string } | null)?.error;
+  if (functionError) throw new Error(functionError);
+  const userId = (data as { user_id?: string })?.user_id;
+  if (!userId) throw new Error("The invitation was sent without creating a weaver account.");
+
+  const { error: weaverError } = await supabase!.from("weaver_profiles").insert({
+    profile_id: userId,
+    years_experience: input.years_experience ?? null,
+    specialties: input.specialties ?? [],
+    bio: input.bio ?? null,
+    portrait_url: input.portrait_url ?? null,
+    hometown: input.hometown ?? null,
+    languages: input.languages ?? [],
+    loom_count: input.loom_count ?? 1,
+    occupied_looms: input.occupied_looms ?? 0,
+    avg_weaving_hours_per_day: input.avg_weaving_hours_per_day ?? null,
+    avg_days_per_cloth: input.avg_days_per_cloth ?? null,
+    queue_length: input.queue_length ?? 0,
+    unavailable_until: input.unavailable_until ?? null,
+    availability_note: input.availability_note ?? null,
+    reliability_score: input.reliability_score ?? 70,
+    quality_score: input.quality_score ?? 70,
+    address: input.address ?? null,
+    id_number: input.id_number ?? null,
+    emergency_contact: input.emergency_contact ?? null,
+  });
+  if (weaverError) throw weaverError;
+
+  if (input.phone) {
+    const { error: phoneError } = await supabase!
+      .from("profiles")
+      .update({ phone: input.phone })
+      .eq("id", userId);
+    if (phoneError) throw phoneError;
   }
 }
 
